@@ -1,0 +1,104 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/fatih/color",
+			"repository": "https://github.com/fatih/color",
+			"vcs": "git",
+			"revision": "dea9d3a26a087187530244679c1cfb3a42937794",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/golang/protobuf/proto",
+			"repository": "https://github.com/golang/protobuf",
+			"vcs": "git",
+			"revision": "98fa357170587e470c5f27d3c3ea0947b71eb455",
+			"branch": "master",
+			"path": "/proto",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/golang/protobuf/ptypes/any",
+			"repository": "https://github.com/golang/protobuf",
+			"vcs": "git",
+			"revision": "98fa357170587e470c5f27d3c3ea0947b71eb455",
+			"branch": "master",
+			"path": "ptypes/any",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/mattn/go-colorable",
+			"repository": "https://github.com/mattn/go-colorable",
+			"vcs": "git",
+			"revision": "6c903ff4aa50920ca86087a280590b36b3152b9c",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/mattn/go-isatty",
+			"repository": "https://github.com/mattn/go-isatty",
+			"vcs": "git",
+			"revision": "66b8e73f3f5cda9f96b69efd03dd3d7fc4a5cdb8",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/onsi/ginkgo",
+			"repository": "https://github.com/onsi/ginkgo",
+			"vcs": "git",
+			"revision": "39549e585f5005ce588e6217d4538a4c99a472c9",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/onsi/gomega",
+			"repository": "https://github.com/onsi/gomega",
+			"vcs": "git",
+			"revision": "d59fa0ac68bb5dd932ee8d24eed631cdd519efc3",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/pivotal-cf/go-pivnet",
+			"repository": "https://github.com/pivotal-cf/go-pivnet",
+			"vcs": "git",
+			"revision": "dfeea022fbf26377d26d564555b29aa7839fb55e",
+			"branch": "develop",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/robdimsdale/sanitizer",
+			"repository": "https://github.com/robdimsdale/sanitizer",
+			"vcs": "git",
+			"revision": "ab2334cb7539a2ce27b7aea53b7d693087b10cd9",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/sys/unix",
+			"repository": "https://go.googlesource.com/sys",
+			"vcs": "git",
+			"revision": "002cbb5f952456d0c50e0d2aff17ea5eca716979",
+			"branch": "master",
+			"path": "/unix",
+			"notests": true
+		},
+		{
+			"importpath": "gopkg.in/cheggaaa/pb.v1",
+			"repository": "https://gopkg.in/cheggaaa/pb.v1",
+			"vcs": "git",
+			"revision": "9453b2db37f4d8bc63751daca63bbe7049eb5e74",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "gopkg.in/yaml.v2",
+			"repository": "https://gopkg.in/yaml.v2",
+			"vcs": "git",
+			"revision": "a5b47d31c556af34a302ce5d659e6fea44d90de0",
+			"branch": "v2",
+			"notests": true
+		}
+	]
+}
