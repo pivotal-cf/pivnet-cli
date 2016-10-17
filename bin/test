@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -eu
+
+set +x
+API_TOKEN="${API_TOKEN:?"API_TOKEN must be provided"}"
+set -x
+
+HOST="${HOST:?"HOST must be provided"}"
+
+# In seconds
+SLOW_SPEC_THRESHOLD="${SLOW_SPEC_THRESHOLD:-60}"
+
+my_dir="$( cd "$( dirname "${0}" )" && pwd )"
+base_dir="$( cd "${my_dir}/.." && pwd )"
+
+pushd "${base_dir}" > /dev/null
+  CGO_ENABLED=1 ginkgo \
+    -r \
+    -race \
+    -p \
+    -randomizeAllSpecs \
+    -randomizeSuites \
+    -slowSpecThreshold="${SLOW_SPEC_THRESHOLD}" \
+    "$@"
+popd > /dev/null
+
