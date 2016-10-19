@@ -2,6 +2,47 @@
 
 Interact with [Pivotal Network](https://network.pivotal.io) from the command-line.
 
+## Installing
+
+Binaries for various operating systems are provided with each release on the
+[releases page](https://github.com/pivotal-cf/pivnet-cli/releases).
+
+Install for OSX via [homebrew](http://brew.sh/) as follows:
+
+```sh
+brew install pivotal/tap/pivnet-cli
+```
+
+## Usage
+
+Using the Pivnet CLI requires a valid Pivotal Network API token.
+
+Refer to the
+[official docs](https://network.pivotal.io/docs/api#how-to-authenticate)
+for more details on obtaining a Pivotal Network API token.
+
+Example usage:
+
+```sh
+$ pivnet --api-token='my-api-token' products
+
++-----+------------------------------------------------------+--------------------------------+
+| ID  |                         SLUG                         |              NAME              |
++-----+------------------------------------------------------+--------------------------------+
+|  60 | elastic-runtime                                      | Pivotal Cloud Foundry Elastic  |
+|     |                                                      | Runtime                        |
++-----+------------------------------------------------------+--------------------------------+
+
+$ pivnet --api-token='my-api-token' r -p elastic-runtime -r 1.8.8 --format json \
+  | jq '{"id": .id, "release_date": .release_date, "release_type": .release_type}'
+
+{
+  "id": 2555,
+  "release_date": "2016-10-13",
+  "release_type": "Security Release"
+}
+```
+
 ## Developing
 
 ### Prerequisites
