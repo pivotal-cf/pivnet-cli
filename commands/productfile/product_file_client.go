@@ -435,11 +435,6 @@ func (c *ProductFileClient) Download(
 		}
 	}
 
-	progress := newProgressBar(productFile.Size, c.logWriter)
-	onDemandProgress := &startOnDemandProgressBar{progress, false}
-
-	multiWriter := io.MultiWriter(file, onDemandProgress)
-
 	c.l.Debug(
 		"Downloading link to local file",
 		logger.Data{
@@ -447,13 +442,38 @@ func (c *ProductFileClient) Download(
 			"localFilepath": filepath,
 		},
 	)
-	err, _ = c.pivnetClient.DownloadFile(multiWriter, downloadLink)
-	if err != nil {
-		return c.eh.HandleError(err)
+
+	totalAttempts := 3
+	for i := 0; i < totalAttempts; i++ {
+		progress := newProgressBar(productFile.Size, c.logWriter)
+		onDemandProgress := &startOnDemandProgressBar{progress, false}
+
+		multiWriter := io.MultiWriter(file, onDemandProgress)
+
+		var retryable bool
+		err, retryable = c.pivnetClient.DownloadFile(multiWriter, downloadLink)
+
+		if err != nil {
+			if !retryable {
+				break
+			}
+
+			attemptsRemaining := totalAttempts - i - 1
+			c.l.Debug(
+				fmt.Sprintf("Download failed; retrying... (%d attempt(s) left)", attemptsRemaining),
+				logger.Data{
+					"Error": err,
+				},
+			)
+
+			continue
+		}
+
+		progress.Finish()
+		return nil
 	}
 
-	progress.Finish()
-	return nil
+	return c.eh.HandleError(err)
 }
 
 type startOnDemandProgressBar struct {
