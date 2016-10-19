@@ -267,6 +267,6 @@ func (c ExtendedClient) ReleaseFingerprint(productSlug string, releaseID int) (s
 	return c.client.ReleaseFingerprint(productSlug, releaseID)
 }
 
-func (c ExtendedClient) DownloadFile(writer io.Writer, downloadLink string) error {
+func (c ExtendedClient) DownloadFile(writer io.Writer, downloadLink string) (err error, retryable bool) {
 	return c.client.DownloadFile(writer, downloadLink)
 }

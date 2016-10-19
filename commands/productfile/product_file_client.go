@@ -8,9 +8,9 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	pivnet "github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
-	"github.com/pivotal-cf/go-pivnet/logger"
 	"gopkg.in/cheggaaa/pb.v1"
 )
 
@@ -29,7 +29,7 @@ type PivnetClient interface {
 	RemoveProductFileFromFileGroup(productSlug string, fileGroupID int, productFileID int) error
 	DeleteProductFile(productSlug string, releaseID int) (pivnet.ProductFile, error)
 	AcceptEULA(productSlug string, releaseID int) error
-	DownloadFile(writer io.Writer, downloadLink string) error
+	DownloadFile(writer io.Writer, downloadLink string) (err error, retryable bool)
 }
 
 type ProductFileClient struct {
@@ -447,7 +447,7 @@ func (c *ProductFileClient) Download(
 			"localFilepath": filepath,
 		},
 	)
-	err = c.pivnetClient.DownloadFile(multiWriter, downloadLink)
+	err, _ = c.pivnetClient.DownloadFile(multiWriter, downloadLink)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
