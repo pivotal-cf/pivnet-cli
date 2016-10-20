@@ -268,5 +268,6 @@ func (c ExtendedClient) ReleaseFingerprint(productSlug string, releaseID int) (s
 }
 
 func (c ExtendedClient) DownloadFile(writer io.Writer, downloadLink string) error {
-	return c.client.DownloadFile(writer, downloadLink)
+	err, _ := c.client.DownloadFile(writer, downloadLink)
+	return err
 }
