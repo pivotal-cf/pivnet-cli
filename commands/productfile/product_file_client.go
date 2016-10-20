@@ -8,9 +8,9 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	pivnet "github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
-	"github.com/pivotal-cf/go-pivnet/logger"
 	"gopkg.in/cheggaaa/pb.v1"
 )
 
@@ -29,7 +29,7 @@ type PivnetClient interface {
 	RemoveProductFileFromFileGroup(productSlug string, fileGroupID int, productFileID int) error
 	DeleteProductFile(productSlug string, releaseID int) (pivnet.ProductFile, error)
 	AcceptEULA(productSlug string, releaseID int) error
-	DownloadFile(writer io.Writer, downloadLink string) error
+	DownloadFile(writer io.Writer, downloadLink string) (err error, retryable bool)
 }
 
 type ProductFileClient struct {
@@ -435,11 +435,6 @@ func (c *ProductFileClient) Download(
 		}
 	}
 
-	progress := newProgressBar(productFile.Size, c.logWriter)
-	onDemandProgress := &startOnDemandProgressBar{progress, false}
-
-	multiWriter := io.MultiWriter(file, onDemandProgress)
-
 	c.l.Debug(
 		"Downloading link to local file",
 		logger.Data{
@@ -447,13 +442,38 @@ func (c *ProductFileClient) Download(
 			"localFilepath": filepath,
 		},
 	)
-	err = c.pivnetClient.DownloadFile(multiWriter, downloadLink)
-	if err != nil {
-		return c.eh.HandleError(err)
+
+	totalAttempts := 3
+	for i := 0; i < totalAttempts; i++ {
+		progress := newProgressBar(productFile.Size, c.logWriter)
+		onDemandProgress := &startOnDemandProgressBar{progress, false}
+
+		multiWriter := io.MultiWriter(file, onDemandProgress)
+
+		var retryable bool
+		err, retryable = c.pivnetClient.DownloadFile(multiWriter, downloadLink)
+
+		if err != nil {
+			if !retryable {
+				break
+			}
+
+			attemptsRemaining := totalAttempts - i - 1
+			c.l.Debug(
+				fmt.Sprintf("Download failed; retrying... (%d attempt(s) left)", attemptsRemaining),
+				logger.Data{
+					"Error": err,
+				},
+			)
+
+			continue
+		}
+
+		progress.Finish()
+		return nil
 	}
 
-	progress.Finish()
-	return nil
+	return c.eh.HandleError(err)
 }
 
 type startOnDemandProgressBar struct {

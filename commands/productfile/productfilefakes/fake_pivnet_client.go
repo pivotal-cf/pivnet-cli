@@ -138,7 +138,7 @@ type FakePivnetClient struct {
 	acceptEULAReturns struct {
 		result1 error
 	}
-	DownloadFileStub        func(writer io.Writer, downloadLink string) error
+	DownloadFileStub        func(writer io.Writer, downloadLink string) (err error, retryable bool)
 	downloadFileMutex       sync.RWMutex
 	downloadFileArgsForCall []struct {
 		writer       io.Writer
@@ -146,6 +146,7 @@ type FakePivnetClient struct {
 	}
 	downloadFileReturns struct {
 		result1 error
+		result2 bool
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
@@ -604,7 +605,7 @@ func (fake *FakePivnetClient) AcceptEULAReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakePivnetClient) DownloadFile(writer io.Writer, downloadLink string) error {
+func (fake *FakePivnetClient) DownloadFile(writer io.Writer, downloadLink string) (err error, retryable bool) {
 	fake.downloadFileMutex.Lock()
 	fake.downloadFileArgsForCall = append(fake.downloadFileArgsForCall, struct {
 		writer       io.Writer
@@ -615,7 +616,7 @@ func (fake *FakePivnetClient) DownloadFile(writer io.Writer, downloadLink string
 	if fake.DownloadFileStub != nil {
 		return fake.DownloadFileStub(writer, downloadLink)
 	} else {
-		return fake.downloadFileReturns.result1
+		return fake.downloadFileReturns.result1, fake.downloadFileReturns.result2
 	}
 }
 
@@ -631,11 +632,12 @@ func (fake *FakePivnetClient) DownloadFileArgsForCall(i int) (io.Writer, string)
 	return fake.downloadFileArgsForCall[i].writer, fake.downloadFileArgsForCall[i].downloadLink
 }
 
-func (fake *FakePivnetClient) DownloadFileReturns(result1 error) {
+func (fake *FakePivnetClient) DownloadFileReturns(result1 error, result2 bool) {
 	fake.DownloadFileStub = nil
 	fake.downloadFileReturns = struct {
 		result1 error
-	}{result1}
+		result2 bool
+	}{result1, result2}
 }
 
 func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {

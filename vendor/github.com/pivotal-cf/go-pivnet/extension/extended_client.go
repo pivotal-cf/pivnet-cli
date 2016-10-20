@@ -120,7 +120,7 @@ func (c ExtendedClient) etag(url string) (string, error) {
 	return etag, nil
 }
 
-func (c ExtendedClient) DownloadFile(writer io.Writer, downloadLink string) error {
+func (c ExtendedClient) DownloadFile(writer io.Writer, downloadLink string) (err error, retryable bool) {
 	c.logger.Debug("Downloading file", logger.Data{"downloadLink": downloadLink})
 
 	req, err := c.c.CreateRequest(
@@ -129,34 +129,34 @@ func (c ExtendedClient) DownloadFile(writer io.Writer, downloadLink string) erro
 		nil,
 	)
 	if err != nil {
-		return err
+		return err, false
 	}
 
 	reqBytes, err := httputil.DumpRequestOut(req, true)
 	if err != nil {
-		return err
+		return err, false
 	}
 
 	c.logger.Debug("Making request", logger.Data{"request": string(reqBytes)})
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return err
+		return err, false
 	}
 
 	if resp.StatusCode == http.StatusUnavailableForLegalReasons {
-		return errors.New(fmt.Sprintf("the EULA has not been accepted for the file: %s", downloadLink))
+		return errors.New(fmt.Sprintf("the EULA has not been accepted for the file: %s", downloadLink)), false
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.New(fmt.Sprintf("pivnet returned an error code of %d for the file: %s", resp.StatusCode, downloadLink))
+		return errors.New(fmt.Sprintf("pivnet returned an error code of %d for the file: %s", resp.StatusCode, downloadLink)), false
 	}
 
 	c.logger.Debug("Copying body", logger.Data{"downloadLink": downloadLink})
 
 	_, err = io.Copy(writer, resp.Body)
 	if err != nil {
-		return err
+		return err, true
 	}
 
-	return nil
+	return nil, true
 }

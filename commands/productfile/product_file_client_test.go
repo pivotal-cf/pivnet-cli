@@ -13,11 +13,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	pivnet "github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet/logger/loggerfakes"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile/productfilefakes"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
 	"github.com/pivotal-cf/pivnet-cli/printer"
-	"github.com/pivotal-cf/go-pivnet/logger/loggerfakes"
 )
 
 var _ = Describe("productfile commands", func() {
@@ -678,9 +678,9 @@ var _ = Describe("productfile commands", func() {
 			}
 
 			fakePivnetClient.ReleaseForVersionReturns(returnedRelease, nil)
-			fakePivnetClient.DownloadFileStub = func(writer io.Writer, downloadLink string) error {
-				_, err := fmt.Fprintf(writer, fileContents)
-				return err
+			fakePivnetClient.DownloadFileStub = func(writer io.Writer, downloadLink string) (err error, retryable bool) {
+				_, err = fmt.Fprintf(writer, fileContents)
+				return err, false
 			}
 		})
 
@@ -715,14 +715,14 @@ var _ = Describe("productfile commands", func() {
 			Expect(contents).To(Equal([]byte(fileContents)))
 		})
 
-		Context("when there is an error", func() {
+		Context("when there is a non-retryable error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("productfile error")
-				fakePivnetClient.DownloadFileReturns(expectedErr)
+				fakePivnetClient.DownloadFileReturns(expectedErr, false)
 			})
 
 			It("invokes the error handler", func() {
@@ -738,6 +738,64 @@ var _ = Describe("productfile commands", func() {
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
 				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
 			})
+		})
+
+		Context("when there is a retryable error", func() {
+			var (
+				expectedErr error
+				triesCount  int
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("productfile error")
+				triesCount = 0
+				fakePivnetClient.DownloadFileStub = func(writer io.Writer, downloadLink string) (err error, retryable bool) {
+					failed := (triesCount < 1)
+					triesCount++
+
+					if failed {
+						return expectedErr, true
+					} else {
+						return nil, true
+					}
+				}
+			})
+
+			It("retries the download", func() {
+				err := client.Download(
+					productSlug,
+					releaseVersion,
+					productFileID,
+					providedFilepath,
+					acceptEULA,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.DownloadFileCallCount()).To(Equal(2))
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(0))
+			})
+
+			Context("when the error has occurred three times", func() {
+				BeforeEach(func() {
+					fakePivnetClient.DownloadFileReturns(expectedErr, true)
+				})
+
+				It("invokes the error handler", func() {
+					err := client.Download(
+						productSlug,
+						releaseVersion,
+						productFileID,
+						providedFilepath,
+						acceptEULA,
+					)
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(fakePivnetClient.DownloadFileCallCount()).To(Equal(3))
+					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+					Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				})
+			})
+
 		})
 
 		Context("when there is an error getting release", func() {
