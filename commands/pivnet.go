@@ -10,6 +10,7 @@ import (
 	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/pivotal-cf/go-pivnet/logshim"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
+	"github.com/pivotal-cf/pivnet-cli/filter"
 	"github.com/pivotal-cf/pivnet-cli/gp"
 	"github.com/pivotal-cf/pivnet-cli/printer"
 	"github.com/pivotal-cf/pivnet-cli/version"
@@ -20,10 +21,15 @@ const (
 	DefaultHost = "https://network.pivotal.io"
 )
 
+type Filterer interface {
+	ReleasesByVersion(releases []pivnet.Release, version string) ([]pivnet.Release, error)
+}
+
 var (
 	OutputWriter io.Writer
 	LogWriter    io.Writer
 
+	Filter       Filterer
 	ErrorHandler errorhandler.ErrorHandler
 	Printer      printer.Printer
 )
@@ -138,6 +144,10 @@ func Init() {
 
 	if ErrorHandler == nil {
 		ErrorHandler = errorhandler.NewErrorHandler(Pivnet.Format, OutputWriter, LogWriter)
+	}
+
+	if Filter == nil {
+		Filter = filter.NewFilter()
 	}
 
 	if Printer == nil {

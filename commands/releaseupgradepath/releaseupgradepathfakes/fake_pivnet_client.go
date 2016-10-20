@@ -9,6 +9,15 @@ import (
 )
 
 type FakePivnetClient struct {
+	ReleasesForProductSlugStub        func(productSlug string) ([]go_pivnet.Release, error)
+	releasesForProductSlugMutex       sync.RWMutex
+	releasesForProductSlugArgsForCall []struct {
+		productSlug string
+	}
+	releasesForProductSlugReturns struct {
+		result1 []go_pivnet.Release
+		result2 error
+	}
 	ReleaseForVersionStub        func(productSlug string, releaseVersion string) (go_pivnet.Release, error)
 	releaseForVersionMutex       sync.RWMutex
 	releaseForVersionArgsForCall []struct {
@@ -51,6 +60,40 @@ type FakePivnetClient struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakePivnetClient) ReleasesForProductSlug(productSlug string) ([]go_pivnet.Release, error) {
+	fake.releasesForProductSlugMutex.Lock()
+	fake.releasesForProductSlugArgsForCall = append(fake.releasesForProductSlugArgsForCall, struct {
+		productSlug string
+	}{productSlug})
+	fake.recordInvocation("ReleasesForProductSlug", []interface{}{productSlug})
+	fake.releasesForProductSlugMutex.Unlock()
+	if fake.ReleasesForProductSlugStub != nil {
+		return fake.ReleasesForProductSlugStub(productSlug)
+	} else {
+		return fake.releasesForProductSlugReturns.result1, fake.releasesForProductSlugReturns.result2
+	}
+}
+
+func (fake *FakePivnetClient) ReleasesForProductSlugCallCount() int {
+	fake.releasesForProductSlugMutex.RLock()
+	defer fake.releasesForProductSlugMutex.RUnlock()
+	return len(fake.releasesForProductSlugArgsForCall)
+}
+
+func (fake *FakePivnetClient) ReleasesForProductSlugArgsForCall(i int) string {
+	fake.releasesForProductSlugMutex.RLock()
+	defer fake.releasesForProductSlugMutex.RUnlock()
+	return fake.releasesForProductSlugArgsForCall[i].productSlug
+}
+
+func (fake *FakePivnetClient) ReleasesForProductSlugReturns(result1 []go_pivnet.Release, result2 error) {
+	fake.ReleasesForProductSlugStub = nil
+	fake.releasesForProductSlugReturns = struct {
+		result1 []go_pivnet.Release
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakePivnetClient) ReleaseForVersion(productSlug string, releaseVersion string) (go_pivnet.Release, error) {
@@ -196,6 +239,8 @@ func (fake *FakePivnetClient) RemoveReleaseUpgradePathReturns(result1 error) {
 func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.releasesForProductSlugMutex.RLock()
+	defer fake.releasesForProductSlugMutex.RUnlock()
 	fake.releaseForVersionMutex.RLock()
 	defer fake.releaseForVersionMutex.RUnlock()
 	fake.releaseUpgradePathsMutex.RLock()

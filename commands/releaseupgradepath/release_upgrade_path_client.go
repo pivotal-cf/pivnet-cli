@@ -13,10 +13,16 @@ import (
 
 //go:generate counterfeiter . PivnetClient
 type PivnetClient interface {
+	ReleasesForProductSlug(productSlug string) ([]pivnet.Release, error)
 	ReleaseForVersion(productSlug string, releaseVersion string) (pivnet.Release, error)
 	ReleaseUpgradePaths(productSlug string, releaseID int) ([]pivnet.ReleaseUpgradePath, error)
 	AddReleaseUpgradePath(productSlug string, releaseID int, previousReleaseID int) error
 	RemoveReleaseUpgradePath(productSlug string, releaseID int, previousReleaseID int) error
+}
+
+//go:generate counterfeiter . Filter
+type Filter interface {
+	ReleasesByVersion(releases []pivnet.Release, version string) ([]pivnet.Release, error)
 }
 
 type ReleaseUpgradePathClient struct {
@@ -25,6 +31,7 @@ type ReleaseUpgradePathClient struct {
 	format       string
 	outputWriter io.Writer
 	printer      printer.Printer
+	filter       Filter
 }
 
 func NewReleaseUpgradePathClient(
@@ -33,6 +40,7 @@ func NewReleaseUpgradePathClient(
 	format string,
 	outputWriter io.Writer,
 	printer printer.Printer,
+	filter Filter,
 ) *ReleaseUpgradePathClient {
 	return &ReleaseUpgradePathClient{
 		pivnetClient: pivnetClient,
@@ -40,6 +48,7 @@ func NewReleaseUpgradePathClient(
 		format:       format,
 		outputWriter: outputWriter,
 		printer:      printer,
+		filter:       filter,
 	}
 }
 
@@ -96,27 +105,40 @@ func (c *ReleaseUpgradePathClient) Add(
 		return c.eh.HandleError(err)
 	}
 
-	previousRelease, err := c.pivnetClient.ReleaseForVersion(productSlug, previousReleaseVersion)
+	allReleases, err := c.pivnetClient.ReleasesForProductSlug(productSlug)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
 
-	err = c.pivnetClient.AddReleaseUpgradePath(
-		productSlug,
-		release.ID,
-		previousRelease.ID,
-	)
+	matchingReleases, err := c.filter.ReleasesByVersion(allReleases, previousReleaseVersion)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
 
-	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"release upgrade path added successfully to %s/%s\n",
+	if len(matchingReleases) == 0 {
+		err := fmt.Errorf("No releases match: '%s'", previousReleaseVersion)
+		return c.eh.HandleError(err)
+	}
+
+	for _, previousRelease := range matchingReleases {
+		err = c.pivnetClient.AddReleaseUpgradePath(
 			productSlug,
-			releaseVersion,
+			release.ID,
+			previousRelease.ID,
 		)
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
+
+		if c.format == printer.PrintAsTable {
+			_, err = fmt.Fprintf(
+				c.outputWriter,
+				"release upgrade path '%s' added successfully to %s/%s\n",
+				previousRelease.Version,
+				productSlug,
+				releaseVersion,
+			)
+		}
 	}
 
 	return nil
@@ -132,27 +154,40 @@ func (c *ReleaseUpgradePathClient) Remove(
 		return c.eh.HandleError(err)
 	}
 
-	previousRelease, err := c.pivnetClient.ReleaseForVersion(productSlug, previousReleaseVersion)
+	allReleases, err := c.pivnetClient.ReleasesForProductSlug(productSlug)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
 
-	err = c.pivnetClient.RemoveReleaseUpgradePath(
-		productSlug,
-		release.ID,
-		previousRelease.ID,
-	)
+	matchingReleases, err := c.filter.ReleasesByVersion(allReleases, previousReleaseVersion)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
 
-	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"release upgrade path removed successfully from %s/%s\n",
+	if len(matchingReleases) == 0 {
+		err := fmt.Errorf("No releases match: '%s'", previousReleaseVersion)
+		return c.eh.HandleError(err)
+	}
+
+	for _, previousRelease := range matchingReleases {
+		err = c.pivnetClient.RemoveReleaseUpgradePath(
 			productSlug,
-			releaseVersion,
+			release.ID,
+			previousRelease.ID,
 		)
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
+
+		if c.format == printer.PrintAsTable {
+			_, err = fmt.Fprintf(
+				c.outputWriter,
+				"release upgrade path '%s' removed successfully from %s/%s\n",
+				previousRelease.Version,
+				productSlug,
+				releaseVersion,
+			)
+		}
 	}
 
 	return nil
