@@ -7,12 +7,12 @@ import (
 	"os"
 
 	"github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet/logger"
+	"github.com/pivotal-cf/go-pivnet/logshim"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/gp"
-	"github.com/pivotal-cf/pivnet-cli/logshim"
 	"github.com/pivotal-cf/pivnet-cli/printer"
 	"github.com/pivotal-cf/pivnet-cli/version"
-	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/robdimsdale/sanitizer"
 )
 
