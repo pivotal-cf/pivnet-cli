@@ -12,13 +12,18 @@ type ProductFilesService struct {
 }
 
 type CreateProductFileConfig struct {
-	ProductSlug  string
-	FileVersion  string
-	AWSObjectKey string
-	Name         string
-	MD5          string
-	Description  string
-	FileType     string
+	ProductSlug        string
+	AWSObjectKey       string
+	Description        string
+	DocsURL            string
+	FileType           string
+	FileVersion        string
+	IncludedFiles      []string
+	MD5                string
+	Name               string
+	Platforms          []string
+	ReleasedAt         string
+	SystemRequirements []string
 }
 
 type ProductFilesResponse struct {
@@ -30,15 +35,23 @@ type ProductFileResponse struct {
 }
 
 type ProductFile struct {
-	ID           int    `json:"id,omitempty" yaml:"id,omitempty"`
-	AWSObjectKey string `json:"aws_object_key,omitempty" yaml:"aws_object_key,omitempty"`
-	Links        *Links `json:"_links,omitempty" yaml:"_links,omitempty"`
-	FileType     string `json:"file_type,omitempty" yaml:"file_type,omitempty"`
-	FileVersion  string `json:"file_version,omitempty" yaml:"file_version,omitempty"`
-	Name         string `json:"name,omitempty" yaml:"name,omitempty"`
-	MD5          string `json:"md5,omitempty" yaml:"md5,omitempty"`
-	Description  string `json:"description,omitempty" yaml:"description,omitempty"`
-	Size         int    `json:"size,omitempty" yaml:"size,omitempty"`
+	ID                 int      `json:"id,omitempty" yaml:"id,omitempty"`
+	AWSObjectKey       string   `json:"aws_object_key,omitempty" yaml:"aws_object_key,omitempty"`
+	Description        string   `json:"description,omitempty" yaml:"description,omitempty"`
+	DocsURL            string   `json:"docs_url,omitempty" yaml:"docs_url,omitempty"`
+	FileTransferStatus string   `json:"file_transfer_status,omitempty" yaml:"file_transfer_status,omitempty"`
+	FileType           string   `json:"file_type,omitempty" yaml:"file_type,omitempty"`
+	FileVersion        string   `json:"file_version,omitempty" yaml:"file_version,omitempty"`
+	HasSignatureFile   bool     `json:"has_signature_file,omitempty" yaml:"has_signature_file,omitempty"`
+	IncludedFiles      []string `json:"included_files,omitempty" yaml:"included_files,omitempty"`
+	MD5                string   `json:"md5,omitempty" yaml:"md5,omitempty"`
+	Name               string   `json:"name,omitempty" yaml:"name,omitempty"`
+	Platforms          []string `json:"platforms,omitempty" yaml:"platforms,omitempty"`
+	ReadyToServe       bool     `json:"ready_to_serve,omitempty" yaml:"ready_to_serve,omitempty"`
+	ReleasedAt         string   `json:"released_at,omitempty" yaml:"released_at,omitempty"`
+	Size               int      `json:"size,omitempty" yaml:"size,omitempty"`
+	SystemRequirements []string `json:"system_requirements,omitempty" yaml:"system_requirements,omitempty"`
+	Links              *Links   `json:"_links,omitempty" yaml:"_links,omitempty"`
 }
 
 const (
@@ -141,12 +154,17 @@ func (p ProductFilesService) Create(config CreateProductFileConfig) (ProductFile
 
 	body := createUpdateProductFileBody{
 		ProductFile: ProductFile{
-			MD5:          config.MD5,
-			FileType:     config.FileType,
-			FileVersion:  config.FileVersion,
-			AWSObjectKey: config.AWSObjectKey,
-			Name:         config.Name,
-			Description:  config.Description,
+			AWSObjectKey:       config.AWSObjectKey,
+			Description:        config.Description,
+			DocsURL:            config.DocsURL,
+			FileType:           config.FileType,
+			FileVersion:        config.FileVersion,
+			IncludedFiles:      config.IncludedFiles,
+			MD5:                config.MD5,
+			Name:               config.Name,
+			Platforms:          config.Platforms,
+			ReleasedAt:         config.ReleasedAt,
+			SystemRequirements: config.SystemRequirements,
 		},
 	}
 
