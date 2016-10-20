@@ -175,6 +175,10 @@ var _ = Describe("release upgrade path commands", func() {
 				Expect(isRequired(field)).To(BeTrue())
 			})
 
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("u"))
+			})
+
 			It("contains long name", func() {
 				Expect(longTag(field)).To(Equal("previous-release-version"))
 			})
@@ -258,6 +262,10 @@ var _ = Describe("release upgrade path commands", func() {
 
 			It("is required", func() {
 				Expect(isRequired(field)).To(BeTrue())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("u"))
 			})
 
 			It("contains long name", func() {

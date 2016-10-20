@@ -10,13 +10,13 @@ type ReleaseUpgradePathsCommand struct {
 type AddReleaseUpgradePathCommand struct {
 	ProductSlug            string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
 	ReleaseVersion         string `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1" required:"true"`
-	PreviousReleaseVersion string `long:"previous-release-version" description:"Previous release version e.g. 0.1.2-rc1" required:"true"`
+	PreviousReleaseVersion string `long:"previous-release-version" short:"u" description:"Previous release version e.g. 0.1.2-rc1" required:"true"`
 }
 
 type RemoveReleaseUpgradePathCommand struct {
 	ProductSlug            string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
 	ReleaseVersion         string `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1" required:"true"`
-	PreviousReleaseVersion string `long:"previous-release-version" description:"Previous release version e.g. 0.1.2-rc1" required:"true"`
+	PreviousReleaseVersion string `long:"previous-release-version" short:"u" description:"Previous release version e.g. 0.1.2-rc1" required:"true"`
 }
 
 //go:generate counterfeiter . ReleaseUpgradePathClient

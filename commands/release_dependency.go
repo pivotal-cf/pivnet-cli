@@ -10,15 +10,15 @@ type ReleaseDependenciesCommand struct {
 type AddReleaseDependencyCommand struct {
 	ProductSlug             string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
 	ReleaseVersion          string `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1" required:"true"`
-	DependentProductSlug    string `long:"dependent-product-slug" description:"Dependent product slug e.g. p-mysql" required:"true"`
-	DependentReleaseVersion string `long:"dependent-release-version" description:"Dependent release version e.g. 0.1.2-rc1" required:"true"`
+	DependentProductSlug    string `long:"dependent-product-slug" short:"s" description:"Dependent product slug e.g. p-mysql" required:"true"`
+	DependentReleaseVersion string `long:"dependent-release-version" short:"u" description:"Dependent release version e.g. 0.1.2-rc1" required:"true"`
 }
 
 type RemoveReleaseDependencyCommand struct {
 	ProductSlug             string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
 	ReleaseVersion          string `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1" required:"true"`
-	DependentProductSlug    string `long:"dependent-product-slug" description:"Dependent product slug e.g. p-mysql" required:"true"`
-	DependentReleaseVersion string `long:"dependent-release-version" description:"Dependent release version e.g. 0.1.2-rc1" required:"true"`
+	DependentProductSlug    string `long:"dependent-product-slug" short:"s" description:"Dependent product slug e.g. p-mysql" required:"true"`
+	DependentReleaseVersion string `long:"dependent-release-version" short:"u" description:"Dependent release version e.g. 0.1.2-rc1" required:"true"`
 }
 
 //go:generate counterfeiter . ReleaseDependencyClient
