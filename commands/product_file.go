@@ -19,12 +19,18 @@ type ProductFileCommand struct {
 }
 
 type CreateProductFileCommand struct {
-	ProductSlug  string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
-	Name         string `long:"name" description:"Name e.g. p-mysql 1.7.13" required:"true"`
-	AWSObjectKey string `long:"aws-object-key" description:"AWS Object Key e.g. product_files/P-MySQL/p-mysql-1.7.13.pivotal" required:"true"`
-	FileType     string `long:"file-type" description:"File Type e.g. 'Software'" required:"true"`
-	FileVersion  string `long:"file-version" description:"File Version e.g. '1.7.13'" required:"true"`
-	MD5          string `long:"md5" description:"MD5 of file" required:"true"`
+	ProductSlug        string   `long:"product-slug" short:"p" description:"Product slug e.g. 'p-mysql'" required:"true"`
+	Name               string   `long:"name" description:"Name e.g. 'p-mysql 1.7.13'" required:"true"`
+	AWSObjectKey       string   `long:"aws-object-key" description:"AWS Object Key e.g. 'product_files/P-MySQL/p-mysql-1.7.13.pivotal'" required:"true"`
+	FileType           string   `long:"file-type" description:"File Type e.g. 'Software'" required:"true"`
+	FileVersion        string   `long:"file-version" description:"File Version e.g. '1.7.13'" required:"true"`
+	MD5                string   `long:"md5" description:"MD5 of file" required:"true"`
+	Description        string   `long:"description" description:"Description of file"`
+	DocsURL            string   `long:"docs-url" description:"URL of docs for file"`
+	IncludedFiles      []string `long:"included-file" description:"Name of included file"`
+	Platforms          []string `long:"platform" description:"Platform of file"`
+	ReleasedAt         string   `long:"released-at" description:"When file is marked for release e.g. '2016/01/16'"`
+	SystemRequirements []string `long:"system-requirement" description:"System-requirement of file"`
 }
 
 type UpdateProductFileCommand struct {
@@ -112,12 +118,18 @@ func (command *CreateProductFileCommand) Execute([]string) error {
 	Init()
 
 	config := pivnet.CreateProductFileConfig{
-		ProductSlug:  command.ProductSlug,
-		Name:         command.Name,
-		AWSObjectKey: command.AWSObjectKey,
-		FileType:     command.FileType,
-		FileVersion:  command.FileVersion,
-		MD5:          command.MD5,
+		ProductSlug:        command.ProductSlug,
+		AWSObjectKey:       command.AWSObjectKey,
+		Description:        command.Description,
+		DocsURL:            command.DocsURL,
+		FileType:           command.FileType,
+		FileVersion:        command.FileVersion,
+		IncludedFiles:      command.IncludedFiles,
+		MD5:                command.MD5,
+		Name:               command.Name,
+		Platforms:          command.Platforms,
+		ReleasedAt:         command.ReleasedAt,
+		SystemRequirements: command.SystemRequirements,
 	}
 
 	return NewProductFileClient().Create(config)

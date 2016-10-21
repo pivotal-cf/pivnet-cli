@@ -195,7 +195,12 @@ var _ = Describe("product file commands", func() {
 			fileVersion  string
 			md5          string
 
-			config pivnet.CreateProductFileConfig
+			description        string
+			docsURL            string
+			includedFiles      []string
+			platforms          []string
+			releasedAt         string
+			systemRequirements []string
 
 			cmd commands.CreateProductFileCommand
 		)
@@ -208,22 +213,26 @@ var _ = Describe("product file commands", func() {
 			fileVersion = "some file version"
 			md5 = "some md5"
 
-			cmd = commands.CreateProductFileCommand{
-				ProductSlug:  productSlug,
-				Name:         name,
-				AWSObjectKey: awsObjectKey,
-				FileType:     fileType,
-				FileVersion:  fileVersion,
-				MD5:          md5,
-			}
+			description = "some description"
+			docsURL = "some-docs-url"
+			includedFiles = []string{"file1", "file2"}
+			platforms = []string{"platform1", "platform2"}
+			releasedAt = "released-at"
+			systemRequirements = []string{"system1", "system2"}
 
-			config = pivnet.CreateProductFileConfig{
-				ProductSlug:  productSlug,
-				Name:         name,
-				AWSObjectKey: awsObjectKey,
-				FileType:     fileType,
-				FileVersion:  fileVersion,
-				MD5:          md5,
+			cmd = commands.CreateProductFileCommand{
+				ProductSlug:        productSlug,
+				Name:               name,
+				AWSObjectKey:       awsObjectKey,
+				FileType:           fileType,
+				FileVersion:        fileVersion,
+				MD5:                md5,
+				Description:        description,
+				DocsURL:            docsURL,
+				IncludedFiles:      includedFiles,
+				Platforms:          platforms,
+				ReleasedAt:         releasedAt,
+				SystemRequirements: systemRequirements,
 			}
 		})
 
@@ -231,6 +240,21 @@ var _ = Describe("product file commands", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
+
+			config := pivnet.CreateProductFileConfig{
+				ProductSlug:        productSlug,
+				Name:               name,
+				AWSObjectKey:       awsObjectKey,
+				FileType:           fileType,
+				FileVersion:        fileVersion,
+				MD5:                md5,
+				Description:        description,
+				DocsURL:            docsURL,
+				IncludedFiles:      includedFiles,
+				Platforms:          platforms,
+				ReleasedAt:         releasedAt,
+				SystemRequirements: systemRequirements,
+			}
 
 			Expect(fakeProductFileClient.CreateCallCount()).To(Equal(1))
 			Expect(fakeProductFileClient.CreateArgsForCall(0)).To(Equal(config))
@@ -340,6 +364,91 @@ var _ = Describe("product file commands", func() {
 				Expect(longTag(field)).To(Equal("md5"))
 			})
 		})
+
+		Describe("Description flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "Description")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("description"))
+			})
+		})
+
+		Describe("DocsURL flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "DocsURL")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("docs-url"))
+			})
+		})
+
+		Describe("IncludedFiles flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "IncludedFiles")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("included-file"))
+			})
+		})
+
+		Describe("Platforms flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "Platforms")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("platform"))
+			})
+		})
+
+		Describe("ReleasedAt flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "ReleasedAt")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("released-at"))
+			})
+		})
+
+		Describe("SystemRequirements flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "SystemRequirements")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("system-requirement"))
+			})
+		})
+
 	})
 
 	Describe("UpdateProductFileCommand", func() {
