@@ -32,10 +32,17 @@ func NewLogShim(
 
 func (l logShim) Debug(action string, data ...logger.Data) {
 	if l.verbose {
-		l.debugLogger.Println(fmt.Sprintf("%s - %+v", action, data))
+		l.debugLogger.Println(fmt.Sprintf("%s%s", action, appendString(data...)))
 	}
 }
 
 func (l logShim) Info(action string, data ...logger.Data) {
-	l.infoLogger.Println(fmt.Sprintf("%s - %+v", action, data))
+	l.infoLogger.Println(fmt.Sprintf("%s%s", action, appendString(data...)))
+}
+
+func appendString(data ...logger.Data) string {
+	if len(data) > 0 {
+		return fmt.Sprintf(" - %+v", data)
+	}
+	return ""
 }
