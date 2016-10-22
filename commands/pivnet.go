@@ -65,7 +65,7 @@ type PivnetCommand struct {
 	RemoveProductFile RemoveProductFileCommand `command:"remove-product-file" alias:"rpf" description:"Remove product file from release"`
 	DeleteProductFile DeleteProductFileCommand `command:"delete-product-file" alias:"dpf" description:"Delete product file"`
 
-	DownloadProductFile DownloadProductFileCommand `command:"download-product-file" alias:"dlpf" description:"Download product file"`
+	DownloadProductFiles DownloadProductFilesCommand `command:"download-product-files" alias:"dlpf" description:"Download product files"`
 
 	FileGroups                 FileGroupsCommand                 `command:"file-groups" alias:"fgs" description:"List file groups"`
 	FileGroup                  FileGroupCommand                  `command:"file-group" alias:"fg" description:"Show file group"`

@@ -13,11 +13,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	pivnet "github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet/logger/loggerfakes"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile/productfilefakes"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
 	"github.com/pivotal-cf/pivnet-cli/printer"
-	"github.com/pivotal-cf/go-pivnet/logger/loggerfakes"
 )
 
 var _ = Describe("productfile commands", func() {
@@ -46,10 +46,12 @@ var _ = Describe("productfile commands", func() {
 
 		productfiles = []pivnet.ProductFile{
 			{
-				ID: 1234,
+				ID:   1234,
+				Name: "some-file",
 			},
 			{
-				ID: 2345,
+				ID:   2345,
+				Name: "some-other-file",
 			},
 		}
 
@@ -74,7 +76,7 @@ var _ = Describe("productfile commands", func() {
 			productSlug = "some-product-slug"
 			releaseVersion = ""
 
-			fakePivnetClient.GetProductFilesReturns(productfiles, nil)
+			fakePivnetClient.ProductFilesReturns(productfiles, nil)
 		})
 
 		It("lists all ProductFiles", func() {
@@ -95,7 +97,7 @@ var _ = Describe("productfile commands", func() {
 
 			BeforeEach(func() {
 				expectedErr = errors.New("productfiles error")
-				fakePivnetClient.GetProductFilesReturns(nil, expectedErr)
+				fakePivnetClient.ProductFilesReturns(nil, expectedErr)
 			})
 
 			It("invokes the error handler", func() {
@@ -110,7 +112,7 @@ var _ = Describe("productfile commands", func() {
 		Context("when release version is not empty", func() {
 			BeforeEach(func() {
 				releaseVersion = "some-release-version"
-				fakePivnetClient.GetProductFilesForReleaseReturns(productfiles, nil)
+				fakePivnetClient.ProductFilesForReleaseReturns(productfiles, nil)
 			})
 
 			It("lists all ProductFiles", func() {
@@ -150,7 +152,7 @@ var _ = Describe("productfile commands", func() {
 
 				BeforeEach(func() {
 					expectedErr = errors.New("productfiles error")
-					fakePivnetClient.GetProductFilesForReleaseReturns(nil, expectedErr)
+					fakePivnetClient.ProductFilesForReleaseReturns(nil, expectedErr)
 				})
 
 				It("invokes the error handler", func() {
@@ -221,7 +223,7 @@ var _ = Describe("productfile commands", func() {
 			releaseVersion = ""
 			productFileID = productfiles[0].ID
 
-			fakePivnetClient.GetProductFileReturns(productfiles[0], nil)
+			fakePivnetClient.ProductFileReturns(productfiles[0], nil)
 		})
 
 		It("gets ProductFile", func() {
@@ -242,7 +244,7 @@ var _ = Describe("productfile commands", func() {
 
 			BeforeEach(func() {
 				expectedErr = errors.New("productfile error")
-				fakePivnetClient.GetProductFileReturns(pivnet.ProductFile{}, expectedErr)
+				fakePivnetClient.ProductFileReturns(pivnet.ProductFile{}, expectedErr)
 			})
 
 			It("invokes the error handler", func() {
@@ -257,7 +259,7 @@ var _ = Describe("productfile commands", func() {
 		Context("when release version is not empty", func() {
 			BeforeEach(func() {
 				releaseVersion = "some-release-version"
-				fakePivnetClient.GetProductFileForReleaseReturns(productfiles[0], nil)
+				fakePivnetClient.ProductFileForReleaseReturns(productfiles[0], nil)
 			})
 
 			It("gets ProductFile", func() {
@@ -297,7 +299,7 @@ var _ = Describe("productfile commands", func() {
 
 				BeforeEach(func() {
 					expectedErr = errors.New("productfiles error")
-					fakePivnetClient.GetProductFileForReleaseReturns(pivnet.ProductFile{}, expectedErr)
+					fakePivnetClient.ProductFileForReleaseReturns(pivnet.ProductFile{}, expectedErr)
 				})
 
 				It("invokes the error handler", func() {
@@ -356,7 +358,7 @@ var _ = Describe("productfile commands", func() {
 				Description: existingDescription,
 			}
 
-			fakePivnetClient.GetProductFileReturns(existingProductFile, nil)
+			fakePivnetClient.ProductFileReturns(existingProductFile, nil)
 			fakePivnetClient.UpdateProductFileReturns(productfiles[0], nil)
 		})
 
@@ -648,15 +650,17 @@ var _ = Describe("productfile commands", func() {
 		)
 
 		var (
-			productSlug      string
-			releaseVersion   string
-			productFileID    int
-			providedFilepath string
-			acceptEULA       bool
+			productSlug    string
+			releaseVersion string
+			productFileIDs []int
+			downloadDir    string
+			acceptEULA     bool
 
 			tempDir   string
 			filename  string
 			releaseID int
+
+			productFileForReleaseErr error
 		)
 
 		BeforeEach(func() {
@@ -668,8 +672,8 @@ var _ = Describe("productfile commands", func() {
 
 			productSlug = "some-product-slug"
 			releaseVersion = "some-release-version"
-			productFileID = productfiles[0].ID
-			providedFilepath = filepath.Join(tempDir, filename)
+			productFileIDs = []int{productfiles[0].ID, productfiles[1].ID}
+			downloadDir = tempDir
 			acceptEULA = false
 
 			returnedRelease := pivnet.Release{
@@ -677,10 +681,30 @@ var _ = Describe("productfile commands", func() {
 				Version: releaseVersion,
 			}
 
+			productFileForReleaseErr = nil
+
 			fakePivnetClient.ReleaseForVersionReturns(returnedRelease, nil)
 			fakePivnetClient.DownloadFileStub = func(writer io.Writer, downloadLink string) error {
 				_, err := fmt.Fprintf(writer, fileContents)
 				return err
+			}
+		})
+
+		JustBeforeEach(func() {
+			fakePivnetClient.ProductFileForReleaseStub = func(productSlug string, releaseID int, productFileID int) (pivnet.ProductFile, error) {
+				if productFileForReleaseErr != nil {
+					return pivnet.ProductFile{}, productFileForReleaseErr
+				}
+
+				switch productFileID {
+				case productfiles[0].ID:
+					return productfiles[0], nil
+				case productfiles[1].ID:
+					return productfiles[1], nil
+				default:
+					Fail("Unexpected invocation of ProductFileForRelease")
+					return pivnet.ProductFile{}, nil
+				}
 			}
 		})
 
@@ -693,26 +717,31 @@ var _ = Describe("productfile commands", func() {
 			err := client.Download(
 				productSlug,
 				releaseVersion,
-				productFileID,
-				providedFilepath,
+				productFileIDs,
+				downloadDir,
 				acceptEULA,
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakePivnetClient.DownloadFileCallCount()).To(Equal(1))
-			_, invokedLink := fakePivnetClient.DownloadFileArgsForCall(0)
+			Expect(fakePivnetClient.DownloadFileCallCount()).To(Equal(2))
 
-			expectedLink := fmt.Sprintf(
-				"/products/%s/releases/%d/product_files/%d/download",
-				productSlug,
-				releaseID,
-				productFileID,
-			)
-			Expect(invokedLink).To(Equal(expectedLink))
+			for i, pf := range productfiles {
+				_, invokedLink := fakePivnetClient.DownloadFileArgsForCall(i)
 
-			contents, err := ioutil.ReadFile(providedFilepath)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(contents).To(Equal([]byte(fileContents)))
+				expectedLink := fmt.Sprintf(
+					"/products/%s/releases/%d/product_files/%d/download",
+					productSlug,
+					releaseID,
+					pf.ID,
+				)
+				Expect(invokedLink).To(Equal(expectedLink))
+
+				downloadedFilepath := filepath.Join(downloadDir, pf.Name)
+
+				contents, err := ioutil.ReadFile(downloadedFilepath)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(contents).To(Equal([]byte(fileContents)))
+			}
 		})
 
 		Context("when there is an error", func() {
@@ -729,8 +758,8 @@ var _ = Describe("productfile commands", func() {
 				err := client.Download(
 					productSlug,
 					releaseVersion,
-					productFileID,
-					providedFilepath,
+					productFileIDs,
+					downloadDir,
 					acceptEULA,
 				)
 				Expect(err).NotTo(HaveOccurred())
@@ -754,8 +783,8 @@ var _ = Describe("productfile commands", func() {
 				err := client.Download(
 					productSlug,
 					releaseVersion,
-					productFileID,
-					providedFilepath,
+					productFileIDs,
+					downloadDir,
 					acceptEULA,
 				)
 				Expect(err).NotTo(HaveOccurred())
@@ -767,15 +796,15 @@ var _ = Describe("productfile commands", func() {
 
 		Context("when there is an error creating file", func() {
 			BeforeEach(func() {
-				providedFilepath = "/not/a/valid/filepath"
+				downloadDir = "/not/a/valid/filepath"
 			})
 
 			It("invokes the error handler", func() {
 				err := client.Download(
 					productSlug,
 					releaseVersion,
-					productFileID,
-					providedFilepath,
+					productFileIDs,
+					downloadDir,
 					acceptEULA,
 				)
 				Expect(err).NotTo(HaveOccurred())
@@ -785,27 +814,22 @@ var _ = Describe("productfile commands", func() {
 		})
 
 		Context("when there is an error getting product file", func() {
-			var (
-				expectedErr error
-			)
-
 			BeforeEach(func() {
-				expectedErr = errors.New("product file error")
-				fakePivnetClient.GetProductFileForReleaseReturns(pivnet.ProductFile{}, expectedErr)
+				productFileForReleaseErr = errors.New("product file for release error")
 			})
 
 			It("invokes the error handler", func() {
 				err := client.Download(
 					productSlug,
 					releaseVersion,
-					productFileID,
-					providedFilepath,
+					productFileIDs,
+					downloadDir,
 					acceptEULA,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(productFileForReleaseErr))
 			})
 		})
 
@@ -818,8 +842,8 @@ var _ = Describe("productfile commands", func() {
 				err := client.Download(
 					productSlug,
 					releaseVersion,
-					productFileID,
-					providedFilepath,
+					productFileIDs,
+					downloadDir,
 					acceptEULA,
 				)
 				Expect(err).NotTo(HaveOccurred())
@@ -841,8 +865,8 @@ var _ = Describe("productfile commands", func() {
 					err := client.Download(
 						productSlug,
 						releaseVersion,
-						productFileID,
-						providedFilepath,
+						productFileIDs,
+						downloadDir,
 						acceptEULA,
 					)
 					Expect(err).NotTo(HaveOccurred())

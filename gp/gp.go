@@ -147,19 +147,19 @@ func (c Client) EULAs() ([]pivnet.EULA, error) {
 	return c.client.EULA.List()
 }
 
-func (c Client) GetProductFilesForRelease(productSlug string, releaseID int) ([]pivnet.ProductFile, error) {
+func (c Client) ProductFilesForRelease(productSlug string, releaseID int) ([]pivnet.ProductFile, error) {
 	return c.client.ProductFiles.ListForRelease(productSlug, releaseID)
 }
 
-func (c Client) GetProductFiles(productSlug string) ([]pivnet.ProductFile, error) {
+func (c Client) ProductFiles(productSlug string) ([]pivnet.ProductFile, error) {
 	return c.client.ProductFiles.List(productSlug)
 }
 
-func (c Client) GetProductFileForRelease(productSlug string, releaseID int, productFileID int) (pivnet.ProductFile, error) {
+func (c Client) ProductFileForRelease(productSlug string, releaseID int, productFileID int) (pivnet.ProductFile, error) {
 	return c.client.ProductFiles.GetForRelease(productSlug, releaseID, productFileID)
 }
 
-func (c Client) GetProductFile(productSlug string, productFileID int) (pivnet.ProductFile, error) {
+func (c Client) ProductFile(productSlug string, productFileID int) (pivnet.ProductFile, error) {
 	return c.client.ProductFiles.Get(productSlug, productFileID)
 }
 

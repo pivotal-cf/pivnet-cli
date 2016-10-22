@@ -4,23 +4,24 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/olekukonko/tablewriter"
 	pivnet "github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
-	"github.com/pivotal-cf/go-pivnet/logger"
 	"gopkg.in/cheggaaa/pb.v1"
 )
 
 //go:generate counterfeiter . PivnetClient
 type PivnetClient interface {
 	ReleaseForVersion(productSlug string, releaseVersion string) (pivnet.Release, error)
-	GetProductFiles(productSlug string) ([]pivnet.ProductFile, error)
-	GetProductFilesForRelease(productSlug string, releaseID int) ([]pivnet.ProductFile, error)
-	GetProductFile(productSlug string, productFileID int) (pivnet.ProductFile, error)
-	GetProductFileForRelease(productSlug string, releaseID int, productFileID int) (pivnet.ProductFile, error)
+	ProductFiles(productSlug string) ([]pivnet.ProductFile, error)
+	ProductFilesForRelease(productSlug string, releaseID int) ([]pivnet.ProductFile, error)
+	ProductFile(productSlug string, productFileID int) (pivnet.ProductFile, error)
+	ProductFileForRelease(productSlug string, releaseID int, productFileID int) (pivnet.ProductFile, error)
 	CreateProductFile(config pivnet.CreateProductFileConfig) (pivnet.ProductFile, error)
 	UpdateProductFile(productSlug string, productFile pivnet.ProductFile) (pivnet.ProductFile, error)
 	AddProductFileToRelease(productSlug string, releaseID int, productFileID int) error
@@ -64,7 +65,7 @@ func NewProductFileClient(
 
 func (c *ProductFileClient) List(productSlug string, releaseVersion string) error {
 	if releaseVersion == "" {
-		productFiles, err := c.pivnetClient.GetProductFiles(productSlug)
+		productFiles, err := c.pivnetClient.ProductFiles(productSlug)
 		if err != nil {
 			return c.eh.HandleError(err)
 		}
@@ -77,7 +78,7 @@ func (c *ProductFileClient) List(productSlug string, releaseVersion string) erro
 		return c.eh.HandleError(err)
 	}
 
-	productFiles, err := c.pivnetClient.GetProductFilesForRelease(
+	productFiles, err := c.pivnetClient.ProductFilesForRelease(
 		productSlug,
 		release.ID,
 	)
@@ -163,7 +164,7 @@ func (c *ProductFileClient) Get(
 	productFileID int,
 ) error {
 	if releaseVersion == "" {
-		productFile, err := c.pivnetClient.GetProductFile(
+		productFile, err := c.pivnetClient.ProductFile(
 			productSlug,
 			productFileID,
 		)
@@ -178,7 +179,7 @@ func (c *ProductFileClient) Get(
 		return c.eh.HandleError(err)
 	}
 
-	productFile, err := c.pivnetClient.GetProductFileForRelease(
+	productFile, err := c.pivnetClient.ProductFileForRelease(
 		productSlug,
 		release.ID,
 		productFileID,
@@ -208,7 +209,7 @@ func (c *ProductFileClient) Update(
 	md5 *string,
 	description *string,
 ) error {
-	productFile, err := c.pivnetClient.GetProductFile(
+	productFile, err := c.pivnetClient.ProductFile(
 		productSlug,
 		productFileID,
 	)
@@ -392,37 +393,11 @@ func (c *ProductFileClient) Delete(productSlug string, productFileID int) error 
 func (c *ProductFileClient) Download(
 	productSlug string,
 	releaseVersion string,
-	productFileID int,
-	filepath string,
+	productFileIDs []int,
+	downloadDir string,
 	acceptEULA bool,
 ) error {
 	release, err := c.pivnetClient.ReleaseForVersion(productSlug, releaseVersion)
-	if err != nil {
-		return c.eh.HandleError(err)
-	}
-
-	downloadLink := fmt.Sprintf(
-		"/products/%s/releases/%d/product_files/%d/download",
-		productSlug,
-		release.ID,
-		productFileID,
-	)
-
-	c.l.Debug(
-		"Creating local file",
-		logger.Data{"downloadLink": downloadLink, "localFilepath": filepath},
-	)
-	file, err := os.Create(filepath)
-	if err != nil {
-		return c.eh.HandleError(err)
-	}
-
-	c.l.Debug("Determining file size", logger.Data{"downloadLink": downloadLink})
-	productFile, err := c.pivnetClient.GetProductFileForRelease(
-		productSlug,
-		release.ID,
-		productFileID,
-	)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
@@ -435,24 +410,60 @@ func (c *ProductFileClient) Download(
 		}
 	}
 
-	progress := newProgressBar(productFile.Size, c.logWriter)
-	onDemandProgress := &startOnDemandProgressBar{progress, false}
+	c.l.Debug("ids", logger.Data{"ids": productFileIDs})
 
-	multiWriter := io.MultiWriter(file, onDemandProgress)
+	for _, productFileID := range productFileIDs {
+		productFile, err := c.pivnetClient.ProductFileForRelease(
+			productSlug,
+			release.ID,
+			productFileID,
+		)
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
 
-	c.l.Debug(
-		"Downloading link to local file",
-		logger.Data{
-			"downloadLink":  downloadLink,
-			"localFilepath": filepath,
-		},
-	)
-	err = c.pivnetClient.DownloadFile(multiWriter, downloadLink)
-	if err != nil {
-		return c.eh.HandleError(err)
+		// productFile.Links.Download
+
+		downloadLink := fmt.Sprintf(
+			"/products/%s/releases/%d/product_files/%d/download",
+			productSlug,
+			release.ID,
+			productFileID,
+		)
+
+		localFilepath := filepath.Join(downloadDir, productFile.Name)
+
+		c.l.Debug(
+			"Creating local file",
+			logger.Data{"downloadLink": downloadLink, "localFilepath": localFilepath},
+		)
+		file, err := os.Create(localFilepath)
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
+
+		c.l.Debug("Determining file size", logger.Data{"downloadLink": downloadLink})
+
+		progress := newProgressBar(productFile.Size, c.logWriter)
+		onDemandProgress := &startOnDemandProgressBar{progress, false}
+
+		multiWriter := io.MultiWriter(file, onDemandProgress)
+
+		c.l.Info(fmt.Sprintf(
+			"Downloading '%s' to '%s'",
+			productFile.Name,
+			localFilepath,
+		))
+		err = c.pivnetClient.DownloadFile(multiWriter, downloadLink)
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
+
+		progress.Finish()
+
+		fmt.Fprintln(c.logWriter) // progressbar doesn't always add a newline
 	}
 
-	progress.Finish()
 	return nil
 }
 

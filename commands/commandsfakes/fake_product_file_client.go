@@ -99,13 +99,13 @@ type FakeProductFileClient struct {
 	deleteReturns struct {
 		result1 error
 	}
-	DownloadStub        func(productSlug string, releaseVersion string, productFileID int, filepath string, acceptEULA bool) error
+	DownloadStub        func(productSlug string, releaseVersion string, productFileIDs []int, downloadDir string, acceptEULA bool) error
 	downloadMutex       sync.RWMutex
 	downloadArgsForCall []struct {
 		productSlug    string
 		releaseVersion string
-		productFileID  int
-		filepath       string
+		productFileIDs []int
+		downloadDir    string
 		acceptEULA     bool
 	}
 	downloadReturns struct {
@@ -430,19 +430,24 @@ func (fake *FakeProductFileClient) DeleteReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeProductFileClient) Download(productSlug string, releaseVersion string, productFileID int, filepath string, acceptEULA bool) error {
+func (fake *FakeProductFileClient) Download(productSlug string, releaseVersion string, productFileIDs []int, downloadDir string, acceptEULA bool) error {
+	var productFileIDsCopy []int
+	if productFileIDs != nil {
+		productFileIDsCopy = make([]int, len(productFileIDs))
+		copy(productFileIDsCopy, productFileIDs)
+	}
 	fake.downloadMutex.Lock()
 	fake.downloadArgsForCall = append(fake.downloadArgsForCall, struct {
 		productSlug    string
 		releaseVersion string
-		productFileID  int
-		filepath       string
+		productFileIDs []int
+		downloadDir    string
 		acceptEULA     bool
-	}{productSlug, releaseVersion, productFileID, filepath, acceptEULA})
-	fake.recordInvocation("Download", []interface{}{productSlug, releaseVersion, productFileID, filepath, acceptEULA})
+	}{productSlug, releaseVersion, productFileIDsCopy, downloadDir, acceptEULA})
+	fake.recordInvocation("Download", []interface{}{productSlug, releaseVersion, productFileIDsCopy, downloadDir, acceptEULA})
 	fake.downloadMutex.Unlock()
 	if fake.DownloadStub != nil {
-		return fake.DownloadStub(productSlug, releaseVersion, productFileID, filepath, acceptEULA)
+		return fake.DownloadStub(productSlug, releaseVersion, productFileIDs, downloadDir, acceptEULA)
 	} else {
 		return fake.downloadReturns.result1
 	}
@@ -454,10 +459,10 @@ func (fake *FakeProductFileClient) DownloadCallCount() int {
 	return len(fake.downloadArgsForCall)
 }
 
-func (fake *FakeProductFileClient) DownloadArgsForCall(i int) (string, string, int, string, bool) {
+func (fake *FakeProductFileClient) DownloadArgsForCall(i int) (string, string, []int, string, bool) {
 	fake.downloadMutex.RLock()
 	defer fake.downloadMutex.RUnlock()
-	return fake.downloadArgsForCall[i].productSlug, fake.downloadArgsForCall[i].releaseVersion, fake.downloadArgsForCall[i].productFileID, fake.downloadArgsForCall[i].filepath, fake.downloadArgsForCall[i].acceptEULA
+	return fake.downloadArgsForCall[i].productSlug, fake.downloadArgsForCall[i].releaseVersion, fake.downloadArgsForCall[i].productFileIDs, fake.downloadArgsForCall[i].downloadDir, fake.downloadArgsForCall[i].acceptEULA
 }
 
 func (fake *FakeProductFileClient) DownloadReturns(result1 error) {

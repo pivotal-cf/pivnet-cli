@@ -1061,11 +1061,11 @@ var _ = Describe("product file commands", func() {
 
 	Describe("DownloadProductFileCommand", func() {
 		var (
-			cmd commands.DownloadProductFileCommand
+			cmd commands.DownloadProductFilesCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.DownloadProductFileCommand{}
+			cmd = commands.DownloadProductFilesCommand{}
 		})
 
 		It("invokes the ProductFile client", func() {
@@ -1095,7 +1095,7 @@ var _ = Describe("product file commands", func() {
 
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.DownloadProductFileCommand{}, "ProductSlug")
+				field = fieldFor(commands.DownloadProductFilesCommand{}, "ProductSlug")
 			})
 
 			It("is required", func() {
@@ -1113,7 +1113,7 @@ var _ = Describe("product file commands", func() {
 
 		Describe("ReleaseVersion flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.DownloadProductFileCommand{}, "ReleaseVersion")
+				field = fieldFor(commands.DownloadProductFilesCommand{}, "ReleaseVersion")
 			})
 
 			It("is required", func() {
@@ -1129,9 +1129,9 @@ var _ = Describe("product file commands", func() {
 			})
 		})
 
-		Describe("ProductFileID flag", func() {
+		Describe("ProductFileIDs flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.DownloadProductFileCommand{}, "ProductFileID")
+				field = fieldFor(commands.DownloadProductFilesCommand{}, "ProductFileIDs")
 			})
 
 			It("is required", func() {
@@ -1147,23 +1147,27 @@ var _ = Describe("product file commands", func() {
 			})
 		})
 
-		Describe("Filepath flag", func() {
+		Describe("DownloadDir flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.DownloadProductFileCommand{}, "Filepath")
+				field = fieldFor(commands.DownloadProductFilesCommand{}, "DownloadDir")
 			})
 
-			It("is required", func() {
-				Expect(isRequired(field)).To(BeTrue())
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("d"))
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("filepath"))
+				Expect(longTag(field)).To(Equal("download-dir"))
 			})
 		})
 
 		Describe("AcceptEULA flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.DownloadProductFileCommand{}, "AcceptEULA")
+				field = fieldFor(commands.DownloadProductFilesCommand{}, "AcceptEULA")
 			})
 
 			It("is not required", func() {
