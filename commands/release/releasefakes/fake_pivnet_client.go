@@ -46,16 +46,6 @@ type FakePivnetClient struct {
 	deleteReleaseReturns struct {
 		result1 error
 	}
-	ReleaseFingerprintStub        func(productSlug string, releaseID int) (string, error)
-	releaseFingerprintMutex       sync.RWMutex
-	releaseFingerprintArgsForCall []struct {
-		productSlug string
-		releaseID   int
-	}
-	releaseFingerprintReturns struct {
-		result1 string
-		result2 error
-	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -197,41 +187,6 @@ func (fake *FakePivnetClient) DeleteReleaseReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakePivnetClient) ReleaseFingerprint(productSlug string, releaseID int) (string, error) {
-	fake.releaseFingerprintMutex.Lock()
-	fake.releaseFingerprintArgsForCall = append(fake.releaseFingerprintArgsForCall, struct {
-		productSlug string
-		releaseID   int
-	}{productSlug, releaseID})
-	fake.recordInvocation("ReleaseFingerprint", []interface{}{productSlug, releaseID})
-	fake.releaseFingerprintMutex.Unlock()
-	if fake.ReleaseFingerprintStub != nil {
-		return fake.ReleaseFingerprintStub(productSlug, releaseID)
-	} else {
-		return fake.releaseFingerprintReturns.result1, fake.releaseFingerprintReturns.result2
-	}
-}
-
-func (fake *FakePivnetClient) ReleaseFingerprintCallCount() int {
-	fake.releaseFingerprintMutex.RLock()
-	defer fake.releaseFingerprintMutex.RUnlock()
-	return len(fake.releaseFingerprintArgsForCall)
-}
-
-func (fake *FakePivnetClient) ReleaseFingerprintArgsForCall(i int) (string, int) {
-	fake.releaseFingerprintMutex.RLock()
-	defer fake.releaseFingerprintMutex.RUnlock()
-	return fake.releaseFingerprintArgsForCall[i].productSlug, fake.releaseFingerprintArgsForCall[i].releaseID
-}
-
-func (fake *FakePivnetClient) ReleaseFingerprintReturns(result1 string, result2 error) {
-	fake.ReleaseFingerprintStub = nil
-	fake.releaseFingerprintReturns = struct {
-		result1 string
-		result2 error
-	}{result1, result2}
-}
-
 func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -243,8 +198,6 @@ func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {
 	defer fake.createReleaseMutex.RUnlock()
 	fake.deleteReleaseMutex.RLock()
 	defer fake.deleteReleaseMutex.RUnlock()
-	fake.releaseFingerprintMutex.RLock()
-	defer fake.releaseFingerprintMutex.RUnlock()
 	return fake.invocations
 }
 

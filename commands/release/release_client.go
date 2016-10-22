@@ -17,7 +17,6 @@ type PivnetClient interface {
 	ReleaseForVersion(productSlug string, releaseVersion string) (pivnet.Release, error)
 	CreateRelease(config pivnet.CreateReleaseConfig) (pivnet.Release, error)
 	DeleteRelease(productSlug string, release pivnet.Release) error
-	ReleaseFingerprint(productSlug string, releaseID int) (string, error)
 }
 
 type ReleaseClient struct {
@@ -62,6 +61,7 @@ func (c *ReleaseClient) printReleases(releases []pivnet.Release) error {
 			"ID",
 			"Version",
 			"Description",
+			"Updated At",
 		})
 
 		for _, release := range releases {
@@ -69,6 +69,7 @@ func (c *ReleaseClient) printReleases(releases []pivnet.Release) error {
 				strconv.Itoa(release.ID),
 				release.Version,
 				release.Description,
+				release.UpdatedAt,
 			}
 			table.Append(releaseAsString)
 		}
@@ -95,20 +96,10 @@ func (c *ReleaseClient) Get(
 		return c.eh.HandleError(err)
 	}
 
-	fingerprint, err := c.pivnetClient.ReleaseFingerprint(productSlug, release.ID)
-	if err != nil {
-		return c.eh.HandleError(err)
-	}
-
-	r := CLIRelease{
-		release,
-		fingerprint,
-	}
-
-	return c.printRelease(r)
+	return c.printRelease(release)
 }
 
-func (c *ReleaseClient) printRelease(release CLIRelease) error {
+func (c *ReleaseClient) printRelease(release pivnet.Release) error {
 	switch c.format {
 	case printer.PrintAsTable:
 		table := tablewriter.NewWriter(c.outputWriter)
@@ -116,14 +107,14 @@ func (c *ReleaseClient) printRelease(release CLIRelease) error {
 			"ID",
 			"Version",
 			"Description",
-			"Fingerprint",
+			"Updated At",
 		})
 
 		releaseAsString := []string{
 			strconv.Itoa(release.ID),
 			release.Version,
 			release.Description,
-			release.Fingerprint,
+			release.UpdatedAt,
 		}
 		table.Append(releaseAsString)
 		table.Render()
@@ -155,17 +146,7 @@ func (c *ReleaseClient) Create(
 		return c.eh.HandleError(err)
 	}
 
-	fingerprint, err := c.pivnetClient.ReleaseFingerprint(productSlug, release.ID)
-	if err != nil {
-		return c.eh.HandleError(err)
-	}
-
-	r := CLIRelease{
-		release,
-		fingerprint,
-	}
-
-	return c.printRelease(r)
+	return c.printRelease(release)
 }
 
 func (c *ReleaseClient) Delete(productSlug string, releaseVersion string) error {
@@ -192,9 +173,4 @@ func (c *ReleaseClient) Delete(productSlug string, releaseVersion string) error 
 	}
 
 	return nil
-}
-
-type CLIRelease struct {
-	pivnet.Release `yaml:",inline"`
-	Fingerprint    string `json:"fingerprint,omitempty"`
 }

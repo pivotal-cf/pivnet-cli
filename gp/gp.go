@@ -263,10 +263,6 @@ func (c Client) CreateRequest(method string, url string, body io.Reader) (*http.
 	return c.client.CreateRequest(method, url, body)
 }
 
-func (c ExtendedClient) ReleaseFingerprint(productSlug string, releaseID int) (string, error) {
-	return c.client.ReleaseFingerprint(productSlug, releaseID)
-}
-
 func (c ExtendedClient) DownloadFile(writer io.Writer, downloadLink string) error {
 	err, _ := c.client.DownloadFile(writer, downloadLink)
 	return err
