@@ -63,11 +63,12 @@ type DeleteProductFileCommand struct {
 }
 
 type DownloadProductFilesCommand struct {
-	ProductSlug    string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
-	ReleaseVersion string `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1" required:"true"`
-	ProductFileIDs []int  `long:"product-file-id" short:"i" description:"Product file ID e.g. 1234" required:"true"`
-	DownloadDir    string `long:"download-dir" short:"d" default:"." description:"Local directory to download files to e.g. /tmp/my-file/"`
-	AcceptEULA     bool   `long:"accept-eula" description:"Automatically accept EULA if necessary"`
+	ProductSlug    string   `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
+	ReleaseVersion string   `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1" required:"true"`
+	ProductFileIDs []int    `long:"product-file-id" short:"i" description:"Product file ID e.g. 1234"`
+	Globs          []string `long:"glob" short:"g" description:"Glob to match product name e.g. *aws*"`
+	DownloadDir    string   `long:"download-dir" short:"d" default:"." description:"Local directory to download files to e.g. /tmp/my-file/"`
+	AcceptEULA     bool     `long:"accept-eula" description:"Automatically accept EULA if necessary"`
 }
 
 //go:generate counterfeiter . ProductFileClient
@@ -89,7 +90,7 @@ type ProductFileClient interface {
 	AddToFileGroup(productSlug string, fileGroupID int, productFileID int) error
 	RemoveFromFileGroup(productSlug string, fileGroupID int, productFileID int) error
 	Delete(productSlug string, productFileID int) error
-	Download(productSlug string, releaseVersion string, productFileIDs []int, downloadDir string, acceptEULA bool) error
+	Download(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool) error
 }
 
 var NewProductFileClient = func() ProductFileClient {
@@ -101,6 +102,7 @@ var NewProductFileClient = func() ProductFileClient {
 		LogWriter,
 		Printer,
 		Pivnet.Logger,
+		Filter,
 	)
 }
 
@@ -194,6 +196,7 @@ func (command *DownloadProductFilesCommand) Execute([]string) error {
 	return NewProductFileClient().Download(
 		command.ProductSlug,
 		command.ReleaseVersion,
+		command.Globs,
 		command.ProductFileIDs,
 		command.DownloadDir,
 		command.AcceptEULA,

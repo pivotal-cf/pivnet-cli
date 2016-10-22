@@ -1134,8 +1134,8 @@ var _ = Describe("product file commands", func() {
 				field = fieldFor(commands.DownloadProductFilesCommand{}, "ProductFileIDs")
 			})
 
-			It("is required", func() {
-				Expect(isRequired(field)).To(BeTrue())
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
 			})
 
 			It("contains short name", func() {
@@ -1144,6 +1144,24 @@ var _ = Describe("product file commands", func() {
 
 			It("contains long name", func() {
 				Expect(longTag(field)).To(Equal("product-file-id"))
+			})
+		})
+
+		Describe("Globs flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.DownloadProductFilesCommand{}, "Globs")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("g"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("glob"))
 			})
 		})
 

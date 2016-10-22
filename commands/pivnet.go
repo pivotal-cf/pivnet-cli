@@ -23,6 +23,7 @@ const (
 
 type Filterer interface {
 	ReleasesByVersion(releases []pivnet.Release, version string) ([]pivnet.Release, error)
+	ProductFileNamesByGlobs(productFiles []pivnet.ProductFile, globs []string) ([]pivnet.ProductFile, error)
 }
 
 var (
@@ -146,10 +147,6 @@ func Init() {
 		ErrorHandler = errorhandler.NewErrorHandler(Pivnet.Format, OutputWriter, LogWriter)
 	}
 
-	if Filter == nil {
-		Filter = filter.NewFilter()
-	}
-
 	if Printer == nil {
 		Printer = printer.NewPrinter(OutputWriter)
 	}
@@ -170,4 +167,11 @@ func Init() {
 	)
 
 	Pivnet.Logger = logshim.NewLogShim(infoLogger, debugLogger, Pivnet.Verbose)
+
+	if Filter == nil {
+		Filter = filter.NewFilter(
+			Pivnet.Logger,
+		)
+	}
+
 }

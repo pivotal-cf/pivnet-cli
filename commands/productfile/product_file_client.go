@@ -33,6 +33,11 @@ type PivnetClient interface {
 	DownloadFile(writer io.Writer, downloadLink string) error
 }
 
+//go:generate counterfeiter . FakeFilter
+type Filter interface {
+	ProductFileNamesByGlobs(productFiles []pivnet.ProductFile, glob []string) ([]pivnet.ProductFile, error)
+}
+
 type ProductFileClient struct {
 	pivnetClient PivnetClient
 	eh           errorhandler.ErrorHandler
@@ -41,6 +46,7 @@ type ProductFileClient struct {
 	logWriter    io.Writer
 	printer      printer.Printer
 	l            logger.Logger
+	filter       Filter
 }
 
 func NewProductFileClient(
@@ -51,6 +57,7 @@ func NewProductFileClient(
 	logWriter io.Writer,
 	printer printer.Printer,
 	l logger.Logger,
+	filter Filter,
 ) *ProductFileClient {
 	return &ProductFileClient{
 		pivnetClient: pivnetClient,
@@ -60,6 +67,7 @@ func NewProductFileClient(
 		logWriter:    logWriter,
 		printer:      printer,
 		l:            l,
+		filter:       filter,
 	}
 }
 
@@ -393,13 +401,46 @@ func (c *ProductFileClient) Delete(productSlug string, productFileID int) error 
 func (c *ProductFileClient) Download(
 	productSlug string,
 	releaseVersion string,
+	globs []string,
 	productFileIDs []int,
 	downloadDir string,
 	acceptEULA bool,
 ) error {
+	if len(globs) > 0 && len(productFileIDs) > 0 {
+		err := fmt.Errorf("Cannot provide both globs and product file IDs")
+		return c.eh.HandleError(err)
+	}
+
+	if len(globs) == 0 && len(productFileIDs) == 0 {
+		err := fmt.Errorf("Must provide either globs or product file IDs")
+		return c.eh.HandleError(err)
+	}
+
 	release, err := c.pivnetClient.ReleaseForVersion(productSlug, releaseVersion)
 	if err != nil {
 		return c.eh.HandleError(err)
+	}
+
+	productFiles, err := c.pivnetClient.ProductFilesForRelease(
+		productSlug,
+		release.ID,
+	)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	var filteredProductFiles []pivnet.ProductFile
+
+	if len(productFileIDs) > 0 {
+		filteredProductFiles = filterProductFilesByIDs(productFiles, productFileIDs)
+	}
+
+	if len(globs) > 0 {
+		var err error
+		filteredProductFiles, err = c.filter.ProductFileNamesByGlobs(productFiles, globs)
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
 	}
 
 	if acceptEULA {
@@ -410,26 +451,20 @@ func (c *ProductFileClient) Download(
 		}
 	}
 
-	c.l.Debug("ids", logger.Data{"ids": productFileIDs})
-
-	for _, productFileID := range productFileIDs {
+	for _, pf := range filteredProductFiles {
 		productFile, err := c.pivnetClient.ProductFileForRelease(
 			productSlug,
 			release.ID,
-			productFileID,
+			pf.ID,
 		)
 		if err != nil {
 			return c.eh.HandleError(err)
 		}
 
-		// productFile.Links.Download
-
-		downloadLink := fmt.Sprintf(
-			"/products/%s/releases/%d/product_files/%d/download",
-			productSlug,
-			release.ID,
-			productFileID,
-		)
+		downloadLink, err := productFile.DownloadLink()
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
 
 		localFilepath := filepath.Join(downloadDir, productFile.Name)
 
@@ -489,4 +524,23 @@ func newProgressBar(total int, output io.Writer) *pb.ProgressBar {
 	progress.NotPrint = true
 
 	return progress.SetWidth(80)
+}
+
+func filterProductFilesByIDs(productFiles []pivnet.ProductFile, ids []int) []pivnet.ProductFile {
+	var foundProductFiles []pivnet.ProductFile
+	for _, pf := range productFiles {
+		if intContains(pf.ID, ids) {
+			foundProductFiles = append(foundProductFiles, pf)
+		}
+	}
+	return foundProductFiles
+}
+
+func intContains(i int, ints []int) bool {
+	for _, val := range ints {
+		if val == i {
+			return true
+		}
+	}
+	return false
 }

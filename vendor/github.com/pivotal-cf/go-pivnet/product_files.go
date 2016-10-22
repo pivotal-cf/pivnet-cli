@@ -54,6 +54,14 @@ type ProductFile struct {
 	Links              *Links   `json:"_links,omitempty" yaml:"_links,omitempty"`
 }
 
+func (p ProductFile) DownloadLink() (string, error) {
+	if p.Links == nil {
+		return "", fmt.Errorf("Could not determine download link - links map is empty")
+	}
+
+	return p.Links.Download["href"], nil
+}
+
 const (
 	FileTypeSoftware          = "Software"
 	FileTypeDocumentation     = "Documentation"
