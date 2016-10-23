@@ -128,6 +128,13 @@ func (c *ReleaseUpgradePathClient) Add(
 	c.l.Debug("found matching releases", logger.Data{"releases": matchingReleases})
 
 	for _, previousRelease := range matchingReleases {
+		c.l.Debug("adding release", logger.Data{"release": release})
+
+		if previousRelease.ID == release.ID {
+			c.l.Debug("skipping release", logger.Data{"release": release})
+			continue
+		}
+
 		err = c.pivnetClient.AddReleaseUpgradePath(
 			productSlug,
 			release.ID,

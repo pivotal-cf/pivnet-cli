@@ -200,6 +200,26 @@ var _ = Describe("releaseupgradepath commands", func() {
 			Expect(invokedPreviousReleaseID1).To(Equal(existingReleases[1].ID))
 		})
 
+		Context("when release matches upgrade path", func() {
+			BeforeEach(func() {
+				releaseForVersion = existingReleases[1]
+			})
+
+			It("does not attempt to add itself as an upgrade path", func() {
+				err := client.Add(productSlug, releaseVersion, previousReleaseVersion)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.AddReleaseUpgradePathCallCount()).To(Equal(1))
+
+				invokedProductSlug0, invokedReleaseID0, invokedPreviousReleaseID0 :=
+					fakePivnetClient.AddReleaseUpgradePathArgsForCall(0)
+
+				Expect(invokedProductSlug0).To(Equal(productSlug))
+				Expect(invokedReleaseID0).To(Equal(releaseForVersion.ID))
+				Expect(invokedPreviousReleaseID0).To(Equal(existingReleases[0].ID))
+			})
+		})
+
 		Context("when provided version does not match", func() {
 			BeforeEach(func() {
 				fakeFilter.ReleasesByVersionReturns(nil, nil)
