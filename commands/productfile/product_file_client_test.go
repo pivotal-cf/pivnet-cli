@@ -7,13 +7,15 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	pivnet "github.com/pivotal-cf/go-pivnet"
-	"github.com/pivotal-cf/go-pivnet/logger/loggerfakes"
+	"github.com/pivotal-cf/go-pivnet/logger"
+	"github.com/pivotal-cf/go-pivnet/logshim"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile/productfilefakes"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
@@ -22,7 +24,7 @@ import (
 
 var _ = Describe("productfile commands", func() {
 	var (
-		fakeLogger       *loggerfakes.FakeLogger
+		l                logger.Logger
 		fakeFilter       *productfilefakes.FakeFilter
 		fakePivnetClient *productfilefakes.FakePivnetClient
 
@@ -37,7 +39,10 @@ var _ = Describe("productfile commands", func() {
 	)
 
 	BeforeEach(func() {
-		fakeLogger = &loggerfakes.FakeLogger{}
+		infoLogger := log.New(GinkgoWriter, "", 0)
+		debugLogger := log.New(GinkgoWriter, "", 0)
+		l = logshim.NewLogShim(infoLogger, debugLogger, true)
+
 		fakeFilter = &productfilefakes.FakeFilter{}
 		fakePivnetClient = &productfilefakes.FakePivnetClient{}
 
@@ -70,7 +75,7 @@ var _ = Describe("productfile commands", func() {
 			&outBuffer,
 			&logBuffer,
 			printer.NewPrinter(&outBuffer),
-			fakeLogger,
+			l,
 			fakeFilter,
 		)
 	})

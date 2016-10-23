@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"log"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	pivnet "github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet/logger"
+	"github.com/pivotal-cf/go-pivnet/logshim"
 	"github.com/pivotal-cf/pivnet-cli/commands/releaseupgradepath"
 	"github.com/pivotal-cf/pivnet-cli/commands/releaseupgradepath/releaseupgradepathfakes"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
@@ -16,6 +19,7 @@ import (
 
 var _ = Describe("releaseupgradepath commands", func() {
 	var (
+		l                logger.Logger
 		fakePivnetClient *releaseupgradepathfakes.FakePivnetClient
 		fakeFilter       *releaseupgradepathfakes.FakeFilter
 
@@ -23,15 +27,22 @@ var _ = Describe("releaseupgradepath commands", func() {
 
 		outBuffer bytes.Buffer
 
-		existingReleases []pivnet.Release
-		filteredReleases []pivnet.Release
+		existingReleases  []pivnet.Release
+		filteredReleases  []pivnet.Release
+		releaseForVersion pivnet.Release
 
 		releaseUpgradePaths []pivnet.ReleaseUpgradePath
+
+		releaseForVersionErr error
 
 		client *releaseupgradepath.ReleaseUpgradePathClient
 	)
 
 	BeforeEach(func() {
+		infoLogger := log.New(GinkgoWriter, "", 0)
+		debugLogger := log.New(GinkgoWriter, "", 0)
+		l = logshim.NewLogShim(infoLogger, debugLogger, true)
+
 		fakePivnetClient = &releaseupgradepathfakes.FakePivnetClient{}
 		fakeFilter = &releaseupgradepathfakes.FakeFilter{}
 
@@ -72,10 +83,13 @@ var _ = Describe("releaseupgradepath commands", func() {
 			existingReleases[1],
 		}
 
+		releaseForVersion = existingReleases[2]
+
 		fakePivnetClient.ReleasesForProductSlugReturns(existingReleases, nil)
-		fakePivnetClient.ReleaseForVersionReturns(existingReleases[2], nil)
 		fakePivnetClient.ReleaseUpgradePathsReturns(releaseUpgradePaths, nil)
 		fakeFilter.ReleasesByVersionReturns(filteredReleases, nil)
+
+		releaseForVersionErr = nil
 
 		client = releaseupgradepath.NewReleaseUpgradePathClient(
 			fakePivnetClient,
@@ -84,7 +98,12 @@ var _ = Describe("releaseupgradepath commands", func() {
 			&outBuffer,
 			printer.NewPrinter(&outBuffer),
 			fakeFilter,
+			l,
 		)
+	})
+
+	JustBeforeEach(func() {
+		fakePivnetClient.ReleaseForVersionReturns(releaseForVersion, releaseForVersionErr)
 	})
 
 	Describe("ReleaseUpgradePaths", func() {
@@ -129,13 +148,8 @@ var _ = Describe("releaseupgradepath commands", func() {
 		})
 
 		Context("when there is an error getting release", func() {
-			var (
-				expectedErr error
-			)
-
 			BeforeEach(func() {
-				expectedErr = errors.New("releases error")
-				fakePivnetClient.ReleaseForVersionReturns(pivnet.Release{}, expectedErr)
+				releaseForVersionErr = errors.New("release for version error")
 			})
 
 			It("invokes the error handler", func() {
@@ -143,7 +157,7 @@ var _ = Describe("releaseupgradepath commands", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(releaseForVersionErr))
 			})
 		})
 	})
@@ -175,14 +189,14 @@ var _ = Describe("releaseupgradepath commands", func() {
 				fakePivnetClient.AddReleaseUpgradePathArgsForCall(0)
 
 			Expect(invokedProductSlug0).To(Equal(productSlug))
-			Expect(invokedReleaseID0).To(Equal(2345))
+			Expect(invokedReleaseID0).To(Equal(releaseForVersion.ID))
 			Expect(invokedPreviousReleaseID0).To(Equal(existingReleases[0].ID))
 
 			invokedProductSlug1, invokedReleaseID1, invokedPreviousReleaseID1 :=
 				fakePivnetClient.AddReleaseUpgradePathArgsForCall(1)
 
 			Expect(invokedProductSlug1).To(Equal(productSlug))
-			Expect(invokedReleaseID1).To(Equal(2345))
+			Expect(invokedReleaseID1).To(Equal(releaseForVersion.ID))
 			Expect(invokedPreviousReleaseID1).To(Equal(existingReleases[1].ID))
 		})
 
@@ -219,13 +233,8 @@ var _ = Describe("releaseupgradepath commands", func() {
 		})
 
 		Context("when there is an error getting release", func() {
-			var (
-				expectedErr error
-			)
-
 			BeforeEach(func() {
-				expectedErr = errors.New("releases error")
-				fakePivnetClient.ReleaseForVersionReturns(pivnet.Release{}, expectedErr)
+				releaseForVersionErr = errors.New("release for version error")
 			})
 
 			It("invokes the error handler", func() {
@@ -233,18 +242,13 @@ var _ = Describe("releaseupgradepath commands", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(releaseForVersionErr))
 			})
 		})
 
 		Context("when there is an error getting previous release", func() {
-			var (
-				expectedErr error
-			)
-
 			BeforeEach(func() {
-				expectedErr = errors.New("releases error")
-				fakePivnetClient.ReleasesForProductSlugReturns(nil, expectedErr)
+				releaseForVersionErr = errors.New("releases error")
 			})
 
 			It("invokes the error handler", func() {
@@ -252,7 +256,7 @@ var _ = Describe("releaseupgradepath commands", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(releaseForVersionErr))
 			})
 		})
 
@@ -347,13 +351,8 @@ var _ = Describe("releaseupgradepath commands", func() {
 		})
 
 		Context("when there is an error getting release", func() {
-			var (
-				expectedErr error
-			)
-
 			BeforeEach(func() {
-				expectedErr = errors.New("releases error")
-				fakePivnetClient.ReleaseForVersionReturns(pivnet.Release{}, expectedErr)
+				releaseForVersionErr = errors.New("release for version error")
 			})
 
 			It("invokes the error handler", func() {
@@ -361,18 +360,13 @@ var _ = Describe("releaseupgradepath commands", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(releaseForVersionErr))
 			})
 		})
 
 		Context("when there is an error getting previous release", func() {
-			var (
-				expectedErr error
-			)
-
 			BeforeEach(func() {
-				expectedErr = errors.New("releases error")
-				fakePivnetClient.ReleasesForProductSlugReturns(nil, expectedErr)
+				releaseForVersionErr = errors.New("releases error")
 			})
 
 			It("invokes the error handler", func() {
@@ -380,7 +374,7 @@ var _ = Describe("releaseupgradepath commands", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(releaseForVersionErr))
 			})
 		})
 

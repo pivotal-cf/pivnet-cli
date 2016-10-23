@@ -34,6 +34,7 @@ var NewReleaseUpgradePathClient = func() ReleaseUpgradePathClient {
 		OutputWriter,
 		Printer,
 		Filter,
+		Pivnet.Logger,
 	)
 }
 

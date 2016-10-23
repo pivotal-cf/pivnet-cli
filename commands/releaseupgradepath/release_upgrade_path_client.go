@@ -7,6 +7,7 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	pivnet "github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
 )
@@ -32,6 +33,7 @@ type ReleaseUpgradePathClient struct {
 	outputWriter io.Writer
 	printer      printer.Printer
 	filter       Filter
+	l            logger.Logger
 }
 
 func NewReleaseUpgradePathClient(
@@ -41,6 +43,7 @@ func NewReleaseUpgradePathClient(
 	outputWriter io.Writer,
 	printer printer.Printer,
 	filter Filter,
+	l logger.Logger,
 ) *ReleaseUpgradePathClient {
 	return &ReleaseUpgradePathClient{
 		pivnetClient: pivnetClient,
@@ -49,6 +52,7 @@ func NewReleaseUpgradePathClient(
 		outputWriter: outputWriter,
 		printer:      printer,
 		filter:       filter,
+		l:            l,
 	}
 }
 
@@ -104,6 +108,7 @@ func (c *ReleaseUpgradePathClient) Add(
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
+	c.l.Debug("found release", logger.Data{"release": release})
 
 	allReleases, err := c.pivnetClient.ReleasesForProductSlug(productSlug)
 	if err != nil {
@@ -119,6 +124,8 @@ func (c *ReleaseUpgradePathClient) Add(
 		err := fmt.Errorf("No releases match: '%s'", previousReleaseVersion)
 		return c.eh.HandleError(err)
 	}
+
+	c.l.Debug("found matching releases", logger.Data{"releases": matchingReleases})
 
 	for _, previousRelease := range matchingReleases {
 		err = c.pivnetClient.AddReleaseUpgradePath(
