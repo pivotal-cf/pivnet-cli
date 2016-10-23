@@ -114,7 +114,9 @@ func (c *ReleaseDependencyClient) Add(
 	if c.format == printer.PrintAsTable {
 		_, err = fmt.Fprintf(
 			c.outputWriter,
-			"release dependency added successfully to %s/%s\n",
+			"release dependency '%s/%s' added successfully to '%s/%s'\n",
+			dependentProductSlug,
+			dependentReleaseVersion,
 			productSlug,
 			releaseVersion,
 		)
@@ -151,7 +153,9 @@ func (c *ReleaseDependencyClient) Remove(
 	if c.format == printer.PrintAsTable {
 		_, err = fmt.Fprintf(
 			c.outputWriter,
-			"release dependency removed successfully from %s/%s\n",
+			"release dependency '%s/%s' removed successfully from '%s/%s'\n",
+			dependentProductSlug,
+			dependentReleaseVersion,
 			productSlug,
 			releaseVersion,
 		)
