@@ -30,7 +30,7 @@ type PivnetClient interface {
 	RemoveProductFileFromFileGroup(productSlug string, fileGroupID int, productFileID int) error
 	DeleteProductFile(productSlug string, releaseID int) (pivnet.ProductFile, error)
 	AcceptEULA(productSlug string, releaseID int) error
-	DownloadFile(writer io.Writer, downloadLink string) error
+	DownloadProductFile(writer io.Writer, productSlug string, releaseID int, productFileID int) error
 }
 
 //go:generate counterfeiter . FakeFilter
@@ -461,23 +461,18 @@ func (c *ProductFileClient) Download(
 			return c.eh.HandleError(err)
 		}
 
-		downloadLink, err := productFile.DownloadLink()
-		if err != nil {
-			return c.eh.HandleError(err)
-		}
-
 		localFilepath := filepath.Join(downloadDir, productFile.Name)
 
 		c.l.Debug(
 			"Creating local file",
-			logger.Data{"downloadLink": downloadLink, "localFilepath": localFilepath},
+			logger.Data{"name": pf.Name, "localFilepath": localFilepath},
 		)
 		file, err := os.Create(localFilepath)
 		if err != nil {
 			return c.eh.HandleError(err)
 		}
 
-		c.l.Debug("Determining file size", logger.Data{"downloadLink": downloadLink})
+		c.l.Debug("Determining file size", logger.Data{"name": pf.Name})
 
 		progress := newProgressBar(productFile.Size, c.logWriter)
 		onDemandProgress := &startOnDemandProgressBar{progress, false}
@@ -489,7 +484,7 @@ func (c *ProductFileClient) Download(
 			productFile.Name,
 			localFilepath,
 		))
-		err = c.pivnetClient.DownloadFile(multiWriter, downloadLink)
+		err = c.pivnetClient.DownloadProductFile(multiWriter, productSlug, release.ID, pf.ID)
 		if err != nil {
 			return c.eh.HandleError(err)
 		}

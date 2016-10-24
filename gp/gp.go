@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/pivotal-cf/go-pivnet"
-	"github.com/pivotal-cf/go-pivnet/extension"
 	"github.com/pivotal-cf/go-pivnet/logger"
 )
 
@@ -17,30 +16,6 @@ type Client struct {
 func NewClient(config pivnet.ClientConfig, logger logger.Logger) *Client {
 	return &Client{
 		client: pivnet.NewClient(config, logger),
-	}
-}
-
-type ExtendedClient struct {
-	client extension.ExtendedClient
-}
-
-func NewExtendedClient(c Client, logger logger.Logger) *ExtendedClient {
-	return &ExtendedClient{
-		client: extension.NewExtendedClient(c, logger),
-	}
-}
-
-type CompositeClient struct {
-	Client
-	ExtendedClient
-}
-
-func NewCompositeClient(config pivnet.ClientConfig, logger logger.Logger) *CompositeClient {
-	c := NewClient(config, logger)
-	e := NewExtendedClient(*c, logger)
-	return &CompositeClient{
-		*c,
-		*e,
 	}
 }
 
@@ -167,6 +142,10 @@ func (c Client) DeleteProductFile(productSlug string, releaseID int) (pivnet.Pro
 	return c.client.ProductFiles.Delete(productSlug, releaseID)
 }
 
+func (c Client) DownloadProductFile(writer io.Writer, productSlug string, releaseID int, productFileID int) error {
+	return c.client.ProductFiles.DownloadForRelease(writer, productSlug, releaseID, productFileID)
+}
+
 func (c Client) Products() ([]pivnet.Product, error) {
 	return c.client.Products.List()
 }
@@ -261,9 +240,4 @@ func (c Client) MakeRequest(method string, url string, expectedResponseCode int,
 
 func (c Client) CreateRequest(method string, url string, body io.Reader) (*http.Request, error) {
 	return c.client.CreateRequest(method, url, body)
-}
-
-func (c ExtendedClient) DownloadFile(writer io.Writer, downloadLink string) error {
-	err, _ := c.client.DownloadFile(writer, downloadLink)
-	return err
 }

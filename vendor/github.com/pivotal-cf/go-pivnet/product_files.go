@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+
+	"github.com/pivotal-cf/go-pivnet/logger"
 )
 
 type ProductFilesService struct {
@@ -404,6 +407,50 @@ func (p ProductFilesService) RemoveFromFileGroup(
 		bytes.NewReader(b),
 		nil,
 	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p ProductFilesService) DownloadForRelease(
+	writer io.Writer,
+	productSlug string,
+	releaseID int,
+	productFileID int,
+) error {
+	pf, err := p.GetForRelease(
+		productSlug,
+		releaseID,
+		productFileID,
+	)
+	if err != nil {
+		return err
+	}
+
+	downloadLink, err := pf.DownloadLink()
+	if err != nil {
+		return err
+	}
+
+	p.client.logger.Debug("Downloading file", logger.Data{"downloadLink": downloadLink})
+
+	_, body, err := p.client.MakeRequest(
+		"POST",
+		downloadLink,
+		http.StatusOK,
+		nil,
+		nil,
+	)
+	if err != nil {
+		// Untested as we cannot force CreateRequest to return an error.
+		return err
+	}
+
+	p.client.logger.Debug("Copying body", logger.Data{"downloadLink": downloadLink})
+
+	_, err = io.Copy(writer, bytes.NewReader(body))
 	if err != nil {
 		return err
 	}

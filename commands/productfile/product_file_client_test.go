@@ -704,7 +704,7 @@ var _ = Describe("productfile commands", func() {
 			filterErr = nil
 
 			fakePivnetClient.ReleaseForVersionReturns(returnedRelease, nil)
-			fakePivnetClient.DownloadFileStub = func(writer io.Writer, downloadLink string) error {
+			fakePivnetClient.DownloadProductFileStub = func(writer io.Writer, productSlug string, releaseID int, productFileID int) error {
 				_, err := fmt.Fprintf(writer, fileContents)
 				return err
 			}
@@ -747,19 +747,19 @@ var _ = Describe("productfile commands", func() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakePivnetClient.DownloadFileCallCount()).To(Equal(2))
+			Expect(fakePivnetClient.DownloadProductFileCallCount()).To(Equal(2))
 
 			for i, pf := range productFiles {
-				_, invokedLink := fakePivnetClient.DownloadFileArgsForCall(i)
+				_, invokedProductSlug, invokedReleaseID, invokedProductFileID :=
+					fakePivnetClient.DownloadProductFileArgsForCall(i)
 
-				expectedLink, err := productFiles[i].DownloadLink()
-				Expect(err).NotTo(HaveOccurred())
+				Expect(invokedProductSlug).To(Equal(productSlug))
+				Expect(invokedReleaseID).To(Equal(releaseID))
+				Expect(invokedProductFileID).To(Equal(pf.ID))
 
-				Expect(invokedLink).To(Equal(expectedLink))
+				downloadedProductFilepath := filepath.Join(downloadDir, pf.Name)
 
-				downloadedFilepath := filepath.Join(downloadDir, pf.Name)
-
-				contents, err := ioutil.ReadFile(downloadedFilepath)
+				contents, err := ioutil.ReadFile(downloadedProductFilepath)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(contents).To(Equal([]byte(fileContents)))
 			}
@@ -782,19 +782,19 @@ var _ = Describe("productfile commands", func() {
 				)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(fakePivnetClient.DownloadFileCallCount()).To(Equal(2))
+				Expect(fakePivnetClient.DownloadProductFileCallCount()).To(Equal(2))
 
 				for i, pf := range productFiles {
-					_, invokedLink := fakePivnetClient.DownloadFileArgsForCall(i)
+					_, invokedProductSlug, invokedReleaseID, invokedProductFileID :=
+						fakePivnetClient.DownloadProductFileArgsForCall(i)
 
-					expectedLink, err := productFiles[i].DownloadLink()
-					Expect(err).NotTo(HaveOccurred())
+					Expect(invokedProductSlug).To(Equal(productSlug))
+					Expect(invokedReleaseID).To(Equal(releaseID))
+					Expect(invokedProductFileID).To(Equal(pf.ID))
 
-					Expect(invokedLink).To(Equal(expectedLink))
+					downloadedProductFilepath := filepath.Join(downloadDir, pf.Name)
 
-					downloadedFilepath := filepath.Join(downloadDir, pf.Name)
-
-					contents, err := ioutil.ReadFile(downloadedFilepath)
+					contents, err := ioutil.ReadFile(downloadedProductFilepath)
 					Expect(err).NotTo(HaveOccurred())
 					Expect(contents).To(Equal([]byte(fileContents)))
 				}
@@ -864,26 +864,6 @@ var _ = Describe("productfile commands", func() {
 			})
 		})
 
-		Context("when productFile.DownloadLink returns an error", func() {
-			BeforeEach(func() {
-				productFiles[0].Links = nil
-			})
-
-			It("invokes the error handler", func() {
-				err := client.Download(
-					productSlug,
-					releaseVersion,
-					globs,
-					productFileIDs,
-					downloadDir,
-					acceptEULA,
-				)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-			})
-		})
-
 		Context("when there is an error", func() {
 			var (
 				expectedErr error
@@ -891,7 +871,7 @@ var _ = Describe("productfile commands", func() {
 
 			BeforeEach(func() {
 				expectedErr = errors.New("productfile error")
-				fakePivnetClient.DownloadFileReturns(expectedErr)
+				fakePivnetClient.DownloadProductFileReturns(expectedErr)
 			})
 
 			It("invokes the error handler", func() {

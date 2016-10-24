@@ -71,6 +71,22 @@ func newErrNotFound(message string) ErrNotFound {
 	}
 }
 
+type ErrUnavailableForLegalReasons struct {
+	ResponseCode int    `json:"response_code" yaml:"response_code"`
+	Message      string `json:"message" yaml:"message"`
+}
+
+func (e ErrUnavailableForLegalReasons) Error() string {
+	return e.Message
+}
+
+func newErrUnavailableForLegalReasons() ErrUnavailableForLegalReasons {
+	return ErrUnavailableForLegalReasons{
+		ResponseCode: http.StatusUnavailableForLegalReasons,
+		Message:      "The EULA has not been accepted.",
+	}
+}
+
 type Client struct {
 	baseURL   string
 	token     string
@@ -193,6 +209,8 @@ func (c Client) MakeRequest(
 			return nil, nil, newErrUnauthorized(pErr.Message)
 		case http.StatusNotFound:
 			return nil, nil, newErrNotFound(pErr.Message)
+		case http.StatusUnavailableForLegalReasons:
+			return nil, nil, newErrUnavailableForLegalReasons()
 		}
 
 		return nil, nil, ErrPivnetOther{

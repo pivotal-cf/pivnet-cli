@@ -117,8 +117,8 @@ func init() {
 	}
 }
 
-func NewPivnetClient() *gp.CompositeClient {
-	return gp.NewCompositeClient(
+func NewPivnetClient() *gp.Client {
+	return gp.NewClient(
 		pivnet.ClientConfig{
 			Token:     Pivnet.APIToken,
 			Host:      Pivnet.Host,
