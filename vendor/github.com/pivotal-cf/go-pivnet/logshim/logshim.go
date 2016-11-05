@@ -7,12 +7,7 @@ import (
 	"github.com/pivotal-cf/go-pivnet/logger"
 )
 
-type LogShim interface {
-	Debug(action string, data ...logger.Data)
-	Info(action string, data ...logger.Data)
-}
-
-type logShim struct {
+type LogShim struct {
 	infoLogger  *log.Logger
 	debugLogger *log.Logger
 	verbose     bool
@@ -22,21 +17,21 @@ func NewLogShim(
 	infoLogger *log.Logger,
 	debugLogger *log.Logger,
 	verbose bool,
-) LogShim {
-	return &logShim{
+) *LogShim {
+	return &LogShim{
 		infoLogger:  infoLogger,
 		debugLogger: debugLogger,
 		verbose:     verbose,
 	}
 }
 
-func (l logShim) Debug(action string, data ...logger.Data) {
+func (l LogShim) Debug(action string, data ...logger.Data) {
 	if l.verbose {
 		l.debugLogger.Println(fmt.Sprintf("%s%s", action, appendString(data...)))
 	}
 }
 
-func (l logShim) Info(action string, data ...logger.Data) {
+func (l LogShim) Info(action string, data ...logger.Data) {
 	l.infoLogger.Println(fmt.Sprintf("%s%s", action, appendString(data...)))
 }
 
