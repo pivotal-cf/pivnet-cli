@@ -715,7 +715,7 @@ var _ = Describe("productfile commands", func() {
 
 		JustBeforeEach(func() {
 			fakePivnetClient.ProductFilesForReleaseReturns(productFiles, productFilesForReleaseErr)
-			fakeFilter.ProductFileNamesByGlobsReturns(productFiles, filterErr)
+			fakeFilter.ProductFileKeysByGlobsReturns(productFiles, filterErr)
 
 			fakePivnetClient.ProductFileForReleaseStub = func(productSlug string, releaseID int, productFileID int) (pivnet.ProductFile, error) {
 				if productFileForReleaseErr != nil {
