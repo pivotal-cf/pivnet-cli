@@ -9,13 +9,13 @@ import (
 )
 
 type FakeFilter struct {
-	ProductFileNamesByGlobsStub        func(productFiles []go_pivnet.ProductFile, glob []string) ([]go_pivnet.ProductFile, error)
-	productFileNamesByGlobsMutex       sync.RWMutex
-	productFileNamesByGlobsArgsForCall []struct {
+	ProductFileKeysByGlobsStub        func(productFiles []go_pivnet.ProductFile, glob []string) ([]go_pivnet.ProductFile, error)
+	productFileKeysByGlobsMutex       sync.RWMutex
+	productFileKeysByGlobsArgsForCall []struct {
 		productFiles []go_pivnet.ProductFile
 		glob         []string
 	}
-	productFileNamesByGlobsReturns struct {
+	productFileKeysByGlobsReturns struct {
 		result1 []go_pivnet.ProductFile
 		result2 error
 	}
@@ -23,7 +23,7 @@ type FakeFilter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeFilter) ProductFileNamesByGlobs(productFiles []go_pivnet.ProductFile, glob []string) ([]go_pivnet.ProductFile, error) {
+func (fake *FakeFilter) ProductFileKeysByGlobs(productFiles []go_pivnet.ProductFile, glob []string) ([]go_pivnet.ProductFile, error) {
 	var productFilesCopy []go_pivnet.ProductFile
 	if productFiles != nil {
 		productFilesCopy = make([]go_pivnet.ProductFile, len(productFiles))
@@ -34,35 +34,35 @@ func (fake *FakeFilter) ProductFileNamesByGlobs(productFiles []go_pivnet.Product
 		globCopy = make([]string, len(glob))
 		copy(globCopy, glob)
 	}
-	fake.productFileNamesByGlobsMutex.Lock()
-	fake.productFileNamesByGlobsArgsForCall = append(fake.productFileNamesByGlobsArgsForCall, struct {
+	fake.productFileKeysByGlobsMutex.Lock()
+	fake.productFileKeysByGlobsArgsForCall = append(fake.productFileKeysByGlobsArgsForCall, struct {
 		productFiles []go_pivnet.ProductFile
 		glob         []string
 	}{productFilesCopy, globCopy})
-	fake.recordInvocation("ProductFileNamesByGlobs", []interface{}{productFilesCopy, globCopy})
-	fake.productFileNamesByGlobsMutex.Unlock()
-	if fake.ProductFileNamesByGlobsStub != nil {
-		return fake.ProductFileNamesByGlobsStub(productFiles, glob)
+	fake.recordInvocation("ProductFileKeysByGlobs", []interface{}{productFilesCopy, globCopy})
+	fake.productFileKeysByGlobsMutex.Unlock()
+	if fake.ProductFileKeysByGlobsStub != nil {
+		return fake.ProductFileKeysByGlobsStub(productFiles, glob)
 	} else {
-		return fake.productFileNamesByGlobsReturns.result1, fake.productFileNamesByGlobsReturns.result2
+		return fake.productFileKeysByGlobsReturns.result1, fake.productFileKeysByGlobsReturns.result2
 	}
 }
 
-func (fake *FakeFilter) ProductFileNamesByGlobsCallCount() int {
-	fake.productFileNamesByGlobsMutex.RLock()
-	defer fake.productFileNamesByGlobsMutex.RUnlock()
-	return len(fake.productFileNamesByGlobsArgsForCall)
+func (fake *FakeFilter) ProductFileKeysByGlobsCallCount() int {
+	fake.productFileKeysByGlobsMutex.RLock()
+	defer fake.productFileKeysByGlobsMutex.RUnlock()
+	return len(fake.productFileKeysByGlobsArgsForCall)
 }
 
-func (fake *FakeFilter) ProductFileNamesByGlobsArgsForCall(i int) ([]go_pivnet.ProductFile, []string) {
-	fake.productFileNamesByGlobsMutex.RLock()
-	defer fake.productFileNamesByGlobsMutex.RUnlock()
-	return fake.productFileNamesByGlobsArgsForCall[i].productFiles, fake.productFileNamesByGlobsArgsForCall[i].glob
+func (fake *FakeFilter) ProductFileKeysByGlobsArgsForCall(i int) ([]go_pivnet.ProductFile, []string) {
+	fake.productFileKeysByGlobsMutex.RLock()
+	defer fake.productFileKeysByGlobsMutex.RUnlock()
+	return fake.productFileKeysByGlobsArgsForCall[i].productFiles, fake.productFileKeysByGlobsArgsForCall[i].glob
 }
 
-func (fake *FakeFilter) ProductFileNamesByGlobsReturns(result1 []go_pivnet.ProductFile, result2 error) {
-	fake.ProductFileNamesByGlobsStub = nil
-	fake.productFileNamesByGlobsReturns = struct {
+func (fake *FakeFilter) ProductFileKeysByGlobsReturns(result1 []go_pivnet.ProductFile, result2 error) {
+	fake.ProductFileKeysByGlobsStub = nil
+	fake.productFileKeysByGlobsReturns = struct {
 		result1 []go_pivnet.ProductFile
 		result2 error
 	}{result1, result2}
@@ -71,8 +71,8 @@ func (fake *FakeFilter) ProductFileNamesByGlobsReturns(result1 []go_pivnet.Produ
 func (fake *FakeFilter) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.productFileNamesByGlobsMutex.RLock()
-	defer fake.productFileNamesByGlobsMutex.RUnlock()
+	fake.productFileKeysByGlobsMutex.RLock()
+	defer fake.productFileKeysByGlobsMutex.RUnlock()
 	return fake.invocations
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	pivnet "github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/go-pivnet/logger"
@@ -37,18 +38,21 @@ func (f Filter) ReleasesByVersion(releases []pivnet.Release, version string) ([]
 	return filteredReleases, nil
 }
 
-func (f Filter) ProductFileNamesByGlobs(
+func (f Filter) ProductFileKeysByGlobs(
 	productFiles []pivnet.ProductFile,
 	globs []string,
 ) ([]pivnet.ProductFile, error) {
-	f.l.Debug("filter.ProductFilesNamesByGlobs", logger.Data{"globs": globs})
+	f.l.Debug("filter.ProductFilesKeysByGlobs", logger.Data{"globs": globs})
 
 	filtered := []pivnet.ProductFile{}
 	for _, pattern := range globs {
 		prevFilteredCount := len(filtered)
 
 		for _, p := range productFiles {
-			matched, err := filepath.Match(pattern, p.Name)
+			parts := strings.Split(p.AWSObjectKey, "/")
+			fileName := parts[len(parts)-1]
+
+			matched, err := filepath.Match(pattern, fileName)
 			if err != nil {
 				return nil, err
 			}

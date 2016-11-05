@@ -36,7 +36,7 @@ type PivnetClient interface {
 
 //go:generate counterfeiter . FakeFilter
 type Filter interface {
-	ProductFileNamesByGlobs(productFiles []pivnet.ProductFile, glob []string) ([]pivnet.ProductFile, error)
+	ProductFileKeysByGlobs(productFiles []pivnet.ProductFile, glob []string) ([]pivnet.ProductFile, error)
 }
 
 type ProductFileClient struct {
@@ -438,7 +438,7 @@ func (c *ProductFileClient) Download(
 
 	if len(globs) > 0 {
 		var err error
-		filteredProductFiles, err = c.filter.ProductFileNamesByGlobs(productFiles, globs)
+		filteredProductFiles, err = c.filter.ProductFileKeysByGlobs(productFiles, globs)
 		if err != nil {
 			return c.eh.HandleError(err)
 		}
@@ -485,7 +485,7 @@ func (c *ProductFileClient) Download(
 
 		c.l.Info(fmt.Sprintf(
 			"Downloading '%s' to '%s'",
-			productFile.Name,
+			fileName,
 			localFilepath,
 		))
 		err = c.pivnetClient.DownloadProductFile(multiWriter, productSlug, release.ID, pf.ID)

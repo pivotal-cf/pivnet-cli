@@ -23,7 +23,7 @@ const (
 
 type Filterer interface {
 	ReleasesByVersion(releases []pivnet.Release, version string) ([]pivnet.Release, error)
-	ProductFileNamesByGlobs(productFiles []pivnet.ProductFile, globs []string) ([]pivnet.ProductFile, error)
+	ProductFileKeysByGlobs(productFiles []pivnet.ProductFile, globs []string) ([]pivnet.ProductFile, error)
 }
 
 var (

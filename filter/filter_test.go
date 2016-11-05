@@ -149,7 +149,7 @@ var _ = Describe("Filter", func() {
 		})
 	})
 
-	Describe("ProductFileNamesByGlobs", func() {
+	Describe("ProductFileKeysByGlobs", func() {
 		var (
 			productFiles []pivnet.ProductFile
 			globs        []string
@@ -158,24 +158,27 @@ var _ = Describe("Filter", func() {
 		BeforeEach(func() {
 			productFiles = []pivnet.ProductFile{
 				{
-					ID:   1234,
-					Name: "name0",
+					ID:           1234,
+					Name:         "File 0",
+					AWSObjectKey: "/some/remote/path/to/file-0",
 				},
 				{
-					ID:   2345,
-					Name: "name1",
+					ID:           2345,
+					Name:         "File 1",
+					AWSObjectKey: "/some/remote/path/to/file-1",
 				},
 				{
-					ID:   3456,
-					Name: "name2",
+					ID:           3456,
+					Name:         "File 2",
+					AWSObjectKey: "/some/remote/path/to/file-2",
 				},
 			}
 
-			globs = []string{"*name1*", "*name2*"}
+			globs = []string{"*file-1*", "*file-2*"}
 		})
 
 		It("returns the download links that match the glob filters", func() {
-			filtered, err := f.ProductFileNamesByGlobs(
+			filtered, err := f.ProductFileKeysByGlobs(
 				productFiles,
 				globs,
 			)
@@ -191,7 +194,7 @@ var _ = Describe("Filter", func() {
 			})
 
 			It("returns an error", func() {
-				_, err := f.ProductFileNamesByGlobs(
+				_, err := f.ProductFileKeysByGlobs(
 					productFiles,
 					globs,
 				)
@@ -206,7 +209,7 @@ var _ = Describe("Filter", func() {
 			})
 
 			It("returns empty slice", func() {
-				filtered, err := f.ProductFileNamesByGlobs(
+				filtered, err := f.ProductFileKeysByGlobs(
 					productFiles,
 					globs,
 				)
@@ -218,11 +221,11 @@ var _ = Describe("Filter", func() {
 
 		Describe("When a glob that matches a file and glob that does not match a file", func() {
 			BeforeEach(func() {
-				globs = []string{"name1", "does-not-exist.txt"}
+				globs = []string{"file-1", "does-not-exist.txt"}
 			})
 
 			It("returns an error", func() {
-				_, err := f.ProductFileNamesByGlobs(
+				_, err := f.ProductFileKeysByGlobs(
 					productFiles,
 					globs,
 				)
