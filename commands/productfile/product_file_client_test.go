@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -53,15 +54,17 @@ var _ = Describe("productfile commands", func() {
 
 		productFiles = []pivnet.ProductFile{
 			{
-				ID:   1234,
-				Name: "some-file",
+				ID:           1234,
+				Name:         "Some File",
+				AWSObjectKey: "/remote/path/some-file",
 				Links: &pivnet.Links{
 					Download: map[string]string{"href": "download-link-0"},
 				},
 			},
 			{
-				ID:   2345,
-				Name: "some-other-file",
+				ID:           2345,
+				Name:         "Some Other File",
+				AWSObjectKey: "/remote/path/some-other-file",
 				Links: &pivnet.Links{
 					Download: map[string]string{"href": "download-link-1"},
 				},
@@ -757,7 +760,10 @@ var _ = Describe("productfile commands", func() {
 				Expect(invokedReleaseID).To(Equal(releaseID))
 				Expect(invokedProductFileID).To(Equal(pf.ID))
 
-				downloadedProductFilepath := filepath.Join(downloadDir, pf.Name)
+				downloadedProductFilepath := filepath.Join(
+					downloadDir,
+					nameFromAWSObjectKey(pf.AWSObjectKey),
+				)
 
 				contents, err := ioutil.ReadFile(downloadedProductFilepath)
 				Expect(err).NotTo(HaveOccurred())
@@ -792,7 +798,10 @@ var _ = Describe("productfile commands", func() {
 					Expect(invokedReleaseID).To(Equal(releaseID))
 					Expect(invokedProductFileID).To(Equal(pf.ID))
 
-					downloadedProductFilepath := filepath.Join(downloadDir, pf.Name)
+					downloadedProductFilepath := filepath.Join(
+						downloadDir,
+						nameFromAWSObjectKey(pf.AWSObjectKey),
+					)
 
 					contents, err := ioutil.ReadFile(downloadedProductFilepath)
 					Expect(err).NotTo(HaveOccurred())
@@ -1065,3 +1074,8 @@ var _ = Describe("productfile commands", func() {
 		})
 	})
 })
+
+func nameFromAWSObjectKey(awsObjectKey string) string {
+	parts := strings.Split(awsObjectKey, "/")
+	return parts[len(parts)-1]
+}

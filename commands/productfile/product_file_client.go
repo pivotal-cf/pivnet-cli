@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/olekukonko/tablewriter"
 	pivnet "github.com/pivotal-cf/go-pivnet"
@@ -461,7 +462,10 @@ func (c *ProductFileClient) Download(
 			return c.eh.HandleError(err)
 		}
 
-		localFilepath := filepath.Join(downloadDir, productFile.Name)
+		parts := strings.Split(pf.AWSObjectKey, "/")
+		fileName := parts[len(parts)-1]
+
+		localFilepath := filepath.Join(downloadDir, fileName)
 
 		c.l.Debug(
 			"Creating local file",
