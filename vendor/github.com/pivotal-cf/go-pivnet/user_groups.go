@@ -65,13 +65,18 @@ func (u UserGroupsService) List() ([]UserGroup, error) {
 	url := "/user_groups"
 
 	var response UserGroupsResponse
-	_, _, err := u.client.MakeRequest(
+	resp, err := u.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
@@ -87,13 +92,18 @@ func (u UserGroupsService) ListForRelease(productSlug string, releaseID int) ([]
 	)
 
 	var response UserGroupsResponse
-	_, _, err := u.client.MakeRequest(
+	resp, err := u.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
@@ -121,16 +131,16 @@ func (u UserGroupsService) AddToRelease(productSlug string, releaseID int, userG
 		return err
 	}
 
-	_, _, err = u.client.MakeRequest(
+	resp, err := u.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }
@@ -155,16 +165,16 @@ func (u UserGroupsService) RemoveFromRelease(productSlug string, releaseID int, 
 		return err
 	}
 
-	_, _, err = u.client.MakeRequest(
+	resp, err := u.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }
@@ -173,13 +183,18 @@ func (u UserGroupsService) Get(userGroupID int) (UserGroup, error) {
 	url := fmt.Sprintf("/user_groups/%d", userGroupID)
 
 	var response UserGroup
-	_, _, err := u.client.MakeRequest(
+	resp, err := u.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return UserGroup{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return UserGroup{}, err
 	}
@@ -212,13 +227,18 @@ func (u UserGroupsService) Create(name string, description string, members []str
 	body := bytes.NewReader(b)
 
 	var response UserGroup
-	_, _, err = u.client.MakeRequest(
+	resp, err := u.client.MakeRequest(
 		"POST",
 		url,
 		http.StatusCreated,
 		body,
-		&response,
 	)
+	if err != nil {
+		return UserGroup{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return UserGroup{}, err
 	}
@@ -246,13 +266,18 @@ func (u UserGroupsService) Update(userGroup UserGroup) (UserGroup, error) {
 	body := bytes.NewReader(b)
 
 	var response UpdateUserGroupResponse
-	_, _, err = u.client.MakeRequest(
+	resp, err := u.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusOK,
 		body,
-		&response,
 	)
+	if err != nil {
+		return UserGroup{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return UserGroup{}, err
 	}
@@ -263,16 +288,16 @@ func (u UserGroupsService) Update(userGroup UserGroup) (UserGroup, error) {
 func (r UserGroupsService) Delete(userGroupID int) error {
 	url := fmt.Sprintf("/user_groups/%d", userGroupID)
 
-	_, _, err := r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"DELETE",
 		url,
 		http.StatusNoContent,
-		nil,
 		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }
@@ -301,13 +326,18 @@ func (r UserGroupsService) AddMemberToGroup(
 	body := bytes.NewReader(b)
 
 	var response UpdateUserGroupResponse
-	_, _, err = r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusOK,
 		body,
-		&response,
 	)
+	if err != nil {
+		return UserGroup{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return UserGroup{}, err
 	}
@@ -334,13 +364,18 @@ func (r UserGroupsService) RemoveMemberFromGroup(userGroupID int, memberEmailAdd
 	body := bytes.NewReader(b)
 
 	var response UpdateUserGroupResponse
-	_, _, err = r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusOK,
 		body,
-		&response,
 	)
+	if err != nil {
+		return UserGroup{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return UserGroup{}, err
 	}

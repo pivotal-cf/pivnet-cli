@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/pivotal-cf/go-pivnet/logger"
+	"encoding/json"
 )
 
 type ProductsService struct {
@@ -26,13 +27,18 @@ func (p ProductsService) List() ([]Product, error) {
 	url := "/products"
 
 	var response ProductsResponse
-	_, _, err := p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return []Product{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return []Product{}, err
 	}
@@ -44,13 +50,18 @@ func (p ProductsService) Get(slug string) (Product, error) {
 	url := fmt.Sprintf("/products/%s", slug)
 
 	var response Product
-	_, _, err := p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return Product{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return Product{}, err
 	}

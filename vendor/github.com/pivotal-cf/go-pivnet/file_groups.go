@@ -47,13 +47,18 @@ func (e FileGroupsService) List(productSlug string) ([]FileGroup, error) {
 	url := fmt.Sprintf("/products/%s/file_groups", productSlug)
 
 	var response FileGroupsResponse
-	_, _, err := e.client.MakeRequest(
+	resp, err := e.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
@@ -68,13 +73,18 @@ func (p FileGroupsService) Get(productSlug string, fileGroupID int) (FileGroup, 
 	)
 
 	var response FileGroup
-	_, _, err := p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return FileGroup{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return FileGroup{}, err
 	}
@@ -104,13 +114,18 @@ func (p FileGroupsService) Create(productSlug string, name string) (FileGroup, e
 	body := bytes.NewReader(b)
 
 	var response FileGroup
-	_, _, err = p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"POST",
 		url,
 		http.StatusCreated,
 		body,
-		&response,
 	)
+	if err != nil {
+		return FileGroup{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return FileGroup{}, err
 	}
@@ -141,13 +156,18 @@ func (p FileGroupsService) Update(productSlug string, fileGroup FileGroup) (File
 	body := bytes.NewReader(b)
 
 	var response FileGroup
-	_, _, err = p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusOK,
 		body,
-		&response,
 	)
+	if err != nil {
+		return FileGroup{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return FileGroup{}, err
 	}
@@ -163,13 +183,18 @@ func (p FileGroupsService) Delete(productSlug string, id int) (FileGroup, error)
 	)
 
 	var response FileGroup
-	_, _, err := p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"DELETE",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return FileGroup{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return FileGroup{}, err
 	}
@@ -184,13 +209,18 @@ func (p FileGroupsService) ListForRelease(productSlug string, releaseID int) ([]
 	)
 
 	var response FileGroupsResponse
-	_, _, err := p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return []FileGroup{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return []FileGroup{}, err
 	}
@@ -222,16 +252,16 @@ func (r FileGroupsService) AddToRelease(
 		return err
 	}
 
-	_, _, err = r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }
@@ -260,16 +290,16 @@ func (r FileGroupsService) RemoveFromRelease(
 		return err
 	}
 
-	_, _, err = r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }

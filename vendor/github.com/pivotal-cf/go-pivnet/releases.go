@@ -67,7 +67,13 @@ func (r ReleasesService) List(productSlug string) ([]Release, error) {
 	url := fmt.Sprintf("/products/%s/releases", productSlug)
 
 	var response ReleasesResponse
-	_, _, err := r.client.MakeRequest("GET", url, http.StatusOK, nil, &response)
+	resp, err := r.client.MakeRequest("GET", url, http.StatusOK, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +85,13 @@ func (r ReleasesService) Get(productSlug string, releaseID int) (Release, error)
 	url := fmt.Sprintf("/products/%s/releases/%d", productSlug, releaseID)
 
 	var response Release
-	_, _, err := r.client.MakeRequest("GET", url, http.StatusOK, nil, &response)
+	resp, err := r.client.MakeRequest("GET", url, http.StatusOK, nil)
+	if err != nil {
+		return Release{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return Release{}, err
 	}
@@ -126,13 +138,18 @@ func (r ReleasesService) Create(config CreateReleaseConfig) (Release, error) {
 	}
 
 	var response CreateReleaseResponse
-	_, _, err = r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"POST",
 		url,
 		http.StatusCreated,
 		bytes.NewReader(b),
-		&response,
 	)
+	if err != nil {
+		return Release{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return Release{}, err
 	}
@@ -161,13 +178,18 @@ func (r ReleasesService) Update(productSlug string, release Release) (Release, e
 	}
 
 	var response CreateReleaseResponse
-	_, _, err = r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusOK,
 		bytes.NewReader(body),
-		&response,
 	)
+	if err != nil {
+		return Release{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return Release{}, err
 	}
@@ -182,16 +204,16 @@ func (r ReleasesService) Delete(productSlug string, release Release) error {
 		release.ID,
 	)
 
-	_, _, err := r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"DELETE",
 		url,
 		http.StatusNoContent,
-		nil,
 		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }

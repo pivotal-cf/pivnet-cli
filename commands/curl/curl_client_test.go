@@ -3,6 +3,8 @@ package curl_test
 import (
 	"bytes"
 	"errors"
+	"io/ioutil"
+	"net/http"
 	"strings"
 
 	. "github.com/onsi/ginkgo"
@@ -22,6 +24,9 @@ var _ = Describe("curl commands", func() {
 		outBuffer bytes.Buffer
 
 		client *curl.CurlClient
+
+		resp       *http.Response
+		requestErr error
 	)
 
 	BeforeEach(func() {
@@ -38,6 +43,15 @@ var _ = Describe("curl commands", func() {
 			&outBuffer,
 			printer.NewPrinter(&outBuffer),
 		)
+
+		resp = &http.Response{
+			Body: ioutil.NopCloser(strings.NewReader("")),
+		}
+		requestErr = nil
+	})
+
+	JustBeforeEach(func() {
+		fakePivnetClient.MakeRequestReturns(resp, requestErr)
 	})
 
 	Describe("MakeRequest", func() {
@@ -62,14 +76,12 @@ var _ = Describe("curl commands", func() {
 			invokedMethod,
 				invokedEndpoint,
 				invokedExpectedResponseCode,
-				invokedBody,
-				invokedResponse := fakePivnetClient.MakeRequestArgsForCall(0)
+				invokedBody := fakePivnetClient.MakeRequestArgsForCall(0)
 
 			Expect(invokedMethod).To(Equal(method))
 			Expect(invokedEndpoint).To(Equal(args[0]))
 			Expect(invokedExpectedResponseCode).To(Equal(0))
 			Expect(invokedBody).To(Equal(strings.NewReader(data)))
-			Expect(invokedResponse).To(BeNil())
 		})
 
 		Context("when data is empty", func() {
@@ -86,21 +98,15 @@ var _ = Describe("curl commands", func() {
 				_,
 					_,
 					_,
-					invokedBody,
-					_ := fakePivnetClient.MakeRequestArgsForCall(0)
+					invokedBody := fakePivnetClient.MakeRequestArgsForCall(0)
 
 				Expect(invokedBody).To(BeNil())
 			})
 		})
 
 		Context("when there is an error", func() {
-			var (
-				expectedErr error
-			)
-
 			BeforeEach(func() {
-				expectedErr = errors.New("curl error")
-				fakePivnetClient.MakeRequestReturns(nil, nil, expectedErr)
+				requestErr = errors.New("curl error")
 			})
 
 			It("invokes the error handler", func() {
@@ -108,7 +114,7 @@ var _ = Describe("curl commands", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(requestErr))
 			})
 		})
 
@@ -119,7 +125,10 @@ var _ = Describe("curl commands", func() {
 
 			BeforeEach(func() {
 				returnedBytes = []byte(`[garbage-json!`)
-				fakePivnetClient.MakeRequestReturns(nil, returnedBytes, nil)
+				resp := &http.Response{
+					Body: ioutil.NopCloser(bytes.NewReader(returnedBytes)),
+				}
+				fakePivnetClient.MakeRequestReturns(resp, nil)
 			})
 
 			It("invokes the error handler", func() {

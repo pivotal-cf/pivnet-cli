@@ -32,13 +32,18 @@ func (r ReleaseUpgradePathsService) Get(productSlug string, releaseID int) ([]Re
 	)
 
 	var response ReleaseUpgradePathsResponse
-	_, _, err := r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
@@ -70,16 +75,16 @@ func (r ReleaseUpgradePathsService) Add(
 		return err
 	}
 
-	_, _, err = r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }
@@ -108,16 +113,16 @@ func (r ReleaseUpgradePathsService) Remove(
 		return err
 	}
 
-	_, _, err = r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }

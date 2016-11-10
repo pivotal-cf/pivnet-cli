@@ -173,16 +173,15 @@ func (c Client) MakeRequest(
 	endpoint string,
 	expectedStatusCode int,
 	body io.Reader,
-	data interface{},
-) (*http.Response, []byte, error) {
+) (*http.Response, error) {
 	req, err := c.CreateRequest(requestType, endpoint, body)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	reqBytes, err := httputil.DumpRequestOut(req, true)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	c.logger.Debug("Making request", logger.Data{"request": string(reqBytes)})
@@ -193,33 +192,29 @@ func (c Client) MakeRequest(
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: c.skipSSLValidation},
 		},
 	}
+
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	defer resp.Body.Close()
 
 	c.logger.Debug("Response status code", logger.Data{"status code": resp.StatusCode})
 	c.logger.Debug("Response headers", logger.Data{"headers": resp.Header})
 
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if len(b) > 0 {
-		c.logger.Debug("Response body", logger.Data{"response body": string(b)})
-	}
-
 	if expectedStatusCode > 0 && resp.StatusCode != expectedStatusCode {
 		var pErr pivnetErr
+
+		b, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
 
 		// We have to handle 500 differently because it has a different structure
 		if resp.StatusCode == http.StatusInternalServerError {
 			var internalServerError pivnetInternalServerErr
 			err = json.Unmarshal(b, &internalServerError)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 
 			pErr = pivnetErr{
@@ -228,19 +223,19 @@ func (c Client) MakeRequest(
 		} else {
 			err = json.Unmarshal(b, &pErr)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 		}
 
 		switch resp.StatusCode {
 		case http.StatusUnauthorized:
-			return nil, nil, newErrUnauthorized(pErr.Message)
+			return nil, newErrUnauthorized(pErr.Message)
 		case http.StatusNotFound:
-			return nil, nil, newErrNotFound(pErr.Message)
+			return nil, newErrNotFound(pErr.Message)
 		case http.StatusUnavailableForLegalReasons:
-			return nil, nil, newErrUnavailableForLegalReasons()
+			return nil, newErrUnavailableForLegalReasons()
 		default:
-			return nil, nil, ErrPivnetOther{
+			return nil, ErrPivnetOther{
 				ResponseCode: resp.StatusCode,
 				Message:      pErr.Message,
 				Errors:       pErr.Errors,
@@ -248,14 +243,7 @@ func (c Client) MakeRequest(
 		}
 	}
 
-	if len(b) > 0 && data != nil {
-		err = json.Unmarshal(b, data)
-		if err != nil {
-			return nil, nil, err
-		}
-	}
-
-	return resp, b, nil
+	return resp, nil
 }
 
 func (c Client) stripHostPrefix(downloadLink string) string {

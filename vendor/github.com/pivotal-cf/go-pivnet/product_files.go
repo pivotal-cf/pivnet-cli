@@ -75,13 +75,18 @@ func (p ProductFilesService) List(productSlug string) ([]ProductFile, error) {
 	url := fmt.Sprintf("/products/%s/product_files", productSlug)
 
 	var response ProductFilesResponse
-	_, _, err := p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return []ProductFile{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return []ProductFile{}, err
 	}
@@ -97,13 +102,18 @@ func (p ProductFilesService) ListForRelease(productSlug string, releaseID int) (
 	)
 
 	var response ProductFilesResponse
-	_, _, err := p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return []ProductFile{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return []ProductFile{}, err
 	}
@@ -119,13 +129,18 @@ func (p ProductFilesService) Get(productSlug string, productFileID int) (Product
 	)
 
 	var response ProductFileResponse
-	_, _, err := p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return ProductFile{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return ProductFile{}, err
 	}
@@ -142,13 +157,18 @@ func (p ProductFilesService) GetForRelease(productSlug string, releaseID int, pr
 	)
 
 	var response ProductFileResponse
-	_, _, err := p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return ProductFile{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return ProductFile{}, err
 	}
@@ -187,13 +207,18 @@ func (p ProductFilesService) Create(config CreateProductFileConfig) (ProductFile
 	}
 
 	var response ProductFileResponse
-	_, _, err = p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"POST",
 		url,
 		http.StatusCreated,
 		bytes.NewReader(b),
-		&response,
 	)
+	if err != nil {
+		return ProductFile{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return ProductFile{}, err
 	}
@@ -222,13 +247,18 @@ func (p ProductFilesService) Update(productSlug string, productFile ProductFile)
 	}
 
 	var response ProductFileResponse
-	_, _, err = p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusOK,
 		bytes.NewReader(b),
-		&response,
 	)
+	if err != nil {
+		return ProductFile{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return ProductFile{}, err
 	}
@@ -248,13 +278,18 @@ func (p ProductFilesService) Delete(productSlug string, id int) (ProductFile, er
 	)
 
 	var response ProductFileResponse
-	_, _, err := p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"DELETE",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return ProductFile{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return ProductFile{}, err
 	}
@@ -286,16 +321,16 @@ func (p ProductFilesService) AddToRelease(
 		return err
 	}
 
-	_, _, err = p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }
@@ -324,16 +359,16 @@ func (p ProductFilesService) RemoveFromRelease(
 		return err
 	}
 
-	_, _, err = p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }
@@ -362,16 +397,16 @@ func (p ProductFilesService) AddToFileGroup(
 		return err
 	}
 
-	_, _, err = p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }
@@ -400,16 +435,16 @@ func (p ProductFilesService) RemoveFromFileGroup(
 		return err
 	}
 
-	_, _, err = p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }
@@ -436,21 +471,21 @@ func (p ProductFilesService) DownloadForRelease(
 
 	p.client.logger.Debug("Downloading file", logger.Data{"downloadLink": downloadLink})
 
-	_, body, err := p.client.MakeRequest(
+	resp, err := p.client.MakeRequest(
 		"POST",
 		downloadLink,
 		http.StatusOK,
-		nil,
 		nil,
 	)
 	if err != nil {
 		// Untested as we cannot force CreateRequest to return an error.
 		return err
 	}
+	defer resp.Body.Close()
 
 	p.client.logger.Debug("Copying body", logger.Data{"downloadLink": downloadLink})
 
-	_, err = io.Copy(writer, bytes.NewReader(body))
+	_, err = io.Copy(writer, resp.Body)
 	if err != nil {
 		return err
 	}

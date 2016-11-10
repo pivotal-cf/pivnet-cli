@@ -234,8 +234,8 @@ func (c Client) RemoveFileGroupFromRelease(productSlug string, fileGroupID int, 
 	return c.client.FileGroups.RemoveFromRelease(productSlug, fileGroupID, releaseID)
 }
 
-func (c Client) MakeRequest(method string, url string, expectedResponseCode int, body io.Reader, data interface{}) (*http.Response, []byte, error) {
-	return c.client.MakeRequest(method, url, expectedResponseCode, body, data)
+func (c Client) MakeRequest(method string, url string, expectedResponseCode int, body io.Reader) (*http.Response, error) {
+	return c.client.MakeRequest(method, url, expectedResponseCode, body)
 }
 
 func (c Client) CreateRequest(method string, url string, body io.Reader) (*http.Request, error) {

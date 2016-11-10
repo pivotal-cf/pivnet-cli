@@ -3,6 +3,7 @@ package pivnet
 import (
 	"fmt"
 	"net/http"
+	"encoding/json"
 )
 
 type ReleaseTypesService struct {
@@ -19,13 +20,18 @@ func (r ReleaseTypesService) Get() ([]ReleaseType, error) {
 	url := fmt.Sprintf("/releases/release_types")
 
 	var response ReleaseTypesResponse
-	_, _, err := r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
 	}

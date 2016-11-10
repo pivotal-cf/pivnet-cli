@@ -10,39 +10,36 @@ import (
 )
 
 type FakePivnetClient struct {
-	MakeRequestStub        func(method string, url string, expectedResponseCode int, body io.Reader, data interface{}) (*http.Response, []byte, error)
+	MakeRequestStub        func(method string, url string, expectedResponseCode int, body io.Reader) (*http.Response, error)
 	makeRequestMutex       sync.RWMutex
 	makeRequestArgsForCall []struct {
 		method               string
 		url                  string
 		expectedResponseCode int
 		body                 io.Reader
-		data                 interface{}
 	}
 	makeRequestReturns struct {
 		result1 *http.Response
-		result2 []byte
-		result3 error
+		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakePivnetClient) MakeRequest(method string, url string, expectedResponseCode int, body io.Reader, data interface{}) (*http.Response, []byte, error) {
+func (fake *FakePivnetClient) MakeRequest(method string, url string, expectedResponseCode int, body io.Reader) (*http.Response, error) {
 	fake.makeRequestMutex.Lock()
 	fake.makeRequestArgsForCall = append(fake.makeRequestArgsForCall, struct {
 		method               string
 		url                  string
 		expectedResponseCode int
 		body                 io.Reader
-		data                 interface{}
-	}{method, url, expectedResponseCode, body, data})
-	fake.recordInvocation("MakeRequest", []interface{}{method, url, expectedResponseCode, body, data})
+	}{method, url, expectedResponseCode, body})
+	fake.recordInvocation("MakeRequest", []interface{}{method, url, expectedResponseCode, body})
 	fake.makeRequestMutex.Unlock()
 	if fake.MakeRequestStub != nil {
-		return fake.MakeRequestStub(method, url, expectedResponseCode, body, data)
+		return fake.MakeRequestStub(method, url, expectedResponseCode, body)
 	} else {
-		return fake.makeRequestReturns.result1, fake.makeRequestReturns.result2, fake.makeRequestReturns.result3
+		return fake.makeRequestReturns.result1, fake.makeRequestReturns.result2
 	}
 }
 
@@ -52,19 +49,18 @@ func (fake *FakePivnetClient) MakeRequestCallCount() int {
 	return len(fake.makeRequestArgsForCall)
 }
 
-func (fake *FakePivnetClient) MakeRequestArgsForCall(i int) (string, string, int, io.Reader, interface{}) {
+func (fake *FakePivnetClient) MakeRequestArgsForCall(i int) (string, string, int, io.Reader) {
 	fake.makeRequestMutex.RLock()
 	defer fake.makeRequestMutex.RUnlock()
-	return fake.makeRequestArgsForCall[i].method, fake.makeRequestArgsForCall[i].url, fake.makeRequestArgsForCall[i].expectedResponseCode, fake.makeRequestArgsForCall[i].body, fake.makeRequestArgsForCall[i].data
+	return fake.makeRequestArgsForCall[i].method, fake.makeRequestArgsForCall[i].url, fake.makeRequestArgsForCall[i].expectedResponseCode, fake.makeRequestArgsForCall[i].body
 }
 
-func (fake *FakePivnetClient) MakeRequestReturns(result1 *http.Response, result2 []byte, result3 error) {
+func (fake *FakePivnetClient) MakeRequestReturns(result1 *http.Response, result2 error) {
 	fake.MakeRequestStub = nil
 	fake.makeRequestReturns = struct {
 		result1 *http.Response
-		result2 []byte
-		result3 error
-	}{result1, result2, result3}
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {

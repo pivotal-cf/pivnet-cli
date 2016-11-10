@@ -1,6 +1,7 @@
 package pivnet
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -32,13 +33,18 @@ func (e EULAsService) List() ([]EULA, error) {
 	url := "/eulas"
 
 	var response EULAsResponse
-	_, _, err := e.client.MakeRequest(
+	resp, err := e.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
@@ -50,13 +56,18 @@ func (e EULAsService) Get(eulaSlug string) (EULA, error) {
 	url := fmt.Sprintf("/eulas/%s", eulaSlug)
 
 	var response EULA
-	_, _, err := e.client.MakeRequest(
+	resp, err := e.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return EULA{}, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return EULA{}, err
 	}
@@ -71,17 +82,16 @@ func (e EULAsService) Accept(productSlug string, releaseID int) error {
 		releaseID,
 	)
 
-	var response EULAAcceptanceResponse
-	_, _, err := e.client.MakeRequest(
+	resp, err := e.client.MakeRequest(
 		"POST",
 		url,
 		http.StatusOK,
 		strings.NewReader(`{}`),
-		&response,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }

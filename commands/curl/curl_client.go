@@ -12,7 +12,7 @@ import (
 
 //go:generate counterfeiter . PivnetClient
 type PivnetClient interface {
-	MakeRequest(method string, url string, expectedResponseCode int, body io.Reader, data interface{}) (*http.Response, []byte, error)
+	MakeRequest(method string, url string, expectedResponseCode int, body io.Reader) (*http.Response, error)
 }
 
 type CurlClient struct {
@@ -51,18 +51,17 @@ func (c *CurlClient) MakeRequest(
 	}
 
 	var output interface{}
-	_, b, err := c.pivnetClient.MakeRequest(
+	resp, err := c.pivnetClient.MakeRequest(
 		method,
 		args[0],
 		expectedResponseCode,
 		body,
-		nil,
 	)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
 
-	err = json.Unmarshal(b, &output)
+	err = json.NewDecoder(resp.Body).Decode(&output)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}

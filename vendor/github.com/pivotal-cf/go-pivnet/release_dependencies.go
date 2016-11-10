@@ -33,13 +33,18 @@ func (r ReleaseDependenciesService) List(productSlug string, releaseID int) ([]R
 	)
 
 	var response ReleaseDependenciesResponse
-	_, _, err := r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"GET",
 		url,
 		http.StatusOK,
 		nil,
-		&response,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
@@ -71,16 +76,16 @@ func (r ReleaseDependenciesService) Add(
 		return err
 	}
 
-	_, _, err = r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }
@@ -109,16 +114,16 @@ func (r ReleaseDependenciesService) Remove(
 		return err
 	}
 
-	_, _, err = r.client.MakeRequest(
+	resp, err := r.client.MakeRequest(
 		"PATCH",
 		url,
 		http.StatusNoContent,
 		bytes.NewReader(b),
-		nil,
 	)
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	return nil
 }
