@@ -29,7 +29,7 @@ func main() {
 		if err == commands.ErrShowHelpMessage {
 			helpParser := flags.NewParser(&commands.Pivnet, flags.HelpFlag)
 			helpParser.NamespaceDelimiter = "-"
-			helpParser.ParseArgs([]string{"-h"})
+			_, _ = helpParser.ParseArgs([]string{"-h"})
 			helpParser.WriteHelp(os.Stdout)
 			os.Exit(0)
 		}

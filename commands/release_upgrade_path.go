@@ -26,9 +26,9 @@ type ReleaseUpgradePathClient interface {
 	Remove(productSlug string, releaseVersion string, previousReleaseVersion string) error
 }
 
-var NewReleaseUpgradePathClient = func() ReleaseUpgradePathClient {
+var NewReleaseUpgradePathClient = func(client releaseupgradepath.PivnetClient) ReleaseUpgradePathClient {
 	return releaseupgradepath.NewReleaseUpgradePathClient(
-		NewPivnetClient(),
+		client,
 		ErrorHandler,
 		Pivnet.Format,
 		OutputWriter,
@@ -39,15 +39,33 @@ var NewReleaseUpgradePathClient = func() ReleaseUpgradePathClient {
 }
 
 func (command *ReleaseUpgradePathsCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewReleaseUpgradePathClient().List(command.ProductSlug, command.ReleaseVersion)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewReleaseUpgradePathClient(client).List(command.ProductSlug, command.ReleaseVersion)
 }
 
 func (command *AddReleaseUpgradePathCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewReleaseUpgradePathClient().Add(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewReleaseUpgradePathClient(client).Add(
 		command.ProductSlug,
 		command.ReleaseVersion,
 		command.PreviousReleaseVersion,
@@ -55,9 +73,18 @@ func (command *AddReleaseUpgradePathCommand) Execute([]string) error {
 }
 
 func (command *RemoveReleaseUpgradePathCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewReleaseUpgradePathClient().Remove(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewReleaseUpgradePathClient(client).Remove(
 		command.ProductSlug,
 		command.ReleaseVersion,
 		command.PreviousReleaseVersion,

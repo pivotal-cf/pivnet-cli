@@ -1,4 +1,4 @@
-package printer_test
+package rc_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestPrinter(t *testing.T) {
+func TestRC(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Printer Suite")
+	RunSpecs(t, "RC Suite")
 }

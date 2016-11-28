@@ -63,9 +63,9 @@ type UserGroupClient interface {
 	RemoveUserGroupMember(userGroupID int, memberEmailAddress string) error
 }
 
-var NewUserGroupClient = func() UserGroupClient {
+var NewUserGroupClient = func(client usergroup.PivnetClient) UserGroupClient {
 	return usergroup.NewUserGroupClient(
-		NewPivnetClient(),
+		client,
 		ErrorHandler,
 		Pivnet.Format,
 		OutputWriter,
@@ -74,21 +74,48 @@ var NewUserGroupClient = func() UserGroupClient {
 }
 
 func (command *UserGroupCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewUserGroupClient().Get(command.UserGroupID)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewUserGroupClient(client).Get(command.UserGroupID)
 }
 
 func (command *UserGroupsCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewUserGroupClient().List(command.ProductSlug, command.ReleaseVersion)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewUserGroupClient(client).List(command.ProductSlug, command.ReleaseVersion)
 }
 
 func (command *CreateUserGroupCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewUserGroupClient().Create(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewUserGroupClient(client).Create(
 		command.Name,
 		command.Description,
 		command.Members,
@@ -96,15 +123,33 @@ func (command *CreateUserGroupCommand) Execute([]string) error {
 }
 
 func (command *DeleteUserGroupCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewUserGroupClient().Delete(command.UserGroupID)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewUserGroupClient(client).Delete(command.UserGroupID)
 }
 
 func (command *UpdateUserGroupCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewUserGroupClient().Update(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewUserGroupClient(client).Update(
 		command.UserGroupID,
 		command.Name,
 		command.Description,
@@ -112,9 +157,18 @@ func (command *UpdateUserGroupCommand) Execute([]string) error {
 }
 
 func (command *AddUserGroupCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewUserGroupClient().AddToRelease(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewUserGroupClient(client).AddToRelease(
 		command.ProductSlug,
 		command.ReleaseVersion,
 		command.UserGroupID,
@@ -122,9 +176,18 @@ func (command *AddUserGroupCommand) Execute([]string) error {
 }
 
 func (command *RemoveUserGroupCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewUserGroupClient().RemoveFromRelease(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewUserGroupClient(client).RemoveFromRelease(
 		command.ProductSlug,
 		command.ReleaseVersion,
 		command.UserGroupID,
@@ -132,9 +195,18 @@ func (command *RemoveUserGroupCommand) Execute([]string) error {
 }
 
 func (command *AddUserGroupMemberCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewUserGroupClient().AddUserGroupMember(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewUserGroupClient(client).AddUserGroupMember(
 		command.UserGroupID,
 		command.MemberEmailAddress,
 		command.Admin,
@@ -142,9 +214,18 @@ func (command *AddUserGroupMemberCommand) Execute([]string) error {
 }
 
 func (command *RemoveUserGroupMemberCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewUserGroupClient().RemoveUserGroupMember(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewUserGroupClient(client).RemoveUserGroupMember(
 		command.UserGroupID,
 		command.MemberEmailAddress,
 	)

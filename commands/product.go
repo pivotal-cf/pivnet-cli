@@ -15,9 +15,9 @@ type ProductClient interface {
 	Get(productSlug string) error
 }
 
-var NewProductClient = func() ProductClient {
+var NewProductClient = func(client product.PivnetClient) ProductClient {
 	return product.NewProductClient(
-		NewPivnetClient(),
+		client,
 		ErrorHandler,
 		Pivnet.Format,
 		OutputWriter,
@@ -26,13 +26,31 @@ var NewProductClient = func() ProductClient {
 }
 
 func (command *ProductsCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewProductClient().List()
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewProductClient(client).List()
 }
 
 func (command *ProductCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewProductClient().Get(command.ProductSlug)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewProductClient(client).Get(command.ProductSlug)
 }

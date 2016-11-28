@@ -11,7 +11,10 @@ import (
 	"github.com/onsi/gomega/ghttp"
 	"github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/commands"
+	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/rc"
 )
 
 var _ = Describe("Pivnet commands", func() {
@@ -19,21 +22,37 @@ var _ = Describe("Pivnet commands", func() {
 		field reflect.StructField
 	)
 
-	Describe("redaction", func() {
+	Describe("Init", func() {
 		var (
 			server *ghttp.Server
 
 			outBuffer bytes.Buffer
+
+			fakeRCHandler    *commandsfakes.FakeRCHandler
+			fakeErrorHandler *errorhandlerfakes.FakeErrorHandler
+
+			profile         *rc.PivnetProfile
+			profileErr      error
+			profileRequired bool
+
+			apiToken string
 		)
 
 		BeforeEach(func() {
+			fakeRCHandler = &commandsfakes.FakeRCHandler{}
+			fakeErrorHandler = &errorhandlerfakes.FakeErrorHandler{}
+
 			server = ghttp.NewServer()
+
+			commands.ErrorHandler = fakeErrorHandler
+			commands.RC = fakeRCHandler
 
 			commands.Pivnet.Host = server.URL()
 			commands.Pivnet.Verbose = true
 
 			outBuffer = bytes.Buffer{}
 			commands.LogWriter = &outBuffer
+			commands.OutputWriter = &outBuffer
 			commands.Printer = printer.NewPrinter(commands.OutputWriter)
 
 			products := []pivnet.Product{
@@ -50,22 +69,79 @@ var _ = Describe("Pivnet commands", func() {
 
 			server.AppendHandlers(
 				ghttp.CombineHandlers(
+					ghttp.VerifyRequest("GET", fmt.Sprintf("%s/authentication", apiPrefix)),
+					ghttp.RespondWithJSONEncoded(http.StatusOK, productsResponse),
+				),
+				ghttp.CombineHandlers(
 					ghttp.VerifyRequest("GET", fmt.Sprintf("%s/products", apiPrefix)),
 					ghttp.RespondWithJSONEncoded(http.StatusOK, productsResponse),
 				),
 			)
+
+			profileRequired = true
+
+			apiToken = "some-api-token"
+			profile = &rc.PivnetProfile{
+				APIToken: apiToken,
+			}
+			profileErr = nil
 		})
 
-		It("redacts api token", func() {
-			commands.Init()
+		JustBeforeEach(func() {
+			fakeRCHandler.ProfileForNameReturns(profile, profileErr)
 
-			client := commands.NewPivnetClient()
+			commands.Init = origInitFunc
+		})
 
-			_, err := client.Products()
+		It("redacts api token from profile", func() {
+			commands.Init(profileRequired)
+
+			_, err := fmt.Fprintf(commands.OutputWriter, apiToken)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(outBuffer.String()).Should(ContainSubstring("*** redacted api token ***"))
 			Expect(outBuffer.String()).ShouldNot(ContainSubstring(apiToken))
+		})
+
+		Context("when getting profile returns an error", func() {
+			BeforeEach(func() {
+				profileErr = fmt.Errorf("some profile error")
+			})
+
+			It("Invokes the error handler", func() {
+				err := commands.Init(profileRequired)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(profileErr))
+			})
+		})
+
+		Context("when profile is nil", func() {
+			BeforeEach(func() {
+				profile = nil
+			})
+
+			It("Invokes the error handler", func() {
+				err := commands.Init(profileRequired)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0).Error()).To(ContainSubstring("login"))
+			})
+
+			Context("when profile is not required", func() {
+				BeforeEach(func() {
+					profileRequired = false
+				})
+
+				It("returns without error", func() {
+					err := commands.Init(profileRequired)
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(0))
+				})
+			})
 		})
 
 		AfterEach(func() {
@@ -150,20 +226,6 @@ var _ = Describe("Pivnet commands", func() {
 		})
 	})
 
-	Describe("APIToken flag", func() {
-		BeforeEach(func() {
-			field = fieldFor(commands.Pivnet, "APIToken")
-		})
-
-		It("contains long flag", func() {
-			Expect(longTag(field)).To(Equal("api-token"))
-		})
-
-		It("is not required", func() {
-			Expect(isRequired(field)).To(BeFalse())
-		})
-	})
-
 	Describe("Host flag", func() {
 		BeforeEach(func() {
 			field = fieldFor(commands.Pivnet, "Host")
@@ -175,6 +237,20 @@ var _ = Describe("Pivnet commands", func() {
 
 		It("is not required", func() {
 			Expect(isRequired(field)).To(BeFalse())
+		})
+	})
+
+	Describe("Login command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "Login")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("login"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("l"))
 		})
 	})
 

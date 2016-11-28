@@ -51,9 +51,9 @@ type FileGroupClient interface {
 	RemoveFromRelease(productSlug string, productFileID int, releaseVersion string) error
 }
 
-var NewFileGroupClient = func() FileGroupClient {
+var NewFileGroupClient = func(client filegroup.PivnetClient) FileGroupClient {
 	return filegroup.NewFileGroupClient(
-		NewPivnetClient(),
+		client,
 		ErrorHandler,
 		Pivnet.Format,
 		OutputWriter,
@@ -62,24 +62,63 @@ var NewFileGroupClient = func() FileGroupClient {
 }
 
 func (command *FileGroupsCommand) Execute([]string) error {
-	Init()
-	return NewFileGroupClient().List(command.ProductSlug, command.ReleaseVersion)
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewFileGroupClient(client).List(command.ProductSlug, command.ReleaseVersion)
 }
 
 func (command *FileGroupCommand) Execute([]string) error {
-	Init()
-	return NewFileGroupClient().Get(command.ProductSlug, command.FileGroupID)
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewFileGroupClient(client).Get(command.ProductSlug, command.FileGroupID)
 }
 
 func (command *CreateFileGroupCommand) Execute([]string) error {
-	Init()
-	return NewFileGroupClient().Create(command.ProductSlug, command.Name)
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewFileGroupClient(client).Create(command.ProductSlug, command.Name)
 }
 
 func (command *UpdateFileGroupCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewFileGroupClient().Update(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewFileGroupClient(client).Update(
 		command.ProductSlug,
 		command.FileGroupID,
 		command.Name,
@@ -87,14 +126,33 @@ func (command *UpdateFileGroupCommand) Execute([]string) error {
 }
 
 func (command *DeleteFileGroupCommand) Execute([]string) error {
-	Init()
-	return NewFileGroupClient().Delete(command.ProductSlug, command.FileGroupID)
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewFileGroupClient(client).Delete(command.ProductSlug, command.FileGroupID)
 }
 
 func (command *AddFileGroupToReleaseCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewFileGroupClient().AddToRelease(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewFileGroupClient(client).AddToRelease(
 		command.ProductSlug,
 		command.FileGroupID,
 		command.ReleaseVersion,
@@ -102,9 +160,18 @@ func (command *AddFileGroupToReleaseCommand) Execute([]string) error {
 }
 
 func (command *RemoveFileGroupFromReleaseCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewFileGroupClient().RemoveFromRelease(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewFileGroupClient(client).RemoveFromRelease(
 		command.ProductSlug,
 		command.FileGroupID,
 		command.ReleaseVersion,

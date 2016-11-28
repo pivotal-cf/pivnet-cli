@@ -5,14 +5,18 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/pivotal-cf/go-pivnet/logshim"
+	"github.com/pivotal-cf/pivnet-cli/auth"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/filter"
 	"github.com/pivotal-cf/pivnet-cli/gp"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/rc"
 	"github.com/pivotal-cf/pivnet-cli/version"
 	"github.com/robdimsdale/sanitizer"
 )
@@ -21,9 +25,20 @@ const (
 	DefaultHost = "https://network.pivotal.io"
 )
 
+//go:generate counterfeiter . Authenticator
+type Authenticator interface {
+	AuthenticateClient(client auth.AuthClient) error
+}
+
 type Filterer interface {
 	ReleasesByVersion(releases []pivnet.Release, version string) ([]pivnet.Release, error)
 	ProductFileKeysByGlobs(productFiles []pivnet.ProductFile, globs []string) ([]pivnet.ProductFile, error)
+}
+
+//go:generate counterfeiter . RCHandler
+type RCHandler interface {
+	SaveProfile(profileName string, apiToken string) error
+	ProfileForName(profileName string) (*rc.PivnetProfile, error)
 }
 
 var (
@@ -33,6 +48,8 @@ var (
 	Filter       Filterer
 	ErrorHandler errorhandler.ErrorHandler
 	Printer      printer.Printer
+	RC           RCHandler
+	Auth         Authenticator
 )
 
 type PivnetCommand struct {
@@ -41,8 +58,11 @@ type PivnetCommand struct {
 	Format  string `long:"format" description:"Format to print as" default:"table" choice:"table" choice:"json" choice:"yaml"`
 	Verbose bool   `long:"verbose" description:"Display verbose output"`
 
-	APIToken string `long:"api-token" description:"Pivnet API token"`
-	Host     string `long:"host" description:"Pivnet API Host"`
+	ProfileName string `long:"profile" description:"Name of profile" default:"default"`
+	ConfigFile  string `long:"config" description:"Path to config file"`
+	Host        string `long:"host" description:"Pivnet API Host"`
+
+	Login LoginCommand `command:"login" alias:"l" description:"Log in to Pivotal Network."`
 
 	Help    HelpCommand    `command:"help" alias:"h" description:"Print this help message"`
 	Version VersionCommand `command:"version" alias:"v" description:"Print the version of this CLI and exit"`
@@ -102,6 +122,7 @@ type PivnetCommand struct {
 
 	Logger    logger.Logger
 	userAgent string
+	profile   *rc.PivnetProfile
 }
 
 var Pivnet PivnetCommand
@@ -115,12 +136,29 @@ func init() {
 	if Pivnet.Host == "" {
 		Pivnet.Host = DefaultHost
 	}
+
+	if Pivnet.ConfigFile == "" {
+		userHomeDir, err := userHomeDir()
+		if err != nil {
+			log.Fatal(err)
+		}
+		Pivnet.ConfigFile = filepath.Join(userHomeDir, ".pivnetrc")
+	}
 }
 
 func NewPivnetClient() *gp.Client {
+	var apiToken string
+	if Pivnet.profile != nil {
+		apiToken = Pivnet.profile.APIToken
+	}
+
+	return NewPivnetClientWithToken(apiToken)
+}
+
+func NewPivnetClientWithToken(apiToken string) *gp.Client {
 	return gp.NewClient(
 		pivnet.ClientConfig{
-			Token:     Pivnet.APIToken,
+			Token:     apiToken,
 			Host:      Pivnet.Host,
 			UserAgent: Pivnet.userAgent,
 		},
@@ -128,7 +166,7 @@ func NewPivnetClient() *gp.Client {
 	)
 }
 
-func Init() {
+var Init = func(profileRequired bool) error {
 	if OutputWriter == nil {
 		OutputWriter = os.Stdout
 	}
@@ -147,16 +185,34 @@ func Init() {
 		ErrorHandler = errorhandler.NewErrorHandler(Pivnet.Format, OutputWriter, LogWriter)
 	}
 
+	if Auth == nil {
+		Auth = auth.NewAuthenticator(ErrorHandler)
+	}
+
 	if Printer == nil {
 		Printer = printer.NewPrinter(OutputWriter)
 	}
 
-	sanitized := map[string]string{
-		Pivnet.APIToken: "*** redacted api token ***",
+	if RC == nil {
+		RC = rc.NewRCHandler(Pivnet.ConfigFile)
 	}
 
-	OutputWriter = sanitizer.NewSanitizer(sanitized, OutputWriter)
-	LogWriter = sanitizer.NewSanitizer(sanitized, LogWriter)
+	profile, err := RC.ProfileForName(Pivnet.ProfileName)
+	if err != nil {
+		return ErrorHandler.HandleError(err)
+	}
+
+	if profile == nil {
+		if profileRequired {
+			err := fmt.Errorf("Please login first")
+			return ErrorHandler.HandleError(err)
+		}
+	} else {
+		Pivnet.profile = profile
+		apiToken := Pivnet.profile.APIToken
+
+		sanitizeWriters(apiToken)
+	}
 
 	infoLogger := log.New(LogWriter, "", log.LstdFlags)
 	debugLogger := log.New(LogWriter, "", log.LstdFlags)
@@ -174,4 +230,35 @@ func Init() {
 		)
 	}
 
+	return nil
+}
+
+func userHomeDir() (string, error) {
+	home := os.Getenv("HOME")
+	if home != "" {
+		return home, nil
+	}
+
+	if runtime.GOOS == "windows" {
+		home = os.Getenv("USERPROFILE")
+		if home != "" {
+			return home, nil
+		}
+
+		home = os.Getenv("HOMEDRIVE") + os.Getenv("HOMEPATH")
+		if home != "" {
+			return home, nil
+		}
+	}
+
+	return "", fmt.Errorf("could not detect home directory for .pivnetrc")
+}
+
+func sanitizeWriters(apiToken string) {
+	sanitized := map[string]string{
+		apiToken: "*** redacted api token ***",
+	}
+
+	OutputWriter = sanitizer.NewSanitizer(sanitized, OutputWriter)
+	LogWriter = sanitizer.NewSanitizer(sanitized, LogWriter)
 }

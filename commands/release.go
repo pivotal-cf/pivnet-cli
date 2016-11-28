@@ -31,9 +31,9 @@ type ReleaseClient interface {
 	Delete(productSlug string, releaseVersion string) error
 }
 
-var NewReleaseClient = func() ReleaseClient {
+var NewReleaseClient = func(client release.PivnetClient) ReleaseClient {
 	return release.NewReleaseClient(
-		NewPivnetClient(),
+		client,
 		ErrorHandler,
 		Pivnet.Format,
 		OutputWriter,
@@ -42,21 +42,48 @@ var NewReleaseClient = func() ReleaseClient {
 }
 
 func (command *ReleasesCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewReleaseClient().List(command.ProductSlug)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewReleaseClient(client).List(command.ProductSlug)
 }
 
 func (command *ReleaseCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewReleaseClient().Get(command.ProductSlug, command.ReleaseVersion)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewReleaseClient(client).Get(command.ProductSlug, command.ReleaseVersion)
 }
 
 func (command *CreateReleaseCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewReleaseClient().Create(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewReleaseClient(client).Create(
 		command.ProductSlug,
 		command.ReleaseVersion,
 		command.ReleaseType,
@@ -65,7 +92,16 @@ func (command *CreateReleaseCommand) Execute([]string) error {
 }
 
 func (command *DeleteReleaseCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewReleaseClient().Delete(command.ProductSlug, command.ReleaseVersion)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewReleaseClient(client).Delete(command.ProductSlug, command.ReleaseVersion)
 }

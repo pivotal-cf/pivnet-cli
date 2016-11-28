@@ -5,7 +5,7 @@
 			"importpath": "github.com/fatih/color",
 			"repository": "https://github.com/fatih/color",
 			"vcs": "git",
-			"revision": "dea9d3a26a087187530244679c1cfb3a42937794",
+			"revision": "bf82308e8c8546dc2b945157173eb8a959ae9505",
 			"branch": "master",
 			"notests": true
 		},
@@ -87,7 +87,7 @@
 			"importpath": "github.com/pivotal-cf/go-pivnet",
 			"repository": "https://github.com/pivotal-cf/go-pivnet",
 			"vcs": "git",
-			"revision": "12346f473b4ecf73903883756ca52c0284cb996b",
+			"revision": "03dc8b8e05752cebe4357e35f5188e19f8e61ab0",
 			"branch": "develop",
 			"notests": true
 		},

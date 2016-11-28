@@ -23,10 +23,10 @@ var _ = Describe("curl commands", func() {
 
 		outBuffer bytes.Buffer
 
-		client *curl.CurlClient
+		resp           *http.Response
+		makeRequestErr error
 
-		resp       *http.Response
-		requestErr error
+		client *curl.CurlClient
 	)
 
 	BeforeEach(func() {
@@ -47,11 +47,11 @@ var _ = Describe("curl commands", func() {
 		resp = &http.Response{
 			Body: ioutil.NopCloser(strings.NewReader("")),
 		}
-		requestErr = nil
+		makeRequestErr = nil
 	})
 
 	JustBeforeEach(func() {
-		fakePivnetClient.MakeRequestReturns(resp, requestErr)
+		fakePivnetClient.MakeRequestReturns(resp, makeRequestErr)
 	})
 
 	Describe("MakeRequest", func() {
@@ -65,6 +65,14 @@ var _ = Describe("curl commands", func() {
 			method = "some-method"
 			data = "some-data"
 			args = []string{"some-endpoint", "not-used"}
+
+			resp = &http.Response{
+				Body: ioutil.NopCloser(bytes.NewReader([]byte{})),
+			}
+		})
+
+		JustBeforeEach(func() {
+			fakePivnetClient.MakeRequestReturns(resp, makeRequestErr)
 		})
 
 		It("invokes the client", func() {
@@ -106,7 +114,7 @@ var _ = Describe("curl commands", func() {
 
 		Context("when there is an error", func() {
 			BeforeEach(func() {
-				requestErr = errors.New("curl error")
+				makeRequestErr = errors.New("curl error")
 			})
 
 			It("invokes the error handler", func() {
@@ -114,21 +122,16 @@ var _ = Describe("curl commands", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(requestErr))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(makeRequestErr))
 			})
 		})
 
 		Context("when there is an error unmarshalling json", func() {
-			var (
-				returnedBytes []byte
-			)
-
 			BeforeEach(func() {
-				returnedBytes = []byte(`[garbage-json!`)
-				resp := &http.Response{
+				returnedBytes := []byte(`[garbage-json!`)
+				resp = &http.Response{
 					Body: ioutil.NopCloser(bytes.NewReader(returnedBytes)),
 				}
-				fakePivnetClient.MakeRequestReturns(resp, nil)
 			})
 
 			It("invokes the error handler", func() {

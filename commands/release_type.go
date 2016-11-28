@@ -10,9 +10,9 @@ type ReleaseTypeClient interface {
 	List() error
 }
 
-var NewReleaseTypeClient = func() ReleaseTypeClient {
+var NewReleaseTypeClient = func(client releasetype.PivnetClient) ReleaseTypeClient {
 	return releasetype.NewReleaseTypeClient(
-		NewPivnetClient(),
+		client,
 		ErrorHandler,
 		Pivnet.Format,
 		OutputWriter,
@@ -21,7 +21,16 @@ var NewReleaseTypeClient = func() ReleaseTypeClient {
 }
 
 func (command *ReleaseTypesCommand) Execute(args []string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewReleaseTypeClient().List()
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewReleaseTypeClient(client).List()
 }

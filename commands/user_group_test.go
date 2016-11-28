@@ -2,12 +2,14 @@ package commands_test
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/commands/usergroup"
 )
 
 var _ = Describe("user group commands", func() {
@@ -20,7 +22,7 @@ var _ = Describe("user group commands", func() {
 	BeforeEach(func() {
 		fakeUserGroupClient = &commandsfakes.FakeUserGroupClient{}
 
-		commands.NewUserGroupClient = func() commands.UserGroupClient {
+		commands.NewUserGroupClient = func(usergroup.PivnetClient) commands.UserGroupClient {
 			return fakeUserGroupClient
 		}
 	})
@@ -56,6 +58,30 @@ var _ = Describe("user group commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 
@@ -129,6 +155,31 @@ var _ = Describe("user group commands", func() {
 				Expect(err).To(Equal(expectedErr))
 			})
 		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
 	})
 
 	Describe("CreateUserGroupCommand", func() {
@@ -162,6 +213,30 @@ var _ = Describe("user group commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 
@@ -242,6 +317,30 @@ var _ = Describe("user group commands", func() {
 			})
 		})
 
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
 		Describe("Name flag", func() {
 			BeforeEach(func() {
 				field = fieldFor(commands.UpdateUserGroupCommand{}, "Name")
@@ -302,6 +401,30 @@ var _ = Describe("user group commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 
@@ -394,6 +517,30 @@ var _ = Describe("user group commands", func() {
 			})
 		})
 
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
 				field = fieldFor(commands.RemoveUserGroupCommand{}, "ProductSlug")
@@ -483,6 +630,30 @@ var _ = Describe("user group commands", func() {
 			})
 		})
 
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
 		Describe("UserGroupID flag", func() {
 			BeforeEach(func() {
 				field = fieldFor(commands.DeleteUserGroupCommand{}, "UserGroupID")
@@ -533,6 +704,30 @@ var _ = Describe("user group commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 
@@ -614,6 +809,30 @@ var _ = Describe("user group commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 

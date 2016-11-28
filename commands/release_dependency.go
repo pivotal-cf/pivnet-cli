@@ -28,9 +28,9 @@ type ReleaseDependencyClient interface {
 	Remove(productSlug string, releaseVersion string, dependentProductSlug string, dependentReleaseVersion string) error
 }
 
-var NewReleaseDependencyClient = func() ReleaseDependencyClient {
+var NewReleaseDependencyClient = func(client releasedependency.PivnetClient) ReleaseDependencyClient {
 	return releasedependency.NewReleaseDependencyClient(
-		NewPivnetClient(),
+		client,
 		ErrorHandler,
 		Pivnet.Format,
 		OutputWriter,
@@ -39,15 +39,33 @@ var NewReleaseDependencyClient = func() ReleaseDependencyClient {
 }
 
 func (command *ReleaseDependenciesCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewReleaseDependencyClient().List(command.ProductSlug, command.ReleaseVersion)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewReleaseDependencyClient(client).List(command.ProductSlug, command.ReleaseVersion)
 }
 
 func (command *AddReleaseDependencyCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewReleaseDependencyClient().Add(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewReleaseDependencyClient(client).Add(
 		command.ProductSlug,
 		command.ReleaseVersion,
 		command.DependentProductSlug,
@@ -56,9 +74,18 @@ func (command *AddReleaseDependencyCommand) Execute([]string) error {
 }
 
 func (command *RemoveReleaseDependencyCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewReleaseDependencyClient().Remove(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewReleaseDependencyClient(client).Remove(
 		command.ProductSlug,
 		command.ReleaseVersion,
 		command.DependentProductSlug,

@@ -202,45 +202,7 @@ func (c Client) MakeRequest(
 	c.logger.Debug("Response headers", logger.Data{"headers": resp.Header})
 
 	if expectedStatusCode > 0 && resp.StatusCode != expectedStatusCode {
-		var pErr pivnetErr
-
-		b, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-
-		// We have to handle 500 differently because it has a different structure
-		if resp.StatusCode == http.StatusInternalServerError {
-			var internalServerError pivnetInternalServerErr
-			err = json.Unmarshal(b, &internalServerError)
-			if err != nil {
-				return nil, err
-			}
-
-			pErr = pivnetErr{
-				Message: internalServerError.Error,
-			}
-		} else {
-			err = json.Unmarshal(b, &pErr)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		switch resp.StatusCode {
-		case http.StatusUnauthorized:
-			return nil, newErrUnauthorized(pErr.Message)
-		case http.StatusNotFound:
-			return nil, newErrNotFound(pErr.Message)
-		case http.StatusUnavailableForLegalReasons:
-			return nil, newErrUnavailableForLegalReasons()
-		default:
-			return nil, ErrPivnetOther{
-				ResponseCode: resp.StatusCode,
-				Message:      pErr.Message,
-				Errors:       pErr.Errors,
-			}
-		}
+		return nil, c.handleUnexpectedResponse(resp)
 	}
 
 	return resp, nil
@@ -252,4 +214,46 @@ func (c Client) stripHostPrefix(downloadLink string) string {
 	}
 	sp := strings.Split(downloadLink, apiVersion)
 	return sp[len(sp)-1]
+}
+
+func (c Client) handleUnexpectedResponse(resp *http.Response) error {
+	var pErr pivnetErr
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	// We have to handle 500 differently because it has a different structure
+	if resp.StatusCode == http.StatusInternalServerError {
+		var internalServerError pivnetInternalServerErr
+		err = json.Unmarshal(b, &internalServerError)
+		if err != nil {
+			return err
+		}
+
+		pErr = pivnetErr{
+			Message: internalServerError.Error,
+		}
+	} else {
+		err = json.Unmarshal(b, &pErr)
+		if err != nil {
+			return err
+		}
+	}
+
+	switch resp.StatusCode {
+	case http.StatusUnauthorized:
+		return newErrUnauthorized(pErr.Message)
+	case http.StatusNotFound:
+		return newErrNotFound(pErr.Message)
+	case http.StatusUnavailableForLegalReasons:
+		return newErrUnavailableForLegalReasons()
+	default:
+		return ErrPivnetOther{
+			ResponseCode: resp.StatusCode,
+			Message:      pErr.Message,
+			Errors:       pErr.Errors,
+		}
+	}
 }

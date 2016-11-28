@@ -2,11 +2,13 @@ package commands_test
 
 import (
 	"errors"
+	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/commands/releasetype"
 )
 
 var _ = Describe("release types commands", func() {
@@ -17,7 +19,7 @@ var _ = Describe("release types commands", func() {
 	BeforeEach(func() {
 		fakeReleaseTypeClient = &commandsfakes.FakeReleaseTypeClient{}
 
-		commands.NewReleaseTypeClient = func() commands.ReleaseTypeClient {
+		commands.NewReleaseTypeClient = func(releasetype.PivnetClient) commands.ReleaseTypeClient {
 			return fakeReleaseTypeClient
 		}
 	})
@@ -55,5 +57,30 @@ var _ = Describe("release types commands", func() {
 				Expect(err).To(Equal(expectedErr))
 			})
 		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
 	})
 })

@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/pivnet-cli/commands"
+	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
 	"github.com/pivotal-cf/pivnet-cli/printer"
 )
 
@@ -20,11 +21,37 @@ func TestCommands(t *testing.T) {
 	RunSpecs(t, "Commands Suite")
 }
 
+var (
+	fakeAuthenticator *commandsfakes.FakeAuthenticator
+	authErr           error
+
+	initErr error
+
+	origInitFunc func(bool) error
+)
+
 var _ = BeforeSuite(func() {
+	origInitFunc = commands.Init
+
 	commands.Pivnet = commands.PivnetCommand{
-		Format:   printer.PrintAsJSON,
-		APIToken: apiToken,
+		Format: printer.PrintAsJSON,
 	}
+})
+
+var _ = BeforeEach(func() {
+	fakeAuthenticator = &commandsfakes.FakeAuthenticator{}
+	commands.Auth = fakeAuthenticator
+	authErr = nil
+
+	initErr = nil
+})
+
+var _ = JustBeforeEach(func() {
+	commands.Init = func(bool) error {
+		return initErr
+	}
+
+	fakeAuthenticator.AuthenticateClientReturns(authErr)
 })
 
 func fieldFor(command interface{}, name string) reflect.StructField {

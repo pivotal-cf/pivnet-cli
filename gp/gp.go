@@ -19,6 +19,10 @@ func NewClient(config pivnet.ClientConfig, logger logger.Logger) *Client {
 	}
 }
 
+func (c Client) Auth() (bool, error) {
+	return c.client.Auth.Check()
+}
+
 func (c Client) ReleaseTypes() ([]pivnet.ReleaseType, error) {
 	return c.client.ReleaseTypes.Get()
 }

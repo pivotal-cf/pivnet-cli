@@ -2,12 +2,14 @@ package commands_test
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/commands/filegroup"
 )
 
 var _ = Describe("file group commands", func() {
@@ -20,7 +22,7 @@ var _ = Describe("file group commands", func() {
 	BeforeEach(func() {
 		fakeFileGroupClient = &commandsfakes.FakeFileGroupClient{}
 
-		commands.NewFileGroupClient = func() commands.FileGroupClient {
+		commands.NewFileGroupClient = func(filegroup.PivnetClient) commands.FileGroupClient {
 			return fakeFileGroupClient
 		}
 	})
@@ -56,6 +58,30 @@ var _ = Describe("file group commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 
@@ -130,6 +156,30 @@ var _ = Describe("file group commands", func() {
 			})
 		})
 
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
 				field = fieldFor(cmd, "ProductSlug")
@@ -201,6 +251,30 @@ var _ = Describe("file group commands", func() {
 			})
 		})
 
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
 				field = fieldFor(cmd, "ProductSlug")
@@ -265,6 +339,30 @@ var _ = Describe("file group commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 
@@ -353,6 +451,30 @@ var _ = Describe("file group commands", func() {
 			})
 		})
 
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
 				field = fieldFor(cmd, "ProductSlug")
@@ -421,6 +543,30 @@ var _ = Describe("file group commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 
@@ -510,6 +656,30 @@ var _ = Describe("file group commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 

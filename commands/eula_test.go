@@ -2,12 +2,14 @@ package commands_test
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/commands/eula"
 )
 
 var _ = Describe("eula commands", func() {
@@ -20,7 +22,7 @@ var _ = Describe("eula commands", func() {
 	BeforeEach(func() {
 		fakeEULAClient = &commandsfakes.FakeEULAClient{}
 
-		commands.NewEULAClient = func() commands.EULAClient {
+		commands.NewEULAClient = func(eula.PivnetClient) commands.EULAClient {
 			return fakeEULAClient
 		}
 	})
@@ -56,6 +58,30 @@ var _ = Describe("eula commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 	})
@@ -98,6 +124,30 @@ var _ = Describe("eula commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 
@@ -161,6 +211,31 @@ var _ = Describe("eula commands", func() {
 				Expect(err).To(Equal(expectedErr))
 			})
 		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
 				field = fieldFor(commands.AcceptEULACommand{}, "ProductSlug")

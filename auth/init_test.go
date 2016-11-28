@@ -1,4 +1,4 @@
-package printer_test
+package auth_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestPrinter(t *testing.T) {
+func TestAuth(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Printer Suite")
+	RunSpecs(t, "Auth Suite")
 }

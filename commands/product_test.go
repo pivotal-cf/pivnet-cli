@@ -2,12 +2,14 @@ package commands_test
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/commands/product"
 )
 
 var _ = Describe("product commands", func() {
@@ -20,7 +22,7 @@ var _ = Describe("product commands", func() {
 	BeforeEach(func() {
 		fakeProductClient = &commandsfakes.FakeProductClient{}
 
-		commands.NewProductClient = func() commands.ProductClient {
+		commands.NewProductClient = func(product.PivnetClient) commands.ProductClient {
 			return fakeProductClient
 		}
 	})
@@ -56,6 +58,30 @@ var _ = Describe("product commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 	})
@@ -97,6 +123,30 @@ var _ = Describe("product commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 

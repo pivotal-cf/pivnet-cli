@@ -12,9 +12,9 @@ type CurlClient interface {
 	MakeRequest(method string, body string, args []string) error
 }
 
-var NewCurlClient = func() CurlClient {
+var NewCurlClient = func(client curl.PivnetClient) CurlClient {
 	return curl.NewCurlClient(
-		NewPivnetClient(),
+		client,
 		ErrorHandler,
 		Pivnet.Format,
 		OutputWriter,
@@ -23,7 +23,16 @@ var NewCurlClient = func() CurlClient {
 }
 
 func (command *CurlCommand) Execute(args []string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewCurlClient().MakeRequest(command.Method, command.Data, args)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewCurlClient(client).MakeRequest(command.Method, command.Data, args)
 }

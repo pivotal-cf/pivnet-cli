@@ -2,12 +2,14 @@ package commands_test
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/commands/releaseupgradepath"
 )
 
 var _ = Describe("release upgrade path commands", func() {
@@ -20,7 +22,7 @@ var _ = Describe("release upgrade path commands", func() {
 	BeforeEach(func() {
 		fakeReleaseUpgradePathClient = &commandsfakes.FakeReleaseUpgradePathClient{}
 
-		commands.NewReleaseUpgradePathClient = func() commands.ReleaseUpgradePathClient {
+		commands.NewReleaseUpgradePathClient = func(releaseupgradepath.PivnetClient) commands.ReleaseUpgradePathClient {
 			return fakeReleaseUpgradePathClient
 		}
 	})
@@ -56,6 +58,30 @@ var _ = Describe("release upgrade path commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 
@@ -127,6 +153,30 @@ var _ = Describe("release upgrade path commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 
@@ -216,6 +266,30 @@ var _ = Describe("release upgrade path commands", func() {
 				err := cmd.Execute(nil)
 
 				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
 			})
 		})
 

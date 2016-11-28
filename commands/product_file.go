@@ -93,9 +93,9 @@ type ProductFileClient interface {
 	Download(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool) error
 }
 
-var NewProductFileClient = func() ProductFileClient {
+var NewProductFileClient = func(client productfile.PivnetClient) ProductFileClient {
 	return productfile.NewProductFileClient(
-		NewPivnetClient(),
+		client,
 		ErrorHandler,
 		Pivnet.Format,
 		OutputWriter,
@@ -107,17 +107,46 @@ var NewProductFileClient = func() ProductFileClient {
 }
 
 func (command *ProductFilesCommand) Execute([]string) error {
-	Init()
-	return NewProductFileClient().List(command.ProductSlug, command.ReleaseVersion)
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewProductFileClient(client).List(command.ProductSlug, command.ReleaseVersion)
 }
 
 func (command *ProductFileCommand) Execute([]string) error {
-	Init()
-	return NewProductFileClient().Get(command.ProductSlug, command.ReleaseVersion, command.ProductFileID)
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewProductFileClient(client).Get(command.ProductSlug, command.ReleaseVersion, command.ProductFileID)
 }
 
 func (command *CreateProductFileCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
 
 	config := pivnet.CreateProductFileConfig{
 		ProductSlug:        command.ProductSlug,
@@ -134,13 +163,22 @@ func (command *CreateProductFileCommand) Execute([]string) error {
 		SystemRequirements: command.SystemRequirements,
 	}
 
-	return NewProductFileClient().Create(config)
+	return NewProductFileClient(client).Create(config)
 }
 
 func (command *UpdateProductFileCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewProductFileClient().Update(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewProductFileClient(client).Update(
 		command.ProductFileID,
 		command.ProductSlug,
 		command.Name,
@@ -152,7 +190,16 @@ func (command *UpdateProductFileCommand) Execute([]string) error {
 }
 
 func (command *AddProductFileCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
 
 	if command.ReleaseVersion == nil && command.FileGroupID == nil {
 		return errors.New("one of release-version or file-group-id must be provided")
@@ -162,14 +209,23 @@ func (command *AddProductFileCommand) Execute([]string) error {
 	}
 
 	if command.ReleaseVersion != nil {
-		return NewProductFileClient().AddToRelease(command.ProductSlug, *command.ReleaseVersion, command.ProductFileID)
+		return NewProductFileClient(client).AddToRelease(command.ProductSlug, *command.ReleaseVersion, command.ProductFileID)
 	}
 
-	return NewProductFileClient().AddToFileGroup(command.ProductSlug, *command.FileGroupID, command.ProductFileID)
+	return NewProductFileClient(client).AddToFileGroup(command.ProductSlug, *command.FileGroupID, command.ProductFileID)
 }
 
 func (command *RemoveProductFileCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
 
 	if command.ReleaseVersion == nil && command.FileGroupID == nil {
 		return errors.New("one of release-version or file-group-id must be provided")
@@ -179,21 +235,40 @@ func (command *RemoveProductFileCommand) Execute([]string) error {
 	}
 
 	if command.ReleaseVersion != nil {
-		return NewProductFileClient().RemoveFromRelease(command.ProductSlug, *command.ReleaseVersion, command.ProductFileID)
+		return NewProductFileClient(client).RemoveFromRelease(command.ProductSlug, *command.ReleaseVersion, command.ProductFileID)
 	}
 
-	return NewProductFileClient().RemoveFromFileGroup(command.ProductSlug, *command.FileGroupID, command.ProductFileID)
+	return NewProductFileClient(client).RemoveFromFileGroup(command.ProductSlug, *command.FileGroupID, command.ProductFileID)
 }
 
 func (command *DeleteProductFileCommand) Execute([]string) error {
-	Init()
-	return NewProductFileClient().Delete(command.ProductSlug, command.ProductFileID)
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewProductFileClient(client).Delete(command.ProductSlug, command.ProductFileID)
 }
 
 func (command *DownloadProductFilesCommand) Execute([]string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewProductFileClient().Download(
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewProductFileClient(client).Download(
 		command.ProductSlug,
 		command.ReleaseVersion,
 		command.Globs,

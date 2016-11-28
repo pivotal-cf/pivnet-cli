@@ -75,18 +75,12 @@ func (h errorHandler) HandleError(err error) error {
 
 	switch h.format {
 	case printer.PrintAsJSON:
-		e := h.printLogln(coloredMessage)
-		if e != nil {
-			return e
-		}
+		_ = h.printLogln(coloredMessage)
 
 		return ErrAlreadyHandled
 
 	case printer.PrintAsYAML:
-		e := h.printLogln(coloredMessage)
-		if e != nil {
-			return e
-		}
+		_ = h.printLogln(coloredMessage)
 
 		return ErrAlreadyHandled
 

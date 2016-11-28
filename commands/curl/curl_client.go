@@ -60,6 +60,7 @@ func (c *CurlClient) MakeRequest(
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
+	defer resp.Body.Close()
 
 	err = json.NewDecoder(resp.Body).Decode(&output)
 	if err != nil {

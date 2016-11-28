@@ -21,9 +21,9 @@ type EULAClient interface {
 	AcceptEULA(productSlug string, releaseVersion string) error
 }
 
-var NewEULAClient = func() EULAClient {
+var NewEULAClient = func(client eula.PivnetClient) EULAClient {
 	return eula.NewEULAClient(
-		NewPivnetClient(),
+		client,
 		ErrorHandler,
 		Pivnet.Format,
 		OutputWriter,
@@ -32,19 +32,46 @@ var NewEULAClient = func() EULAClient {
 }
 
 func (command *EULAsCommand) Execute(args []string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewEULAClient().List()
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewEULAClient(client).List()
 }
 
 func (command *EULACommand) Execute(args []string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewEULAClient().Get(command.EULASlug)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewEULAClient(client).Get(command.EULASlug)
 }
 
 func (command *AcceptEULACommand) Execute(args []string) error {
-	Init()
+	err := Init(true)
+	if err != nil {
+		return err
+	}
 
-	return NewEULAClient().AcceptEULA(command.ProductSlug, command.ReleaseVersion)
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewEULAClient(client).AcceptEULA(command.ProductSlug, command.ReleaseVersion)
 }
