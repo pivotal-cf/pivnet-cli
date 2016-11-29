@@ -15,11 +15,6 @@ type PivnetRC struct {
 	Profiles []PivnetProfile `yaml:"profiles"`
 }
 
-type PivnetProfile struct {
-	Name     string `yaml:"name"`
-	APIToken string `yaml:"api_token"`
-}
-
 type RCHandler struct {
 	configFilepath string
 }
@@ -33,6 +28,7 @@ func NewRCHandler(configFilepath string) *RCHandler {
 func (h *RCHandler) SaveProfile(
 	profileName string,
 	apiToken string,
+	host string,
 ) error {
 	pivnetRC, err := h.loadPivnetRC()
 	if err != nil {
@@ -57,12 +53,14 @@ func (h *RCHandler) SaveProfile(
 		newInfo = &PivnetProfile{
 			Name:     profileName,
 			APIToken: apiToken,
+			Host:     host,
 		}
 		index = len(pivnetRC.Profiles)
 		pivnetRC.Profiles = append(pivnetRC.Profiles, PivnetProfile{})
 	}
 
 	newInfo.APIToken = apiToken
+	newInfo.Host = host
 
 	pivnetRC.Profiles[index] = *newInfo
 

@@ -79,3 +79,7 @@ var command = func(f reflect.StructField) string {
 var isRequired = func(f reflect.StructField) bool {
 	return f.Tag.Get("required") == "true"
 }
+
+var defaultVal = func(f reflect.StructField) string {
+	return f.Tag.Get("default")
+}

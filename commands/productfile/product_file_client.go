@@ -33,7 +33,7 @@ type PivnetClient interface {
 	DownloadProductFile(location *os.File, productSlug string, releaseID int, productFileID int) error
 }
 
-//go:generate counterfeiter . FakeFilter
+//go:generate counterfeiter . Filter
 type Filter interface {
 	ProductFileKeysByGlobs(productFiles []pivnet.ProductFile, glob []string) ([]pivnet.ProductFile, error)
 }

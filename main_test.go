@@ -28,17 +28,17 @@ const (
 var _ = Describe("pivnet cli", func() {
 	var (
 		server *ghttp.Server
-		host   string
 
 		product pivnet.Product
 
-		tempDir        string
-		configFilepath string
+		tempDir string
+
+		runMainWithArgs func(args ...string) *gexec.Session
+		login           func()
 	)
 
 	BeforeEach(func() {
 		server = ghttp.NewServer()
-		host = server.URL()
 
 		product = pivnet.Product{
 			ID:   1234,
@@ -47,41 +47,45 @@ var _ = Describe("pivnet cli", func() {
 		}
 
 		var err error
-		tempDir, err = ioutil.TempDir("", "")
+		tempDir, err = ioutil.TempDir("", "pivnet-cli-integration-tests")
 		Expect(err).NotTo(HaveOccurred())
 
-		configFilepath = filepath.Join(tempDir, ".pivnetrc")
+		configFilepath := filepath.Join(tempDir, ".pivnetrc")
+
+		runMainWithArgs = func(args ...string) *gexec.Session {
+			allArgs := []string{
+				"--verbose",
+				fmt.Sprintf("--config=%s", configFilepath),
+			}
+
+			allArgs = append(
+				allArgs,
+				args...,
+			)
+
+			_, err := fmt.Fprintf(GinkgoWriter, "Running command: %v\n", allArgs)
+			Expect(err).NotTo(HaveOccurred())
+
+			command := exec.Command(pivnetBinPath, allArgs...)
+			session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
+			Expect(err).NotTo(HaveOccurred())
+			return session
+		}
+
+		login = func() {
+			session := runMainWithArgs(
+				"login",
+				fmt.Sprintf("--api-token=%s", apiToken),
+				fmt.Sprintf("--host=%s", server.URL()),
+			)
+			Eventually(session, executableTimeout).Should(gexec.Exit(0))
+		}
 	})
 
 	AfterEach(func() {
 		err := os.RemoveAll(tempDir)
 		Expect(err).NotTo(HaveOccurred())
 	})
-
-	runMainWithArgs := func(args ...string) *gexec.Session {
-		args = append(
-			args,
-			fmt.Sprintf("--config=%s", configFilepath),
-			fmt.Sprintf("--host=%s", host),
-			"--verbose",
-		)
-
-		_, err := fmt.Fprintf(GinkgoWriter, "Running command: %v\n", args)
-		Expect(err).NotTo(HaveOccurred())
-
-		command := exec.Command(pivnetBinPath, args...)
-		session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
-		Expect(err).NotTo(HaveOccurred())
-		return session
-	}
-
-	login := func() {
-		session := runMainWithArgs(
-			"login",
-			"--api-token", apiToken,
-		)
-		Eventually(session, executableTimeout).Should(gexec.Exit(0))
-	}
 
 	Describe("Displaying help", func() {
 		It("displays help to stdout with '-h'", func() {
@@ -103,7 +107,7 @@ var _ = Describe("pivnet cli", func() {
 
 			Eventually(session, executableTimeout).Should(gexec.Exit())
 			Expect(session.Out).Should(gbytes.Say("Usage:"))
-			Expect(session.Out).Should(gbytes.Say("network.pivotal.io"))
+			Expect(session.Out).Should(gbytes.Say("version"))
 		})
 
 		It("displays help of a command to stdout with '--help'", func() {
@@ -150,7 +154,7 @@ var _ = Describe("pivnet cli", func() {
 
 	Context("when logged in", func() {
 		BeforeEach(func() {
-			// we hit the login endpoint twice:
+			// we hit the authentication endpoint twice:
 			// once for the login command and once for the actual command
 			server.AppendHandlers(
 				ghttp.CombineHandlers(

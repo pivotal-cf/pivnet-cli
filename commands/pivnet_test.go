@@ -47,7 +47,6 @@ var _ = Describe("Pivnet commands", func() {
 			commands.ErrorHandler = fakeErrorHandler
 			commands.RC = fakeRCHandler
 
-			commands.Pivnet.Host = server.URL()
 			commands.Pivnet.Verbose = true
 
 			outBuffer = bytes.Buffer{}
@@ -82,7 +81,9 @@ var _ = Describe("Pivnet commands", func() {
 
 			apiToken = "some-api-token"
 			profile = &rc.PivnetProfile{
+				Name:     "some-profile",
 				APIToken: apiToken,
+				Host:     server.URL(),
 			}
 			profileErr = nil
 		})
@@ -94,13 +95,29 @@ var _ = Describe("Pivnet commands", func() {
 		})
 
 		It("redacts api token from profile", func() {
-			commands.Init(profileRequired)
+			err := commands.Init(profileRequired)
+			Expect(err).NotTo(HaveOccurred())
 
-			_, err := fmt.Fprintf(commands.OutputWriter, apiToken)
+			_, err = fmt.Fprintf(commands.OutputWriter, apiToken)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(outBuffer.String()).Should(ContainSubstring("*** redacted api token ***"))
 			Expect(outBuffer.String()).ShouldNot(ContainSubstring(apiToken))
+		})
+
+		Context("when profile validation returns an error", func() {
+			BeforeEach(func() {
+				profile.APIToken = ""
+			})
+
+			It("Invokes the error handler", func() {
+				err := commands.Init(profileRequired)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0).Error()).To(ContainSubstring("login"))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0).Error()).To(ContainSubstring("API"))
+			})
 		})
 
 		Context("when getting profile returns an error", func() {
@@ -219,20 +236,6 @@ var _ = Describe("Pivnet commands", func() {
 		It("contains choice", func() {
 			Expect(string(field.Tag)).To(
 				MatchRegexp(`choice:"table".*choice:"json".*choice:"yaml"`))
-		})
-
-		It("is not required", func() {
-			Expect(isRequired(field)).To(BeFalse())
-		})
-	})
-
-	Describe("Host flag", func() {
-		BeforeEach(func() {
-			field = fieldFor(commands.Pivnet, "Host")
-		})
-
-		It("contains long flag", func() {
-			Expect(longTag(field)).To(Equal("host"))
 		})
 
 		It("is not required", func() {

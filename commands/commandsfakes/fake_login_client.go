@@ -8,11 +8,12 @@ import (
 )
 
 type FakeLoginClient struct {
-	LoginStub        func(name string, apiToken string) error
+	LoginStub        func(name string, apiToken string, host string) error
 	loginMutex       sync.RWMutex
 	loginArgsForCall []struct {
 		name     string
 		apiToken string
+		host     string
 	}
 	loginReturns struct {
 		result1 error
@@ -21,16 +22,17 @@ type FakeLoginClient struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeLoginClient) Login(name string, apiToken string) error {
+func (fake *FakeLoginClient) Login(name string, apiToken string, host string) error {
 	fake.loginMutex.Lock()
 	fake.loginArgsForCall = append(fake.loginArgsForCall, struct {
 		name     string
 		apiToken string
-	}{name, apiToken})
-	fake.recordInvocation("Login", []interface{}{name, apiToken})
+		host     string
+	}{name, apiToken, host})
+	fake.recordInvocation("Login", []interface{}{name, apiToken, host})
 	fake.loginMutex.Unlock()
 	if fake.LoginStub != nil {
-		return fake.LoginStub(name, apiToken)
+		return fake.LoginStub(name, apiToken, host)
 	} else {
 		return fake.loginReturns.result1
 	}
@@ -42,10 +44,10 @@ func (fake *FakeLoginClient) LoginCallCount() int {
 	return len(fake.loginArgsForCall)
 }
 
-func (fake *FakeLoginClient) LoginArgsForCall(i int) (string, string) {
+func (fake *FakeLoginClient) LoginArgsForCall(i int) (string, string, string) {
 	fake.loginMutex.RLock()
 	defer fake.loginMutex.RUnlock()
-	return fake.loginArgsForCall[i].name, fake.loginArgsForCall[i].apiToken
+	return fake.loginArgsForCall[i].name, fake.loginArgsForCall[i].apiToken, fake.loginArgsForCall[i].host
 }
 
 func (fake *FakeLoginClient) LoginReturns(result1 error) {

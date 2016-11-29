@@ -32,6 +32,7 @@ var _ = Describe("RCHandler", func() {
 		profile = rc.PivnetProfile{
 			Name:     "some-profile",
 			APIToken: "some-api-token",
+			Host:     "some-host",
 		}
 
 		configFilepath = filepath.Join(tempDir, ".pivnetrc")
@@ -41,9 +42,11 @@ var _ = Describe("RCHandler", func() {
 profiles:
 - name: %s
   api_token: %s
+  host: %s
 `,
 			profile.Name,
 			profile.APIToken,
+			profile.Host,
 		),
 		)
 	})
@@ -68,6 +71,7 @@ profiles:
 			Expect(returnedProfile).NotTo(BeNil())
 			Expect(returnedProfile.Name).To(Equal(profile.Name))
 			Expect(returnedProfile.APIToken).To(Equal(profile.APIToken))
+			Expect(returnedProfile.Host).To(Equal(profile.Host))
 		})
 
 		Context("when profile cannot be found", func() {
@@ -120,7 +124,11 @@ profiles:
 
 	Describe("SaveProfile", func() {
 		It("saves profile", func() {
-			err := rcHandler.SaveProfile(profile.Name, profile.APIToken)
+			err := rcHandler.SaveProfile(
+				profile.Name,
+				profile.APIToken,
+				profile.Host,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			profiles := profilesFromRCFilepath(configFilepath)
@@ -130,10 +138,15 @@ profiles:
 			Expect(profiles[0]).NotTo(BeNil())
 			Expect(profiles[0].Name).To(Equal(profile.Name))
 			Expect(profiles[0].APIToken).To(Equal(profile.APIToken))
+			Expect(profiles[0].Host).To(Equal(profile.Host))
 		})
 
 		It("updates existing file with user-only read/write (i.e. 0600) permissions", func() {
-			err := rcHandler.SaveProfile(profile.Name, profile.APIToken)
+			err := rcHandler.SaveProfile(
+				profile.Name,
+				profile.APIToken,
+				profile.Host,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			info, err := os.Stat(configFilepath)
@@ -146,15 +159,21 @@ profiles:
 			var (
 				newName     string
 				newAPIToken string
+				newHost     string
 			)
 
 			BeforeEach(func() {
 				newName = "some-other-profile"
 				newAPIToken = "some-other-api-token"
+				newHost = "some-other-host"
 			})
 
 			It("creates new profile without error", func() {
-				err := rcHandler.SaveProfile(newName, newAPIToken)
+				err := rcHandler.SaveProfile(
+					newName,
+					newAPIToken,
+					newHost,
+				)
 				Expect(err).NotTo(HaveOccurred())
 
 				profiles := profilesFromRCFilepath(configFilepath)
@@ -164,10 +183,12 @@ profiles:
 				Expect(profiles[0]).NotTo(BeNil())
 				Expect(profiles[0].Name).To(Equal(profile.Name))
 				Expect(profiles[0].APIToken).To(Equal(profile.APIToken))
+				Expect(profiles[0].Host).To(Equal(profile.Host))
 
 				Expect(profiles[1]).NotTo(BeNil())
 				Expect(profiles[1].Name).To(Equal(newName))
 				Expect(profiles[1].APIToken).To(Equal(newAPIToken))
+				Expect(profiles[1].Host).To(Equal(newHost))
 			})
 		})
 
@@ -182,7 +203,11 @@ profiles:
 			})
 
 			It("create file and saves new profile without error", func() {
-				err := rcHandler.SaveProfile(profile.Name, profile.APIToken)
+				err := rcHandler.SaveProfile(
+					profile.Name,
+					profile.APIToken,
+					profile.Host,
+				)
 				Expect(err).NotTo(HaveOccurred())
 
 				profiles := profilesFromRCFilepath(newFilepath)
@@ -192,10 +217,15 @@ profiles:
 				Expect(profiles[0]).NotTo(BeNil())
 				Expect(profiles[0].Name).To(Equal(profile.Name))
 				Expect(profiles[0].APIToken).To(Equal(profile.APIToken))
+				Expect(profiles[0].Host).To(Equal(profile.Host))
 			})
 
 			It("creates new file with user-only read/write (i.e. 0600) permissions", func() {
-				err := rcHandler.SaveProfile(profile.Name, profile.APIToken)
+				err := rcHandler.SaveProfile(
+					profile.Name,
+					profile.APIToken,
+					profile.Host,
+				)
 				Expect(err).NotTo(HaveOccurred())
 
 				info, err := os.Stat(newFilepath)
@@ -212,7 +242,11 @@ profiles:
 			})
 
 			It("returns an error", func() {
-				err := rcHandler.SaveProfile(profile.Name, profile.APIToken)
+				err := rcHandler.SaveProfile(
+					profile.Name,
+					profile.APIToken,
+					profile.Host,
+				)
 
 				Expect(err).To(HaveOccurred())
 			})
@@ -224,7 +258,11 @@ profiles:
 			})
 
 			It("returns an error", func() {
-				err := rcHandler.SaveProfile(profile.Name, profile.APIToken)
+				err := rcHandler.SaveProfile(
+					profile.Name,
+					profile.APIToken,
+					profile.Host,
+				)
 
 				Expect(err).To(HaveOccurred())
 			})

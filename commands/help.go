@@ -9,7 +9,6 @@ type HelpCommand struct{}
 func (command *HelpCommand) Execute(args []string) error {
 	// Reset flags to avoid overriding defaults
 	Pivnet.ProfileName = ""
-	Pivnet.Host = DefaultHost
 
 	return ErrShowHelpMessage
 }

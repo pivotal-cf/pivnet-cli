@@ -3,12 +3,13 @@ package commands
 import "github.com/pivotal-cf/pivnet-cli/commands/login"
 
 type LoginCommand struct {
-	APIToken string `long:"api-token" description:"API Token" required:"true"`
+	APIToken string `long:"api-token" description:"Pivnet API Token" required:"true"`
+	Host     string `long:"host" description:"Pivnet API Host" default:"https://network.pivotal.io"`
 }
 
 //go:generate counterfeiter . LoginClient
 type LoginClient interface {
-	Login(name string, apiToken string) error
+	Login(name string, apiToken string, host string) error
 }
 
 var NewLoginClient = func(client login.PivnetClient) LoginClient {
@@ -30,7 +31,11 @@ func (command *LoginCommand) Execute([]string) error {
 
 	sanitizeWriters(command.APIToken)
 
-	client := NewPivnetClientWithToken(command.APIToken)
+	client := NewPivnetClientWithToken(command.APIToken, command.Host)
 
-	return NewLoginClient(client).Login(Pivnet.ProfileName, command.APIToken)
+	return NewLoginClient(client).Login(
+		Pivnet.ProfileName,
+		command.APIToken,
+		command.Host,
+	)
 }

@@ -101,5 +101,24 @@ var _ = Describe("login commands", func() {
 				Expect(longTag(field)).To(Equal("api-token"))
 			})
 		})
+
+		Describe("Host flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "Host")
+			})
+
+			It("contains long flag", func() {
+				Expect(longTag(field)).To(Equal("host"))
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("has a default value", func() {
+				Expect(defaultVal(field)).To(Equal("https://network.pivotal.io"))
+			})
+		})
+
 	})
 })

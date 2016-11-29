@@ -21,10 +21,6 @@ import (
 	"github.com/robdimsdale/sanitizer"
 )
 
-const (
-	DefaultHost = "https://network.pivotal.io"
-)
-
 //go:generate counterfeiter . Authenticator
 type Authenticator interface {
 	AuthenticateClient(client auth.AuthClient) error
@@ -37,7 +33,7 @@ type Filterer interface {
 
 //go:generate counterfeiter . RCHandler
 type RCHandler interface {
-	SaveProfile(profileName string, apiToken string) error
+	SaveProfile(profileName string, apiToken string, host string) error
 	ProfileForName(profileName string) (*rc.PivnetProfile, error)
 }
 
@@ -60,7 +56,6 @@ type PivnetCommand struct {
 
 	ProfileName string `long:"profile" description:"Name of profile" default:"default"`
 	ConfigFile  string `long:"config" description:"Path to config file"`
-	Host        string `long:"host" description:"Pivnet API Host"`
 
 	Login LoginCommand `command:"login" alias:"l" description:"Log in to Pivotal Network."`
 
@@ -133,10 +128,6 @@ func init() {
 		os.Exit(0)
 	}
 
-	if Pivnet.Host == "" {
-		Pivnet.Host = DefaultHost
-	}
-
 	if Pivnet.ConfigFile == "" {
 		userHomeDir, err := userHomeDir()
 		if err != nil {
@@ -148,18 +139,21 @@ func init() {
 
 func NewPivnetClient() *gp.Client {
 	var apiToken string
+	var host string
+
 	if Pivnet.profile != nil {
 		apiToken = Pivnet.profile.APIToken
+		host = Pivnet.profile.Host
 	}
 
-	return NewPivnetClientWithToken(apiToken)
+	return NewPivnetClientWithToken(apiToken, host)
 }
 
-func NewPivnetClientWithToken(apiToken string) *gp.Client {
+func NewPivnetClientWithToken(apiToken string, host string) *gp.Client {
 	return gp.NewClient(
 		pivnet.ClientConfig{
 			Token:     apiToken,
-			Host:      Pivnet.Host,
+			Host:      host,
 			UserAgent: Pivnet.userAgent,
 		},
 		Pivnet.Logger,
@@ -202,16 +196,23 @@ var Init = func(profileRequired bool) error {
 		return ErrorHandler.HandleError(err)
 	}
 
-	if profile == nil {
-		if profileRequired {
+	if profileRequired {
+		if profile == nil {
 			err := fmt.Errorf("Please login first")
 			return ErrorHandler.HandleError(err)
+		} else {
+			err := profile.Validate()
+			if err != nil {
+				e := fmt.Errorf("Saved profile is invalid (%s). Please login again", err.Error())
+				return ErrorHandler.HandleError(e)
+			}
 		}
-	} else {
-		Pivnet.profile = profile
-		apiToken := Pivnet.profile.APIToken
+	}
 
-		sanitizeWriters(apiToken)
+	if profile != nil {
+		Pivnet.profile = profile
+
+		sanitizeWriters(profile.APIToken)
 	}
 
 	infoLogger := log.New(LogWriter, "", log.LstdFlags)

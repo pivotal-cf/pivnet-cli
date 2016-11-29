@@ -45,6 +45,7 @@ var _ = Describe("login commands", func() {
 		var (
 			profileName string
 			apiToken    string
+			host        string
 
 			authResult bool
 			authErr    error
@@ -55,6 +56,7 @@ var _ = Describe("login commands", func() {
 		BeforeEach(func() {
 			profileName = "some-login-slug"
 			apiToken = "some-api-token"
+			host = "some-host"
 
 			authResult = true
 			authErr = nil
@@ -68,16 +70,21 @@ var _ = Describe("login commands", func() {
 		})
 
 		It("authenticates and saves profile", func() {
-			err := client.Login(profileName, apiToken)
+			err := client.Login(
+				profileName,
+				apiToken,
+				host,
+			)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakePivnetClient.AuthCallCount()).To(Equal(1))
 
 			Expect(fakeRCHandler.SaveProfileCallCount()).To(Equal(1))
-			invokedProfileName, invokedAPIToken := fakeRCHandler.SaveProfileArgsForCall(0)
+			invokedProfileName, invokedAPIToken, invokedHost := fakeRCHandler.SaveProfileArgsForCall(0)
 
 			Expect(invokedProfileName).To(Equal(profileName))
 			Expect(invokedAPIToken).To(Equal(apiToken))
+			Expect(invokedHost).To(Equal(host))
 		})
 
 		Context("when there is an error authenticating", func() {
@@ -86,7 +93,11 @@ var _ = Describe("login commands", func() {
 			})
 
 			It("invokes the error handler", func() {
-				err := client.Login(profileName, apiToken)
+				err := client.Login(
+					profileName,
+					apiToken,
+					host,
+				)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
@@ -100,7 +111,11 @@ var _ = Describe("login commands", func() {
 			})
 
 			It("invokes the error handler", func() {
-				err := client.Login(profileName, apiToken)
+				err := client.Login(
+					profileName,
+					apiToken,
+					host,
+				)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
@@ -114,7 +129,11 @@ var _ = Describe("login commands", func() {
 			})
 
 			It("invokes the error handler", func() {
-				err := client.Login(profileName, apiToken)
+				err := client.Login(
+					profileName,
+					apiToken,
+					host,
+				)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
