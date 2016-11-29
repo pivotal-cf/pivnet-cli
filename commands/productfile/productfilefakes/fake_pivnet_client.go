@@ -2,7 +2,7 @@
 package productfilefakes
 
 import (
-	"io"
+	"os"
 	"sync"
 
 	go_pivnet "github.com/pivotal-cf/go-pivnet"
@@ -138,10 +138,10 @@ type FakePivnetClient struct {
 	acceptEULAReturns struct {
 		result1 error
 	}
-	DownloadProductFileStub        func(writer io.Writer, productSlug string, releaseID int, productFileID int) error
+	DownloadProductFileStub        func(location *os.File, productSlug string, releaseID int, productFileID int) error
 	downloadProductFileMutex       sync.RWMutex
 	downloadProductFileArgsForCall []struct {
-		writer        io.Writer
+		location      *os.File
 		productSlug   string
 		releaseID     int
 		productFileID int
@@ -606,18 +606,18 @@ func (fake *FakePivnetClient) AcceptEULAReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakePivnetClient) DownloadProductFile(writer io.Writer, productSlug string, releaseID int, productFileID int) error {
+func (fake *FakePivnetClient) DownloadProductFile(location *os.File, productSlug string, releaseID int, productFileID int) error {
 	fake.downloadProductFileMutex.Lock()
 	fake.downloadProductFileArgsForCall = append(fake.downloadProductFileArgsForCall, struct {
-		writer        io.Writer
+		location      *os.File
 		productSlug   string
 		releaseID     int
 		productFileID int
-	}{writer, productSlug, releaseID, productFileID})
-	fake.recordInvocation("DownloadProductFile", []interface{}{writer, productSlug, releaseID, productFileID})
+	}{location, productSlug, releaseID, productFileID})
+	fake.recordInvocation("DownloadProductFile", []interface{}{location, productSlug, releaseID, productFileID})
 	fake.downloadProductFileMutex.Unlock()
 	if fake.DownloadProductFileStub != nil {
-		return fake.DownloadProductFileStub(writer, productSlug, releaseID, productFileID)
+		return fake.DownloadProductFileStub(location, productSlug, releaseID, productFileID)
 	} else {
 		return fake.downloadProductFileReturns.result1
 	}
@@ -629,10 +629,10 @@ func (fake *FakePivnetClient) DownloadProductFileCallCount() int {
 	return len(fake.downloadProductFileArgsForCall)
 }
 
-func (fake *FakePivnetClient) DownloadProductFileArgsForCall(i int) (io.Writer, string, int, int) {
+func (fake *FakePivnetClient) DownloadProductFileArgsForCall(i int) (*os.File, string, int, int) {
 	fake.downloadProductFileMutex.RLock()
 	defer fake.downloadProductFileMutex.RUnlock()
-	return fake.downloadProductFileArgsForCall[i].writer, fake.downloadProductFileArgsForCall[i].productSlug, fake.downloadProductFileArgsForCall[i].releaseID, fake.downloadProductFileArgsForCall[i].productFileID
+	return fake.downloadProductFileArgsForCall[i].location, fake.downloadProductFileArgsForCall[i].productSlug, fake.downloadProductFileArgsForCall[i].releaseID, fake.downloadProductFileArgsForCall[i].productFileID
 }
 
 func (fake *FakePivnetClient) DownloadProductFileReturns(result1 error) {

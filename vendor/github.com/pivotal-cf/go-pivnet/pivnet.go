@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/pivotal-cf/go-pivnet/download"
 	"github.com/pivotal-cf/go-pivnet/logger"
 )
 
@@ -19,84 +20,15 @@ const (
 	apiVersion  = "/api/v2"
 )
 
-type pivnetErr struct {
-	Message string   `json:"message"`
-	Errors  []string `json:"errors"`
-}
-
-type pivnetInternalServerErr struct {
-	Error string `json:"error"`
-}
-
-type ErrPivnetOther struct {
-	ResponseCode int      `json:"response_code" yaml:"response_code"`
-	Message      string   `json:"message" yaml:"message"`
-	Errors       []string `json:"errors" yaml:"errors"`
-}
-
-func (e ErrPivnetOther) Error() string {
-	return fmt.Sprintf(
-		"%d - %s. Errors: %v",
-		e.ResponseCode,
-		e.Message,
-		strings.Join(e.Errors, ","),
-	)
-}
-
-type ErrUnauthorized struct {
-	ResponseCode int    `json:"response_code" yaml:"response_code"`
-	Message      string `json:"message" yaml:"message"`
-}
-
-func (e ErrUnauthorized) Error() string {
-	return e.Message
-}
-
-func newErrUnauthorized(message string) ErrUnauthorized {
-	return ErrUnauthorized{
-		ResponseCode: http.StatusUnauthorized,
-		Message:      message,
-	}
-}
-
-type ErrNotFound struct {
-	ResponseCode int    `json:"response_code" yaml:"response_code"`
-	Message      string `json:"message" yaml:"message"`
-}
-
-func (e ErrNotFound) Error() string {
-	return e.Message
-}
-
-func newErrNotFound(message string) ErrNotFound {
-	return ErrNotFound{
-		ResponseCode: http.StatusNotFound,
-		Message:      message,
-	}
-}
-
-type ErrUnavailableForLegalReasons struct {
-	ResponseCode int    `json:"response_code" yaml:"response_code"`
-	Message      string `json:"message" yaml:"message"`
-}
-
-func (e ErrUnavailableForLegalReasons) Error() string {
-	return e.Message
-}
-
-func newErrUnavailableForLegalReasons() ErrUnavailableForLegalReasons {
-	return ErrUnavailableForLegalReasons{
-		ResponseCode: http.StatusUnavailableForLegalReasons,
-		Message:      "The EULA has not been accepted.",
-	}
-}
-
 type Client struct {
-	baseURL           string
-	token             string
-	userAgent         string
-	logger            logger.Logger
-	skipSSLValidation bool
+	baseURL   string
+	token     string
+	userAgent string
+	logger    logger.Logger
+
+	HTTP *http.Client
+
+	downloader *download.Client
 
 	Auth                *AuthService
 	EULA                *EULAsService
@@ -120,12 +52,22 @@ type ClientConfig struct {
 func NewClient(config ClientConfig, logger logger.Logger) Client {
 	baseURL := fmt.Sprintf("%s%s", config.Host, apiVersion)
 
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: config.SkipSSLValidation},
+		},
+	}
+
+	ranger := download.NewRanger(10)
+	downloader := download.New(http.DefaultClient, ranger)
+
 	client := Client{
-		baseURL:           baseURL,
-		token:             config.Token,
-		userAgent:         config.UserAgent,
-		logger:            logger,
-		skipSSLValidation: config.SkipSSLValidation,
+		baseURL:    baseURL,
+		token:      config.Token,
+		userAgent:  config.UserAgent,
+		logger:     logger,
+		downloader: downloader,
+		HTTP:       httpClient,
 	}
 
 	client.Auth = &AuthService{client: client}
@@ -185,15 +127,8 @@ func (c Client) MakeRequest(
 	}
 
 	c.logger.Debug("Making request", logger.Data{"request": string(reqBytes)})
-	var httpClient *http.Client
 
-	httpClient = &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: c.skipSSLValidation},
-		},
-	}
-
-	resp, err := httpClient.Do(req)
+	resp, err := c.HTTP.Do(req)
 	if err != nil {
 		return nil, err
 	}

@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
+	"os"
 
 	"github.com/pivotal-cf/go-pivnet/logger"
 )
@@ -450,7 +450,7 @@ func (p ProductFilesService) RemoveFromFileGroup(
 }
 
 func (p ProductFilesService) DownloadForRelease(
-	writer io.Writer,
+	location *os.File,
 	productSlug string,
 	releaseID int,
 	productFileID int,
@@ -471,10 +471,14 @@ func (p ProductFilesService) DownloadForRelease(
 
 	p.client.logger.Debug("Downloading file", logger.Data{"downloadLink": downloadLink})
 
+	p.client.HTTP.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
+
 	resp, err := p.client.MakeRequest(
 		"POST",
 		downloadLink,
-		http.StatusOK,
+		http.StatusFound,
 		nil,
 	)
 	if err != nil {
@@ -483,9 +487,11 @@ func (p ProductFilesService) DownloadForRelease(
 	}
 	defer resp.Body.Close()
 
-	p.client.logger.Debug("Copying body", logger.Data{"downloadLink": downloadLink})
+	p.client.HTTP.CheckRedirect = nil
 
-	_, err = io.Copy(writer, resp.Body)
+	p.client.logger.Debug("Fetching File", logger.Data{"location": resp.Header.Get("Location")})
+
+	err = p.client.downloader.Get(location, resp.Header.Get("Location"))
 	if err != nil {
 		return err
 	}

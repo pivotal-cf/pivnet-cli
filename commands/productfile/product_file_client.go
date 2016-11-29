@@ -13,7 +13,6 @@ import (
 	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
-	"gopkg.in/cheggaaa/pb.v1"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -31,7 +30,7 @@ type PivnetClient interface {
 	RemoveProductFileFromFileGroup(productSlug string, fileGroupID int, productFileID int) error
 	DeleteProductFile(productSlug string, releaseID int) (pivnet.ProductFile, error)
 	AcceptEULA(productSlug string, releaseID int) error
-	DownloadProductFile(writer io.Writer, productSlug string, releaseID int, productFileID int) error
+	DownloadProductFile(location *os.File, productSlug string, releaseID int, productFileID int) error
 }
 
 //go:generate counterfeiter . FakeFilter
@@ -453,15 +452,6 @@ func (c *ProductFileClient) Download(
 	}
 
 	for _, pf := range filteredProductFiles {
-		productFile, err := c.pivnetClient.ProductFileForRelease(
-			productSlug,
-			release.ID,
-			pf.ID,
-		)
-		if err != nil {
-			return c.eh.HandleError(err)
-		}
-
 		parts := strings.Split(pf.AWSObjectKey, "/")
 		fileName := parts[len(parts)-1]
 
@@ -476,53 +466,19 @@ func (c *ProductFileClient) Download(
 			return c.eh.HandleError(err)
 		}
 
-		c.l.Debug("Determining file size", logger.Data{"name": pf.Name})
-
-		progress := newProgressBar(productFile.Size, c.logWriter)
-		onDemandProgress := &startOnDemandProgressBar{progress, false}
-
-		multiWriter := io.MultiWriter(file, onDemandProgress)
-
 		c.l.Info(fmt.Sprintf(
 			"Downloading '%s' to '%s'",
 			fileName,
 			localFilepath,
 		))
-		err = c.pivnetClient.DownloadProductFile(multiWriter, productSlug, release.ID, pf.ID)
+
+		err = c.pivnetClient.DownloadProductFile(file, productSlug, release.ID, pf.ID)
 		if err != nil {
 			return c.eh.HandleError(err)
 		}
-
-		progress.Finish()
-
-		fmt.Fprintln(c.logWriter) // progressbar doesn't always add a newline
 	}
 
 	return nil
-}
-
-type startOnDemandProgressBar struct {
-	progressbar *pb.ProgressBar
-	started     bool
-}
-
-func (w *startOnDemandProgressBar) Write(b []byte) (int, error) {
-	if !w.started {
-		w.progressbar.Start()
-		w.started = true
-	}
-	return w.progressbar.Write(b)
-}
-
-func newProgressBar(total int, output io.Writer) *pb.ProgressBar {
-	progress := pb.New(total)
-
-	progress.Output = output
-	progress.ShowSpeed = true
-	progress.Units = pb.U_BYTES
-	progress.NotPrint = true
-
-	return progress.SetWidth(80)
 }
 
 func filterProductFilesByIDs(productFiles []pivnet.ProductFile, ids []int) []pivnet.ProductFile {

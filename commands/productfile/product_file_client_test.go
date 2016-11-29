@@ -4,13 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
-	"strings"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -678,9 +674,9 @@ var _ = Describe("productfile commands", func() {
 			filename  string
 			releaseID int
 
-			productFileForReleaseErr  error
 			productFilesForReleaseErr error
 			filterErr                 error
+			downloadErr               error
 		)
 
 		BeforeEach(func() {
@@ -702,36 +698,18 @@ var _ = Describe("productfile commands", func() {
 				Version: releaseVersion,
 			}
 
-			productFileForReleaseErr = nil
 			productFilesForReleaseErr = nil
 			filterErr = nil
+			downloadErr = nil
 
 			fakePivnetClient.ReleaseForVersionReturns(returnedRelease, nil)
-			fakePivnetClient.DownloadProductFileStub = func(writer io.Writer, productSlug string, releaseID int, productFileID int) error {
-				_, err := fmt.Fprintf(writer, fileContents)
-				return err
-			}
 		})
 
 		JustBeforeEach(func() {
 			fakePivnetClient.ProductFilesForReleaseReturns(productFiles, productFilesForReleaseErr)
 			fakeFilter.ProductFileKeysByGlobsReturns(productFiles, filterErr)
 
-			fakePivnetClient.ProductFileForReleaseStub = func(productSlug string, releaseID int, productFileID int) (pivnet.ProductFile, error) {
-				if productFileForReleaseErr != nil {
-					return pivnet.ProductFile{}, productFileForReleaseErr
-				}
-
-				switch productFileID {
-				case productFiles[0].ID:
-					return productFiles[0], nil
-				case productFiles[1].ID:
-					return productFiles[1], nil
-				default:
-					Fail("Unexpected invocation of ProductFileForRelease")
-					return pivnet.ProductFile{}, nil
-				}
-			}
+			fakePivnetClient.DownloadProductFileReturns(downloadErr)
 		})
 
 		AfterEach(func() {
@@ -759,15 +737,6 @@ var _ = Describe("productfile commands", func() {
 				Expect(invokedProductSlug).To(Equal(productSlug))
 				Expect(invokedReleaseID).To(Equal(releaseID))
 				Expect(invokedProductFileID).To(Equal(pf.ID))
-
-				downloadedProductFilepath := filepath.Join(
-					downloadDir,
-					nameFromAWSObjectKey(pf.AWSObjectKey),
-				)
-
-				contents, err := ioutil.ReadFile(downloadedProductFilepath)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(contents).To(Equal([]byte(fileContents)))
 			}
 		})
 
@@ -797,15 +766,6 @@ var _ = Describe("productfile commands", func() {
 					Expect(invokedProductSlug).To(Equal(productSlug))
 					Expect(invokedReleaseID).To(Equal(releaseID))
 					Expect(invokedProductFileID).To(Equal(pf.ID))
-
-					downloadedProductFilepath := filepath.Join(
-						downloadDir,
-						nameFromAWSObjectKey(pf.AWSObjectKey),
-					)
-
-					contents, err := ioutil.ReadFile(downloadedProductFilepath)
-					Expect(err).NotTo(HaveOccurred())
-					Expect(contents).To(Equal([]byte(fileContents)))
 				}
 			})
 
@@ -874,13 +834,8 @@ var _ = Describe("productfile commands", func() {
 		})
 
 		Context("when there is an error", func() {
-			var (
-				expectedErr error
-			)
-
 			BeforeEach(func() {
-				expectedErr = errors.New("productfile error")
-				fakePivnetClient.DownloadProductFileReturns(expectedErr)
+				downloadErr = errors.New("download error")
 			})
 
 			It("invokes the error handler", func() {
@@ -895,7 +850,7 @@ var _ = Describe("productfile commands", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(downloadErr))
 			})
 		})
 
@@ -963,27 +918,6 @@ var _ = Describe("productfile commands", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-			})
-		})
-
-		Context("when there is an error getting product file", func() {
-			BeforeEach(func() {
-				productFileForReleaseErr = errors.New("product file for release error")
-			})
-
-			It("invokes the error handler", func() {
-				err := client.Download(
-					productSlug,
-					releaseVersion,
-					globs,
-					productFileIDs,
-					downloadDir,
-					acceptEULA,
-				)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(productFileForReleaseErr))
 			})
 		})
 
@@ -1074,8 +1008,3 @@ var _ = Describe("productfile commands", func() {
 		})
 	})
 })
-
-func nameFromAWSObjectKey(awsObjectKey string) string {
-	parts := strings.Split(awsObjectKey, "/")
-	return parts[len(parts)-1]
-}
