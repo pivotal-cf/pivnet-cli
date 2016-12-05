@@ -6,16 +6,16 @@ import (
 	"os"
 	"path/filepath"
 
-	yaml "gopkg.in/yaml.v2"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/pivnet-cli/rc"
+	"github.com/pivotal-cf/pivnet-cli/rc/rcfakes"
 )
 
 var _ = Describe("RCHandler", func() {
 	var (
-		rcHandler *rc.RCHandler
+		fakePivnetRCWriter *rcfakes.FakePivnetRCWriter
+		rcHandler          *rc.RCHandler
 
 		profile rc.PivnetProfile
 
@@ -25,6 +25,8 @@ var _ = Describe("RCHandler", func() {
 	)
 
 	BeforeEach(func() {
+		fakePivnetRCWriter = &rcfakes.FakePivnetRCWriter{}
+
 		var err error
 		tempDir, err = ioutil.TempDir("", "")
 		Expect(err).NotTo(HaveOccurred())
@@ -55,7 +57,7 @@ profiles:
 		err := ioutil.WriteFile(configFilepath, configContents, os.ModePerm)
 		Expect(err).NotTo(HaveOccurred())
 
-		rcHandler = rc.NewRCHandler(configFilepath)
+		rcHandler = rc.NewRCHandler(configFilepath, fakePivnetRCWriter)
 	})
 
 	AfterEach(func() {
@@ -86,7 +88,7 @@ profiles:
 		Context("when profile file does not exist", func() {
 			JustBeforeEach(func() {
 				otherFilepath := filepath.Join(tempDir, "other-file")
-				rcHandler = rc.NewRCHandler(otherFilepath)
+				rcHandler = rc.NewRCHandler(otherFilepath, fakePivnetRCWriter)
 			})
 
 			It("returns empty profile without error", func() {
@@ -124,35 +126,30 @@ profiles:
 
 	Describe("SaveProfile", func() {
 		It("saves profile", func() {
+			updatedAPIToken := "updatedAPIToken"
+
 			err := rcHandler.SaveProfile(
 				profile.Name,
-				profile.APIToken,
+				updatedAPIToken,
 				profile.Host,
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			profiles := profilesFromRCFilepath(configFilepath)
+			Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(1))
 
-			Expect(profiles).To(HaveLen(1))
+			invokedFilepath, invokedContents := fakePivnetRCWriter.WriteToFileArgsForCall(0)
+			Expect(invokedFilepath).To(Equal(configFilepath))
 
-			Expect(profiles[0]).NotTo(BeNil())
-			Expect(profiles[0].Name).To(Equal(profile.Name))
-			Expect(profiles[0].APIToken).To(Equal(profile.APIToken))
-			Expect(profiles[0].Host).To(Equal(profile.Host))
-		})
-
-		It("updates existing file with user-only read/write (i.e. 0600) permissions", func() {
-			err := rcHandler.SaveProfile(
-				profile.Name,
-				profile.APIToken,
-				profile.Host,
-			)
-			Expect(err).NotTo(HaveOccurred())
-
-			info, err := os.Stat(configFilepath)
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(info.Mode()).To(Equal(os.FileMode(0600)))
+			expectedPivnetRC := rc.PivnetRC{
+				Profiles: []rc.PivnetProfile{
+					{
+						Name:     profile.Name,
+						APIToken: updatedAPIToken,
+						Host:     profile.Host,
+					},
+				},
+			}
+			Expect(invokedContents).To(Equal(expectedPivnetRC))
 		})
 
 		Context("when profile does not yet exist", func() {
@@ -176,19 +173,22 @@ profiles:
 				)
 				Expect(err).NotTo(HaveOccurred())
 
-				profiles := profilesFromRCFilepath(configFilepath)
+				Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(1))
 
-				Expect(profiles).To(HaveLen(2))
+				invokedFilepath, invokedContents := fakePivnetRCWriter.WriteToFileArgsForCall(0)
+				Expect(invokedFilepath).To(Equal(configFilepath))
 
-				Expect(profiles[0]).NotTo(BeNil())
-				Expect(profiles[0].Name).To(Equal(profile.Name))
-				Expect(profiles[0].APIToken).To(Equal(profile.APIToken))
-				Expect(profiles[0].Host).To(Equal(profile.Host))
-
-				Expect(profiles[1]).NotTo(BeNil())
-				Expect(profiles[1].Name).To(Equal(newName))
-				Expect(profiles[1].APIToken).To(Equal(newAPIToken))
-				Expect(profiles[1].Host).To(Equal(newHost))
+				expectedPivnetRC := rc.PivnetRC{
+					Profiles: []rc.PivnetProfile{
+						profile,
+						{
+							Name:     newName,
+							APIToken: newAPIToken,
+							Host:     newHost,
+						},
+					},
+				}
+				Expect(invokedContents).To(Equal(expectedPivnetRC))
 			})
 		})
 
@@ -199,10 +199,10 @@ profiles:
 
 			JustBeforeEach(func() {
 				newFilepath = filepath.Join(tempDir, "other-file")
-				rcHandler = rc.NewRCHandler(newFilepath)
+				rcHandler = rc.NewRCHandler(newFilepath, fakePivnetRCWriter)
 			})
 
-			It("create file and saves new profile without error", func() {
+			It("saves new profile without error", func() {
 				err := rcHandler.SaveProfile(
 					profile.Name,
 					profile.APIToken,
@@ -210,28 +210,17 @@ profiles:
 				)
 				Expect(err).NotTo(HaveOccurred())
 
-				profiles := profilesFromRCFilepath(newFilepath)
+				Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(1))
 
-				Expect(profiles).To(HaveLen(1))
+				invokedFilepath, invokedContents := fakePivnetRCWriter.WriteToFileArgsForCall(0)
+				Expect(invokedFilepath).To(Equal(newFilepath))
 
-				Expect(profiles[0]).NotTo(BeNil())
-				Expect(profiles[0].Name).To(Equal(profile.Name))
-				Expect(profiles[0].APIToken).To(Equal(profile.APIToken))
-				Expect(profiles[0].Host).To(Equal(profile.Host))
-			})
-
-			It("creates new file with user-only read/write (i.e. 0600) permissions", func() {
-				err := rcHandler.SaveProfile(
-					profile.Name,
-					profile.APIToken,
-					profile.Host,
-				)
-				Expect(err).NotTo(HaveOccurred())
-
-				info, err := os.Stat(newFilepath)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(info.Mode()).To(Equal(os.FileMode(0600)))
+				expectedPivnetRC := rc.PivnetRC{
+					Profiles: []rc.PivnetProfile{
+						profile,
+					},
+				}
+				Expect(invokedContents).To(Equal(expectedPivnetRC))
 			})
 		})
 
@@ -268,17 +257,91 @@ profiles:
 			})
 		})
 	})
+
+	Describe("RemoveProfileWithName", func() {
+		It("removes profile", func() {
+			err := rcHandler.RemoveProfileWithName(profile.Name)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(1))
+
+			invokedFilepath, invokedContents := fakePivnetRCWriter.WriteToFileArgsForCall(0)
+			Expect(invokedFilepath).To(Equal(configFilepath))
+
+			expectedPivnetRC := rc.PivnetRC{
+				Profiles: []rc.PivnetProfile{},
+			}
+			Expect(invokedContents).To(Equal(expectedPivnetRC))
+		})
+
+		Context("when profile does not yet exist", func() {
+			var (
+				newName string
+			)
+
+			BeforeEach(func() {
+				newName = "some-other-profile"
+			})
+
+			It("writes existing profiles without error", func() {
+				err := rcHandler.RemoveProfileWithName(newName)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(1))
+
+				invokedFilepath, invokedContents := fakePivnetRCWriter.WriteToFileArgsForCall(0)
+				Expect(invokedFilepath).To(Equal(configFilepath))
+
+				expectedPivnetRC := rc.PivnetRC{
+					Profiles: []rc.PivnetProfile{
+						profile,
+					},
+				}
+				Expect(invokedContents).To(Equal(expectedPivnetRC))
+			})
+		})
+
+		Context("when profile file does not exist", func() {
+			var (
+				newFilepath string
+			)
+
+			JustBeforeEach(func() {
+				newFilepath = filepath.Join(tempDir, "other-file")
+				rcHandler = rc.NewRCHandler(newFilepath, fakePivnetRCWriter)
+			})
+
+			It("does not write a file", func() {
+				err := rcHandler.RemoveProfileWithName("unused name")
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(0))
+			})
+		})
+
+		Context("when profile file exists but cannot be read", func() {
+			JustBeforeEach(func() {
+				err := os.Chmod(configFilepath, 0)
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("returns an error", func() {
+				err := rcHandler.RemoveProfileWithName("unused name")
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+
+		Context("when profile file cannot be unmarshalled", func() {
+			BeforeEach(func() {
+				configContents = []byte("[*invalid-yaml!")
+			})
+
+			It("returns an error", func() {
+				err := rcHandler.RemoveProfileWithName("unused name")
+
+				Expect(err).To(HaveOccurred())
+			})
+		})
+	})
 })
-
-func profilesFromRCFilepath(filepath string) []rc.PivnetProfile {
-	pivnetRCBytes, err := ioutil.ReadFile(filepath)
-	Expect(err).NotTo(HaveOccurred())
-
-	var pivnetRC rc.PivnetRC
-	err = yaml.Unmarshal(pivnetRCBytes, &pivnetRC)
-	Expect(err).NotTo(HaveOccurred())
-
-	Expect(pivnetRC).NotTo(BeNil())
-
-	return pivnetRC.Profiles
-}

@@ -17,6 +17,7 @@ import (
 	"github.com/pivotal-cf/pivnet-cli/gp"
 	"github.com/pivotal-cf/pivnet-cli/printer"
 	"github.com/pivotal-cf/pivnet-cli/rc"
+	"github.com/pivotal-cf/pivnet-cli/rc/filesystem"
 	"github.com/pivotal-cf/pivnet-cli/version"
 	"github.com/robdimsdale/sanitizer"
 )
@@ -35,6 +36,7 @@ type Filterer interface {
 type RCHandler interface {
 	SaveProfile(profileName string, apiToken string, host string) error
 	ProfileForName(profileName string) (*rc.PivnetProfile, error)
+	RemoveProfileWithName(profileName string) error
 }
 
 var (
@@ -189,7 +191,8 @@ var Init = func(profileRequired bool) error {
 	}
 
 	if RC == nil {
-		RC = rc.NewRCHandler(Pivnet.ConfigFile)
+		rcFileWriter := filesystem.NewPivnetRCWriter()
+		RC = rc.NewRCHandler(Pivnet.ConfigFile, rcFileWriter)
 	}
 
 	profile, err := RC.ProfileForName(Pivnet.ProfileName)

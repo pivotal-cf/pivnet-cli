@@ -10,7 +10,7 @@ import (
 
 //go:generate counterfeiter . RCHandler
 type RCHandler interface {
-	SaveProfile(profileName string, apiToken string, host string) error
+	RemoveProfileWithName(profileName string) error
 }
 
 type LogoutClient struct {
@@ -38,10 +38,7 @@ func NewLogoutClient(
 }
 
 func (c *LogoutClient) Logout(profileName string) error {
-	apiToken := ""
-	host := ""
-
-	err := c.rcHandler.SaveProfile(profileName, apiToken, host)
+	err := c.rcHandler.RemoveProfileWithName(profileName)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}

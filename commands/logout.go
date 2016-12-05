@@ -21,7 +21,7 @@ var NewLogoutClient = func() LogoutClient {
 }
 
 func (command *LogoutCommand) Execute([]string) error {
-	err := Init(true)
+	err := Init(false)
 	if err != nil {
 		return err
 	}

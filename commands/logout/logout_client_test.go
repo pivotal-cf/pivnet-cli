@@ -41,39 +41,33 @@ var _ = Describe("logout commands", func() {
 	Describe("Logout", func() {
 		var (
 			profileName string
-			apiToken    string
-			host        string
 
-			saveProfileErr error
+			removeProfileErr error
 		)
 
 		BeforeEach(func() {
 			profileName = "some-logout-slug"
-			apiToken = "some-api-token"
-			host = "some-host"
 
-			saveProfileErr = nil
+			removeProfileErr = nil
 		})
 
 		JustBeforeEach(func() {
-			fakeRCHandler.SaveProfileReturns(saveProfileErr)
+			fakeRCHandler.RemoveProfileWithNameReturns(removeProfileErr)
 		})
 
-		It("saves profile", func() {
+		It("removes profile", func() {
 			err := client.Logout(profileName)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeRCHandler.SaveProfileCallCount()).To(Equal(1))
-			invokedProfileName, invokedAPIToken, invokedHost := fakeRCHandler.SaveProfileArgsForCall(0)
+			Expect(fakeRCHandler.RemoveProfileWithNameCallCount()).To(Equal(1))
+			invokedProfileName := fakeRCHandler.RemoveProfileWithNameArgsForCall(0)
 
 			Expect(invokedProfileName).To(Equal(profileName))
-			Expect(invokedAPIToken).To(BeEmpty())
-			Expect(invokedHost).To(BeEmpty())
 		})
 
-		Context("when saving profile returns an error", func() {
+		Context("when removing profile returns an error", func() {
 			BeforeEach(func() {
-				saveProfileErr = fmt.Errorf("save profile error")
+				removeProfileErr = fmt.Errorf("remove profile error")
 			})
 
 			It("invokes the error handler", func() {
@@ -81,7 +75,7 @@ var _ = Describe("logout commands", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(saveProfileErr))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(removeProfileErr))
 			})
 		})
 	})

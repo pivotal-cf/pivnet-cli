@@ -36,12 +36,12 @@ var _ = Describe("logout commands", func() {
 			Expect(fakeLogoutClient.LogoutCallCount()).To(Equal(1))
 		})
 
-		It("invokes the Init function with 'true'", func() {
+		It("invokes the Init function with 'false'", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(initInvocationArg).To(BeTrue())
+			Expect(initInvocationArg).To(BeFalse())
 		})
 
 		Context("when the Logout client returns an error", func() {

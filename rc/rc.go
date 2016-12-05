@@ -7,20 +7,23 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-const (
-	fileModeUserReadWrite = 0600
-)
+//go:generate counterfeiter . PivnetRCWriter
+type PivnetRCWriter interface {
+	WriteToFile(configFileLocation string, contents interface{}) error
+}
 
 type PivnetRC struct {
 	Profiles []PivnetProfile `yaml:"profiles"`
 }
 
 type RCHandler struct {
+	rcWriter       PivnetRCWriter
 	configFilepath string
 }
 
-func NewRCHandler(configFilepath string) *RCHandler {
+func NewRCHandler(configFilepath string, rcWriter PivnetRCWriter) *RCHandler {
 	return &RCHandler{
+		rcWriter:       rcWriter,
 		configFilepath: configFilepath,
 	}
 }
@@ -64,10 +67,11 @@ func (h *RCHandler) SaveProfile(
 
 	pivnetRC.Profiles[index] = *newInfo
 
-	return h.writePivnetRC(h.configFilepath, *pivnetRC)
+	return h.rcWriter.WriteToFile(h.configFilepath, *pivnetRC)
 }
 
-// ProfileForName will return (nil,nil) if the file does not exist
+// ProfileForName will return (nil,nil) if the file does not exist,
+// or if the profile does not exist,
 // but will return (nil,err) for other reasons e.g. the file cannot be read.
 func (h *RCHandler) ProfileForName(profileName string) (*PivnetProfile, error) {
 	pivnetRC, err := h.loadPivnetRC()
@@ -86,6 +90,32 @@ func (h *RCHandler) ProfileForName(profileName string) (*PivnetProfile, error) {
 	}
 
 	return nil, nil
+}
+
+// RemoveProfileWithName will return error for all errors except if file does not exist
+func (h *RCHandler) RemoveProfileWithName(profileName string) error {
+	pivnetRC, err := h.loadPivnetRC()
+	if err != nil {
+		return err
+	}
+
+	// Nothing to logout from if we didn't find an RC file
+	if pivnetRC == nil {
+		return nil
+	}
+
+	foundIndex := -1
+	for i, p := range pivnetRC.Profiles {
+		if p.Name == profileName {
+			foundIndex = i
+		}
+	}
+
+	if foundIndex >= 0 {
+		pivnetRC.Profiles = append(pivnetRC.Profiles[:foundIndex], pivnetRC.Profiles[foundIndex+1:]...)
+	}
+
+	return h.rcWriter.WriteToFile(h.configFilepath, *pivnetRC)
 }
 
 // loadPivnetRC does not return an error if the file does not exist
@@ -111,23 +141,4 @@ func (h *RCHandler) loadPivnetRC() (*PivnetRC, error) {
 	}
 
 	return &pivnetRC, nil
-}
-
-func (h *RCHandler) writePivnetRC(configFileLocation string, contents PivnetRC) error {
-	yamlBytes, err := yaml.Marshal(contents)
-	if err != nil {
-		return err
-	}
-
-	err = ioutil.WriteFile(configFileLocation, yamlBytes, fileModeUserReadWrite)
-	if err != nil {
-		return err
-	}
-
-	err = os.Chmod(configFileLocation, fileModeUserReadWrite)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
