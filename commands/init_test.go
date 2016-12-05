@@ -25,7 +25,8 @@ var (
 	fakeAuthenticator *commandsfakes.FakeAuthenticator
 	authErr           error
 
-	initErr error
+	initInvocationArg bool
+	initErr           error
 
 	origInitFunc func(bool) error
 )
@@ -47,7 +48,8 @@ var _ = BeforeEach(func() {
 })
 
 var _ = JustBeforeEach(func() {
-	commands.Init = func(bool) error {
+	commands.Init = func(arg bool) error {
+		initInvocationArg = arg
 		return initErr
 	}
 

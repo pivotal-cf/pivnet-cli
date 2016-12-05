@@ -45,6 +45,14 @@ var _ = Describe("login commands", func() {
 			Expect(fakeLoginClient.LoginCallCount()).To(Equal(1))
 		})
 
+		It("invokes the Init function with 'false'", func() {
+			err := cmd.Execute(nil)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(initInvocationArg).To(BeFalse())
+		})
+
 		Context("when the Login client returns an error", func() {
 			var (
 				expectedErr error

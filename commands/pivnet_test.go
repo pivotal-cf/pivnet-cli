@@ -257,6 +257,16 @@ var _ = Describe("Pivnet commands", func() {
 		})
 	})
 
+	Describe("Logout command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "Logout")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("logout"))
+		})
+	})
+
 	Describe("ReleaseTypes command", func() {
 		BeforeEach(func() {
 			field = fieldFor(commands.Pivnet, "ReleaseTypes")

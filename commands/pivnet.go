@@ -57,7 +57,8 @@ type PivnetCommand struct {
 	ProfileName string `long:"profile" description:"Name of profile" default:"default"`
 	ConfigFile  string `long:"config" description:"Path to config file"`
 
-	Login LoginCommand `command:"login" alias:"l" description:"Log in to Pivotal Network."`
+	Login  LoginCommand  `command:"login" alias:"l" description:"Log in to Pivotal Network."`
+	Logout LogoutCommand `command:"logout" description:"Log out from Pivotal Network."`
 
 	Help    HelpCommand    `command:"help" alias:"h" description:"Print this help message"`
 	Version VersionCommand `command:"version" alias:"v" description:"Print the version of this CLI and exit"`
