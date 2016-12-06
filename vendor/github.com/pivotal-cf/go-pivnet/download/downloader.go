@@ -21,19 +21,29 @@ type httpClient interface {
 	Do(*http.Request) (*http.Response, error)
 }
 
+//go:generate counterfeiter -o ./fakes/bar.go --fake-name Bar . bar
+type bar interface {
+	SetTotal(contentLength int64)
+	Add(totalWritten int) int
+	Kickoff()
+	Finish()
+}
+
 type Client struct {
 	httpClient httpClient
 	ranger     ranger
+	bar        bar
 }
 
-func New(httpClient httpClient, ranger ranger) *Client {
-	return &Client{
+func New(httpClient httpClient, ranger ranger, bar bar) Client {
+	return Client{
 		httpClient: httpClient,
 		ranger:     ranger,
+		bar:        bar,
 	}
 }
 
-func (c *Client) Get(location *os.File, contentURL string) error {
+func (c Client) Get(location *os.File, contentURL string) error {
 	req, err := http.NewRequest("HEAD", contentURL, nil)
 	if err != nil {
 		return fmt.Errorf("failed to construct HEAD request: %s", err)
@@ -51,6 +61,11 @@ func (c *Client) Get(location *os.File, contentURL string) error {
 		return fmt.Errorf("failed to construct range: %s", err)
 	}
 
+	c.bar.SetTotal(resp.ContentLength)
+	c.bar.Kickoff()
+
+	defer c.bar.Finish()
+
 	var g errgroup.Group
 	for _, r := range ranges {
 		byteRange := r
@@ -60,10 +75,12 @@ func (c *Client) Get(location *os.File, contentURL string) error {
 				return fmt.Errorf("failed during retryable request: %s", err)
 			}
 
-			_, err = location.WriteAt(respBytes, byteRange.Lower)
+			bytesWritten, err := location.WriteAt(respBytes, byteRange.Lower)
 			if err != nil {
 				return fmt.Errorf("failed to write file: %s", err)
 			}
+
+			c.bar.Add(bytesWritten)
 
 			return nil
 		})
