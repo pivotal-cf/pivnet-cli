@@ -3,8 +3,6 @@ package filesystem
 import (
 	"io/ioutil"
 	"os"
-
-	yaml "gopkg.in/yaml.v2"
 )
 
 type PivnetRCReadWriter struct {
@@ -44,13 +42,8 @@ type PivnetRCWriter struct {
 	configFilepath string
 }
 
-func (h *PivnetRCReadWriter) WriteToFile(contents interface{}) error {
-	yamlBytes, err := yaml.Marshal(contents)
-	if err != nil {
-		return err
-	}
-
-	err = ioutil.WriteFile(h.configFilepath, yamlBytes, fileModeUserReadWrite)
+func (h *PivnetRCReadWriter) WriteToFile(contents []byte) error {
+	err := ioutil.WriteFile(h.configFilepath, contents, fileModeUserReadWrite)
 	if err != nil {
 		return err
 	}

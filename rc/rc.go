@@ -4,7 +4,7 @@ import yaml "gopkg.in/yaml.v2"
 
 //go:generate counterfeiter . PivnetRCReadWriter
 type PivnetRCReadWriter interface {
-	WriteToFile(contents interface{}) error
+	WriteToFile(contents []byte) error
 	ReadFromFile() ([]byte, error)
 }
 
@@ -61,7 +61,13 @@ func (h *RCHandler) SaveProfile(
 
 	pivnetRC.Profiles[index] = *newInfo
 
-	return h.rcReadWriter.WriteToFile(*pivnetRC)
+	yamlBytes, err := yaml.Marshal(pivnetRC)
+	if err != nil {
+		// untested as we cannot force yaml unmarshal to return an error
+		return err
+	}
+
+	return h.rcReadWriter.WriteToFile(yamlBytes)
 }
 
 // ProfileForName will return (nil,nil) if the file does not exist,
@@ -109,7 +115,13 @@ func (h *RCHandler) RemoveProfileWithName(profileName string) error {
 		pivnetRC.Profiles = append(pivnetRC.Profiles[:foundIndex], pivnetRC.Profiles[foundIndex+1:]...)
 	}
 
-	return h.rcReadWriter.WriteToFile(*pivnetRC)
+	yamlBytes, err := yaml.Marshal(pivnetRC)
+	if err != nil {
+		// untested as we cannot force yaml unmarshal to return an error
+		return err
+	}
+
+	return h.rcReadWriter.WriteToFile(yamlBytes)
 }
 
 // loadPivnetRC does not return an error if the file does not exist

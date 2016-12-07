@@ -8,10 +8,10 @@ import (
 )
 
 type FakePivnetRCReadWriter struct {
-	WriteToFileStub        func(contents interface{}) error
+	WriteToFileStub        func(contents []byte) error
 	writeToFileMutex       sync.RWMutex
 	writeToFileArgsForCall []struct {
-		contents interface{}
+		contents []byte
 	}
 	writeToFileReturns struct {
 		result1 error
@@ -27,12 +27,17 @@ type FakePivnetRCReadWriter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakePivnetRCReadWriter) WriteToFile(contents interface{}) error {
+func (fake *FakePivnetRCReadWriter) WriteToFile(contents []byte) error {
+	var contentsCopy []byte
+	if contents != nil {
+		contentsCopy = make([]byte, len(contents))
+		copy(contentsCopy, contents)
+	}
 	fake.writeToFileMutex.Lock()
 	fake.writeToFileArgsForCall = append(fake.writeToFileArgsForCall, struct {
-		contents interface{}
-	}{contents})
-	fake.recordInvocation("WriteToFile", []interface{}{contents})
+		contents []byte
+	}{contentsCopy})
+	fake.recordInvocation("WriteToFile", []interface{}{contentsCopy})
 	fake.writeToFileMutex.Unlock()
 	if fake.WriteToFileStub != nil {
 		return fake.WriteToFileStub(contents)
@@ -47,7 +52,7 @@ func (fake *FakePivnetRCReadWriter) WriteToFileCallCount() int {
 	return len(fake.writeToFileArgsForCall)
 }
 
-func (fake *FakePivnetRCReadWriter) WriteToFileArgsForCall(i int) interface{} {
+func (fake *FakePivnetRCReadWriter) WriteToFileArgsForCall(i int) []byte {
 	fake.writeToFileMutex.RLock()
 	defer fake.writeToFileMutex.RUnlock()
 	return fake.writeToFileArgsForCall[i].contents

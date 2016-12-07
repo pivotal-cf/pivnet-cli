@@ -3,6 +3,8 @@ package rc_test
 import (
 	"fmt"
 
+	yaml "gopkg.in/yaml.v2"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/pivnet-cli/rc"
@@ -110,7 +112,10 @@ profiles:
 					},
 				},
 			}
-			Expect(invokedContents).To(Equal(expectedPivnetRC))
+
+			expectedBytes, err := yaml.Marshal(expectedPivnetRC)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(invokedContents).To(Equal(expectedBytes))
 		})
 
 		Context("when profile does not yet exist", func() {
@@ -148,7 +153,10 @@ profiles:
 						},
 					},
 				}
-				Expect(invokedContents).To(Equal(expectedPivnetRC))
+
+				expectedBytes, err := yaml.Marshal(expectedPivnetRC)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(invokedContents).To(Equal(expectedBytes))
 			})
 		})
 
@@ -174,7 +182,10 @@ profiles:
 						profile,
 					},
 				}
-				Expect(invokedContents).To(Equal(expectedPivnetRC))
+
+				expectedBytes, err := yaml.Marshal(expectedPivnetRC)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(invokedContents).To(Equal(expectedBytes))
 			})
 		})
 
@@ -223,7 +234,10 @@ profiles:
 			expectedPivnetRC := rc.PivnetRC{
 				Profiles: []rc.PivnetProfile{},
 			}
-			Expect(invokedContents).To(Equal(expectedPivnetRC))
+
+			expectedBytes, err := yaml.Marshal(expectedPivnetRC)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(invokedContents).To(Equal(expectedBytes))
 		})
 
 		Context("when profile does not yet exist", func() {
@@ -248,7 +262,10 @@ profiles:
 						profile,
 					},
 				}
-				Expect(invokedContents).To(Equal(expectedPivnetRC))
+
+				expectedBytes, err := yaml.Marshal(expectedPivnetRC)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(invokedContents).To(Equal(expectedBytes))
 			})
 		})
 

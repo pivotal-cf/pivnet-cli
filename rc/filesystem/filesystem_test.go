@@ -5,8 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	yaml "gopkg.in/yaml.v2"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/pivnet-cli/rc/filesystem"
@@ -84,15 +82,15 @@ var _ = Describe("PivnetRCReadWriter", func() {
 
 	Describe("Write", func() {
 		var (
-			contents string
+			contents []byte
 
 			existingContents []byte
 		)
 
 		BeforeEach(func() {
-			contents = "some contents"
+			contents = []byte("some contents")
 
-			existingContents = []byte(("some-existing-contents"))
+			existingContents = []byte("some-existing-contents")
 		})
 
 		JustBeforeEach(func() {
@@ -108,18 +106,20 @@ var _ = Describe("PivnetRCReadWriter", func() {
 				err := rcReadWriter.WriteToFile(contents)
 				Expect(err).NotTo(HaveOccurred())
 
-				writtenContents := contentsFromRCFilepath(otherFilepath)
+				b, err := ioutil.ReadFile(otherFilepath)
+				Expect(err).NotTo(HaveOccurred())
 
-				Expect(writtenContents).To(Equal(contents))
+				Expect(b).To(Equal(contents))
 			})
 
 			It("overwrites existing file", func() {
 				err := rcReadWriter.WriteToFile(contents)
 				Expect(err).NotTo(HaveOccurred())
 
-				writtenContents := contentsFromRCFilepath(configFilepath)
+				b, err := ioutil.ReadFile(configFilepath)
+				Expect(err).NotTo(HaveOccurred())
 
-				Expect(writtenContents).To(Equal(contents))
+				Expect(b).To(Equal(contents))
 			})
 
 			It("writes file with user-only read/write (i.e. 0600) permissions", func() {
@@ -134,16 +134,3 @@ var _ = Describe("PivnetRCReadWriter", func() {
 		})
 	})
 })
-
-func contentsFromRCFilepath(filepath string) string {
-	b, err := ioutil.ReadFile(filepath)
-	Expect(err).NotTo(HaveOccurred())
-
-	var contents string
-	err = yaml.Unmarshal(b, &contents)
-	Expect(err).NotTo(HaveOccurred())
-
-	Expect(contents).NotTo(BeEmpty())
-
-	return contents
-}
