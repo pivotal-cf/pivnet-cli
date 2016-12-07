@@ -1,15 +1,11 @@
 package rc
 
-import (
-	"io/ioutil"
-	"os"
+import yaml "gopkg.in/yaml.v2"
 
-	yaml "gopkg.in/yaml.v2"
-)
-
-//go:generate counterfeiter . PivnetRCWriter
-type PivnetRCWriter interface {
-	WriteToFile(configFileLocation string, contents interface{}) error
+//go:generate counterfeiter . PivnetRCReadWriter
+type PivnetRCReadWriter interface {
+	WriteToFile(contents interface{}) error
+	ReadFromFile() ([]byte, error)
 }
 
 type PivnetRC struct {
@@ -17,14 +13,12 @@ type PivnetRC struct {
 }
 
 type RCHandler struct {
-	rcWriter       PivnetRCWriter
-	configFilepath string
+	rcReadWriter PivnetRCReadWriter
 }
 
-func NewRCHandler(configFilepath string, rcWriter PivnetRCWriter) *RCHandler {
+func NewRCHandler(rcReadWriter PivnetRCReadWriter) *RCHandler {
 	return &RCHandler{
-		rcWriter:       rcWriter,
-		configFilepath: configFilepath,
+		rcReadWriter: rcReadWriter,
 	}
 }
 
@@ -67,7 +61,7 @@ func (h *RCHandler) SaveProfile(
 
 	pivnetRC.Profiles[index] = *newInfo
 
-	return h.rcWriter.WriteToFile(h.configFilepath, *pivnetRC)
+	return h.rcReadWriter.WriteToFile(*pivnetRC)
 }
 
 // ProfileForName will return (nil,nil) if the file does not exist,
@@ -115,27 +109,23 @@ func (h *RCHandler) RemoveProfileWithName(profileName string) error {
 		pivnetRC.Profiles = append(pivnetRC.Profiles[:foundIndex], pivnetRC.Profiles[foundIndex+1:]...)
 	}
 
-	return h.rcWriter.WriteToFile(h.configFilepath, *pivnetRC)
+	return h.rcReadWriter.WriteToFile(*pivnetRC)
 }
 
 // loadPivnetRC does not return an error if the file does not exist
 // but will return an error for other reasons e.g. the file cannot be read.
 func (h *RCHandler) loadPivnetRC() (*PivnetRC, error) {
-	_, err := os.Stat(h.configFilepath)
+	b, err := h.rcReadWriter.ReadFromFile()
 	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, nil
-		}
 		return nil, err
 	}
 
-	pivnetRCBytes, err := ioutil.ReadFile(h.configFilepath)
-	if err != nil {
-		return nil, err
+	if b == nil {
+		return nil, nil
 	}
 
 	var pivnetRC PivnetRC
-	err = yaml.Unmarshal(pivnetRCBytes, &pivnetRC)
+	err = yaml.Unmarshal(b, &pivnetRC)
 	if err != nil {
 		return nil, err
 	}

@@ -2,9 +2,6 @@ package rc_test
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -14,22 +11,21 @@ import (
 
 var _ = Describe("RCHandler", func() {
 	var (
-		fakePivnetRCWriter *rcfakes.FakePivnetRCWriter
-		rcHandler          *rc.RCHandler
+		fakePivnetRCReadWriter *rcfakes.FakePivnetRCReadWriter
+
+		rcHandler *rc.RCHandler
 
 		profile rc.PivnetProfile
 
-		tempDir        string
 		configContents []byte
-		configFilepath string
+
+		readErr error
 	)
 
 	BeforeEach(func() {
-		fakePivnetRCWriter = &rcfakes.FakePivnetRCWriter{}
+		fakePivnetRCReadWriter = &rcfakes.FakePivnetRCReadWriter{}
 
-		var err error
-		tempDir, err = ioutil.TempDir("", "")
-		Expect(err).NotTo(HaveOccurred())
+		readErr = nil
 
 		profile = rc.PivnetProfile{
 			Name:     "some-profile",
@@ -37,7 +33,6 @@ var _ = Describe("RCHandler", func() {
 			Host:     "some-host",
 		}
 
-		configFilepath = filepath.Join(tempDir, ".pivnetrc")
 		configContents = []byte(fmt.Sprintf(
 			`
 ---
@@ -54,15 +49,8 @@ profiles:
 	})
 
 	JustBeforeEach(func() {
-		err := ioutil.WriteFile(configFilepath, configContents, os.ModePerm)
-		Expect(err).NotTo(HaveOccurred())
-
-		rcHandler = rc.NewRCHandler(configFilepath, fakePivnetRCWriter)
-	})
-
-	AfterEach(func() {
-		err := os.RemoveAll(tempDir)
-		Expect(err).NotTo(HaveOccurred())
+		fakePivnetRCReadWriter.ReadFromFileReturns(configContents, readErr)
+		rcHandler = rc.NewRCHandler(fakePivnetRCReadWriter)
 	})
 
 	Describe("ProfileForName", func() {
@@ -85,33 +73,7 @@ profiles:
 			})
 		})
 
-		Context("when profile file does not exist", func() {
-			JustBeforeEach(func() {
-				otherFilepath := filepath.Join(tempDir, "other-file")
-				rcHandler = rc.NewRCHandler(otherFilepath, fakePivnetRCWriter)
-			})
-
-			It("returns empty profile without error", func() {
-				_, err := rcHandler.ProfileForName("some-profile")
-
-				Expect(err).NotTo(HaveOccurred())
-			})
-		})
-
-		Context("when profile file cannot be read", func() {
-			JustBeforeEach(func() {
-				err := os.Chmod(configFilepath, 0)
-				Expect(err).NotTo(HaveOccurred())
-			})
-
-			It("returns an error", func() {
-				_, err := rcHandler.ProfileForName("some-profile")
-
-				Expect(err).To(HaveOccurred())
-			})
-		})
-
-		Context("when profile file cannot be unmarshalled", func() {
+		Context("when rc file contents cannot be unmarshalled", func() {
 			BeforeEach(func() {
 				configContents = []byte("[*invalid-yaml!")
 			})
@@ -135,10 +97,9 @@ profiles:
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(1))
+			Expect(fakePivnetRCReadWriter.WriteToFileCallCount()).To(Equal(1))
 
-			invokedFilepath, invokedContents := fakePivnetRCWriter.WriteToFileArgsForCall(0)
-			Expect(invokedFilepath).To(Equal(configFilepath))
+			invokedContents := fakePivnetRCReadWriter.WriteToFileArgsForCall(0)
 
 			expectedPivnetRC := rc.PivnetRC{
 				Profiles: []rc.PivnetProfile{
@@ -173,10 +134,9 @@ profiles:
 				)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(1))
+				Expect(fakePivnetRCReadWriter.WriteToFileCallCount()).To(Equal(1))
 
-				invokedFilepath, invokedContents := fakePivnetRCWriter.WriteToFileArgsForCall(0)
-				Expect(invokedFilepath).To(Equal(configFilepath))
+				invokedContents := fakePivnetRCReadWriter.WriteToFileArgsForCall(0)
 
 				expectedPivnetRC := rc.PivnetRC{
 					Profiles: []rc.PivnetProfile{
@@ -193,13 +153,8 @@ profiles:
 		})
 
 		Context("when profile file does not exist", func() {
-			var (
-				newFilepath string
-			)
-
-			JustBeforeEach(func() {
-				newFilepath = filepath.Join(tempDir, "other-file")
-				rcHandler = rc.NewRCHandler(newFilepath, fakePivnetRCWriter)
+			BeforeEach(func() {
+				configContents = nil
 			})
 
 			It("saves new profile without error", func() {
@@ -210,10 +165,9 @@ profiles:
 				)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(1))
+				Expect(fakePivnetRCReadWriter.WriteToFileCallCount()).To(Equal(1))
 
-				invokedFilepath, invokedContents := fakePivnetRCWriter.WriteToFileArgsForCall(0)
-				Expect(invokedFilepath).To(Equal(newFilepath))
+				invokedContents := fakePivnetRCReadWriter.WriteToFileArgsForCall(0)
 
 				expectedPivnetRC := rc.PivnetRC{
 					Profiles: []rc.PivnetProfile{
@@ -224,10 +178,9 @@ profiles:
 			})
 		})
 
-		Context("when profile file exists but cannot be read", func() {
-			JustBeforeEach(func() {
-				err := os.Chmod(configFilepath, 0)
-				Expect(err).NotTo(HaveOccurred())
+		Context("when rc file exists but cannot be read", func() {
+			BeforeEach(func() {
+				readErr = fmt.Errorf("some read error")
 			})
 
 			It("returns an error", func() {
@@ -241,7 +194,7 @@ profiles:
 			})
 		})
 
-		Context("when profile file cannot be unmarshalled", func() {
+		Context("when rc file contents cannot be unmarshalled", func() {
 			BeforeEach(func() {
 				configContents = []byte("[*invalid-yaml!")
 			})
@@ -263,10 +216,9 @@ profiles:
 			err := rcHandler.RemoveProfileWithName(profile.Name)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(1))
+			Expect(fakePivnetRCReadWriter.WriteToFileCallCount()).To(Equal(1))
 
-			invokedFilepath, invokedContents := fakePivnetRCWriter.WriteToFileArgsForCall(0)
-			Expect(invokedFilepath).To(Equal(configFilepath))
+			invokedContents := fakePivnetRCReadWriter.WriteToFileArgsForCall(0)
 
 			expectedPivnetRC := rc.PivnetRC{
 				Profiles: []rc.PivnetProfile{},
@@ -287,10 +239,9 @@ profiles:
 				err := rcHandler.RemoveProfileWithName(newName)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(1))
+				Expect(fakePivnetRCReadWriter.WriteToFileCallCount()).To(Equal(1))
 
-				invokedFilepath, invokedContents := fakePivnetRCWriter.WriteToFileArgsForCall(0)
-				Expect(invokedFilepath).To(Equal(configFilepath))
+				invokedContents := fakePivnetRCReadWriter.WriteToFileArgsForCall(0)
 
 				expectedPivnetRC := rc.PivnetRC{
 					Profiles: []rc.PivnetProfile{
@@ -301,38 +252,32 @@ profiles:
 			})
 		})
 
-		Context("when profile file does not exist", func() {
-			var (
-				newFilepath string
-			)
-
-			JustBeforeEach(func() {
-				newFilepath = filepath.Join(tempDir, "other-file")
-				rcHandler = rc.NewRCHandler(newFilepath, fakePivnetRCWriter)
+		Context("when rc file does not exist", func() {
+			BeforeEach(func() {
+				configContents = nil
 			})
 
 			It("does not write a file", func() {
 				err := rcHandler.RemoveProfileWithName("unused name")
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(fakePivnetRCWriter.WriteToFileCallCount()).To(Equal(0))
+				Expect(fakePivnetRCReadWriter.WriteToFileCallCount()).To(Equal(0))
 			})
 		})
 
-		Context("when profile file exists but cannot be read", func() {
-			JustBeforeEach(func() {
-				err := os.Chmod(configFilepath, 0)
-				Expect(err).NotTo(HaveOccurred())
+		Context("when reading rc file returns an error", func() {
+			BeforeEach(func() {
+				readErr = fmt.Errorf("some read error")
 			})
 
 			It("returns an error", func() {
 				err := rcHandler.RemoveProfileWithName("unused name")
 
-				Expect(err).To(HaveOccurred())
+				Expect(err).To(Equal(readErr))
 			})
 		})
 
-		Context("when profile file cannot be unmarshalled", func() {
+		Context("when rc file contents cannot be unmarshalled", func() {
 			BeforeEach(func() {
 				configContents = []byte("[*invalid-yaml!")
 			})

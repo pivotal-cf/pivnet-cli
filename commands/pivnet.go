@@ -191,8 +191,8 @@ var Init = func(profileRequired bool) error {
 	}
 
 	if RC == nil {
-		rcFileWriter := filesystem.NewPivnetRCWriter()
-		RC = rc.NewRCHandler(Pivnet.ConfigFile, rcFileWriter)
+		rcFileReadWriter := filesystem.NewPivnetRCReadWriter(Pivnet.ConfigFile)
+		RC = rc.NewRCHandler(rcFileReadWriter)
 	}
 
 	profile, err := RC.ProfileForName(Pivnet.ProfileName)
