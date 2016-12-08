@@ -9,6 +9,7 @@ import (
 	pivnet "github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/ui"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -164,12 +165,16 @@ func (c *ReleaseClient) Delete(productSlug string, releaseVersion string) error 
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"release %d deleted successfully for %s\n",
+		message := fmt.Sprintf(
+			"Release %d deleted for %s",
 			release.ID,
 			productSlug,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil

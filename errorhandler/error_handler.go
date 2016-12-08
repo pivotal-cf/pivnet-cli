@@ -6,14 +6,14 @@ import (
 	"io"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/ui"
 )
 
 var (
 	ErrAlreadyHandled = errors.New("error already handled")
-	RedFunc           = color.New(color.FgRed).SprintFunc()
+	RedFunc           = ui.ErrorColor.SprintFunc()
 )
 
 //go:generate counterfeiter . ErrorHandler

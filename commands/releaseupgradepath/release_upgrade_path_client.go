@@ -10,6 +10,7 @@ import (
 	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/ui"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -145,13 +146,17 @@ func (c *ReleaseUpgradePathClient) Add(
 		}
 
 		if c.format == printer.PrintAsTable {
-			_, err = fmt.Fprintf(
-				c.outputWriter,
-				"release upgrade path '%s' added successfully to %s/%s\n",
+			message := fmt.Sprintf(
+				"Release upgrade path '%s' added to %s/%s",
 				previousRelease.Version,
 				productSlug,
 				releaseVersion,
 			)
+			coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+			_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+			return err
 		}
 	}
 
@@ -194,13 +199,17 @@ func (c *ReleaseUpgradePathClient) Remove(
 		}
 
 		if c.format == printer.PrintAsTable {
-			_, err = fmt.Fprintf(
-				c.outputWriter,
-				"release upgrade path '%s' removed successfully from %s/%s\n",
+			message := fmt.Sprintf(
+				"Release upgrade path '%s' removed from %s/%s",
 				previousRelease.Version,
 				productSlug,
 				releaseVersion,
 			)
+			coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+			_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+			return err
 		}
 	}
 

@@ -9,6 +9,7 @@ import (
 	pivnet "github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/ui"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -118,16 +119,16 @@ func (c *EULAClient) AcceptEULA(productSlug string, releaseVersion string) error
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"eula acccepted successfully for %s/%s\n",
+		message := fmt.Sprintf(
+			"EULA acccepted for %s/%s",
 			productSlug,
 			releaseVersion,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
 
-		if err != nil {
-			return err
-		}
+		_, err = fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil

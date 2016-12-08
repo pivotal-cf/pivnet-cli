@@ -10,6 +10,7 @@ import (
 	pivnet "github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/ui"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -156,13 +157,17 @@ func (c *UserGroupClient) AddToRelease(
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"user group %d added successfully to %s/%s\n",
+		message := fmt.Sprintf(
+			"User group %d added to %s/%s",
 			userGroupID,
 			productSlug,
 			releaseVersion,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil
@@ -188,17 +193,17 @@ func (c *UserGroupClient) RemoveFromRelease(
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"user group %d removed successfully from %s/%s\n",
+		message := fmt.Sprintf(
+			"User group %d removed from %s/%s",
 			userGroupID,
 			productSlug,
 			releaseVersion,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
 
-		if err != nil {
-			return err
-		}
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil
@@ -254,11 +259,15 @@ func (c *UserGroupClient) Delete(userGroupID int) error {
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"user group %d deleted successfully\n",
+		message := fmt.Sprintf(
+			"User group %d deleted",
 			userGroupID,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil

@@ -13,6 +13,7 @@ import (
 	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/ui"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -273,13 +274,17 @@ func (c *ProductFileClient) AddToRelease(
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"product file %d added successfully to %s/%s\n",
+		message := fmt.Sprintf(
+			"Product file %d added to %s/%s",
 			productFileID,
 			productSlug,
 			releaseVersion,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil
@@ -305,17 +310,17 @@ func (c *ProductFileClient) RemoveFromRelease(
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"product file %d removed successfully from %s/%s\n",
+		message := fmt.Sprintf(
+			"Product file %d removed from %s/%s",
 			productFileID,
 			productSlug,
 			releaseVersion,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
 
-		if err != nil {
-			return err
-		}
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil
@@ -336,12 +341,16 @@ func (c *ProductFileClient) AddToFileGroup(
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"product file %d successfully added to file group %d\n",
+		message := fmt.Sprintf(
+			"Product file %d added to file group %d",
 			productFileID,
 			fileGroupID,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil
@@ -362,16 +371,16 @@ func (c *ProductFileClient) RemoveFromFileGroup(
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"product file %d successfully removed from file group %d\n",
+		message := fmt.Sprintf(
+			"Product file %d removed from file group %d",
 			productFileID,
 			fileGroupID,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
 
-		if err != nil {
-			return err
-		}
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil
@@ -387,12 +396,16 @@ func (c *ProductFileClient) Delete(productSlug string, productFileID int) error 
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"product file %d deleted successfully for %s\n",
+		message := fmt.Sprintf(
+			"Product file %d deleted for %s",
 			productFileID,
 			productSlug,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return c.printProductFile(productFile)

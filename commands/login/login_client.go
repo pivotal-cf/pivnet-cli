@@ -6,6 +6,7 @@ import (
 
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/ui"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -72,8 +73,12 @@ func (c *LoginClient) printLogin() error {
 	switch c.format {
 
 	case printer.PrintAsTable:
-		fmt.Fprintln(c.outputWriter, "logged-in successfully")
-		return nil
+		message := "Logged-in successfully"
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil

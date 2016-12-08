@@ -10,6 +10,7 @@ import (
 	pivnet "github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/ui"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -192,12 +193,14 @@ func (c *FileGroupClient) Delete(productSlug string, fileGroupID int) error {
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"file group %d deleted successfully for %s\n",
+		message := fmt.Sprintf(
+			"File group %d deleted successfully for %s",
 			fileGroupID,
 			productSlug,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err = fmt.Fprintln(c.outputWriter, coloredMessage)
 	}
 
 	return nil
@@ -223,13 +226,15 @@ func (c *FileGroupClient) AddToRelease(
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"file group %d successfully added to %s/%s\n",
+		message := fmt.Sprintf(
+			"File group %d added to %s/%s",
 			fileGroupID,
 			productSlug,
 			releaseVersion,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err = fmt.Fprintln(c.outputWriter, coloredMessage)
 	}
 
 	return nil
@@ -255,13 +260,15 @@ func (c *FileGroupClient) RemoveFromRelease(
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"file group %d successfully removed from %s/%s\n",
+		message := fmt.Sprintf(
+			"File group %d removed from %s/%s",
 			fileGroupID,
 			productSlug,
 			releaseVersion,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err = fmt.Fprintln(c.outputWriter, coloredMessage)
 	}
 
 	return nil

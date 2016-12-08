@@ -6,6 +6,7 @@ import (
 
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/ui"
 )
 
 //go:generate counterfeiter . RCHandler
@@ -50,8 +51,12 @@ func (c *LogoutClient) printLogout() error {
 	switch c.format {
 
 	case printer.PrintAsTable:
-		fmt.Fprintln(c.outputWriter, "logged-out successfully")
-		return nil
+		message := "Logged-out successfully"
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil

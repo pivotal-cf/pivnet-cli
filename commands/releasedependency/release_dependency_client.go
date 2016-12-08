@@ -9,6 +9,7 @@ import (
 	pivnet "github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/ui"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -112,14 +113,18 @@ func (c *ReleaseDependencyClient) Add(
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"release dependency '%s/%s' added successfully to '%s/%s'\n",
+		message := fmt.Sprintf(
+			"Release dependency '%s/%s' added successfully to '%s/%s'",
 			dependentProductSlug,
 			dependentReleaseVersion,
 			productSlug,
 			releaseVersion,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil
@@ -151,14 +156,18 @@ func (c *ReleaseDependencyClient) Remove(
 	}
 
 	if c.format == printer.PrintAsTable {
-		_, err = fmt.Fprintf(
-			c.outputWriter,
-			"release dependency '%s/%s' removed successfully from '%s/%s'\n",
+		message := fmt.Sprintf(
+			"Release dependency '%s/%s' removed successfully from '%s/%s'",
 			dependentProductSlug,
 			dependentReleaseVersion,
 			productSlug,
 			releaseVersion,
 		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return nil
