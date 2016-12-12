@@ -856,6 +856,27 @@ var _ = Describe("productfile commands", func() {
 
 		Context("when there is an error getting all product files", func() {
 			BeforeEach(func() {
+				productFiles = nil
+			})
+
+			It("invokes the error handler", func() {
+				err := client.Download(
+					productSlug,
+					releaseVersion,
+					globs,
+					productFileIDs,
+					downloadDir,
+					acceptEULA,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0).Error()).To(ContainSubstring("No product files found"))
+			})
+		})
+
+		Context("when no product files match filter", func() {
+			BeforeEach(func() {
 				productFilesForReleaseErr = errors.New("product files for release error")
 			})
 

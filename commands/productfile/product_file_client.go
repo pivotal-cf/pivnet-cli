@@ -456,6 +456,15 @@ func (c *ProductFileClient) Download(
 		}
 	}
 
+	if len(filteredProductFiles) == 0 {
+		err := fmt.Errorf(
+			"No product files found for ids: %v or globs: %v",
+			productFileIDs,
+			globs,
+		)
+		return c.eh.HandleError(err)
+	}
+
 	if acceptEULA {
 		c.l.Debug("Accepting EULA")
 		err = c.pivnetClient.AcceptEULA(productSlug, release.ID)

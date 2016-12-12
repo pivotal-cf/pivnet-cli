@@ -1,7 +1,6 @@
 package filter
 
 import (
-	"fmt"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -45,13 +44,11 @@ func (f Filter) ProductFileKeysByGlobs(
 	f.l.Debug("filter.ProductFilesKeysByGlobs", logger.Data{"globs": globs})
 
 	filtered := []pivnet.ProductFile{}
-	for _, pattern := range globs {
-		prevFilteredCount := len(filtered)
+	for _, p := range productFiles {
+		parts := strings.Split(p.AWSObjectKey, "/")
+		fileName := parts[len(parts)-1]
 
-		for _, p := range productFiles {
-			parts := strings.Split(p.AWSObjectKey, "/")
-			fileName := parts[len(parts)-1]
-
+		for _, pattern := range globs {
 			matched, err := filepath.Match(pattern, fileName)
 			if err != nil {
 				return nil, err
@@ -60,10 +57,6 @@ func (f Filter) ProductFileKeysByGlobs(
 			if matched {
 				filtered = append(filtered, p)
 			}
-		}
-
-		if len(filtered) == prevFilteredCount {
-			return nil, fmt.Errorf("no product files match glob: %s", pattern)
 		}
 	}
 

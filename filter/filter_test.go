@@ -208,12 +208,12 @@ var _ = Describe("Filter", func() {
 				globs = []string{"*will-not-match*"}
 			})
 
-			It("returns empty slice", func() {
+			It("returns empty slice without error", func() {
 				filtered, err := f.ProductFileKeysByGlobs(
 					productFiles,
 					globs,
 				)
-				Expect(err).To(HaveOccurred())
+				Expect(err).NotTo(HaveOccurred())
 
 				Expect(filtered).To(HaveLen(0))
 			})
@@ -224,13 +224,14 @@ var _ = Describe("Filter", func() {
 				globs = []string{"file-1", "does-not-exist.txt"}
 			})
 
-			It("returns an error", func() {
-				_, err := f.ProductFileKeysByGlobs(
+			It("returns the match without error", func() {
+				filtered, err := f.ProductFileKeysByGlobs(
 					productFiles,
 					globs,
 				)
-				Expect(err).To(HaveOccurred())
-				Expect(err).To(MatchError("no product files match glob: does-not-exist.txt"))
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(filtered).To(HaveLen(1))
 			})
 		})
 	})
