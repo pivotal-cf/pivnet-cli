@@ -31,7 +31,7 @@ type PivnetClient interface {
 	RemoveProductFileFromFileGroup(productSlug string, fileGroupID int, productFileID int) error
 	DeleteProductFile(productSlug string, releaseID int) (pivnet.ProductFile, error)
 	AcceptEULA(productSlug string, releaseID int) error
-	DownloadProductFile(location *os.File, productSlug string, releaseID int, productFileID int) error
+	DownloadProductFile(location *os.File, productSlug string, releaseID int, productFileID int, progressWriter io.Writer) error
 }
 
 //go:generate counterfeiter . Filter
@@ -418,6 +418,7 @@ func (c *ProductFileClient) Download(
 	productFileIDs []int,
 	downloadDir string,
 	acceptEULA bool,
+	progressWriter io.Writer,
 ) error {
 	if len(globs) > 0 && len(productFileIDs) > 0 {
 		err := fmt.Errorf("Cannot provide both globs and product file IDs")
@@ -494,7 +495,7 @@ func (c *ProductFileClient) Download(
 			localFilepath,
 		))
 
-		err = c.pivnetClient.DownloadProductFile(file, productSlug, release.ID, pf.ID)
+		err = c.pivnetClient.DownloadProductFile(file, productSlug, release.ID, pf.ID, progressWriter)
 		if err != nil {
 			return c.eh.HandleError(err)
 		}

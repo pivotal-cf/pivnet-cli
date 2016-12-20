@@ -17,6 +17,8 @@ type Ranger struct {
 		result1 []download.Range
 		result2 error
 	}
+	invocations      map[string][][]interface{}
+	invocationsMutex sync.RWMutex
 }
 
 func (fake *Ranger) BuildRange(contentLength int64) ([]download.Range, error) {
@@ -24,6 +26,7 @@ func (fake *Ranger) BuildRange(contentLength int64) ([]download.Range, error) {
 	fake.buildRangeArgsForCall = append(fake.buildRangeArgsForCall, struct {
 		contentLength int64
 	}{contentLength})
+	fake.recordInvocation("BuildRange", []interface{}{contentLength})
 	fake.buildRangeMutex.Unlock()
 	if fake.BuildRangeStub != nil {
 		return fake.BuildRangeStub(contentLength)
@@ -50,4 +53,24 @@ func (fake *Ranger) BuildRangeReturns(result1 []download.Range, result2 error) {
 		result1 []download.Range
 		result2 error
 	}{result1, result2}
+}
+
+func (fake *Ranger) Invocations() map[string][][]interface{} {
+	fake.invocationsMutex.RLock()
+	defer fake.invocationsMutex.RUnlock()
+	fake.buildRangeMutex.RLock()
+	defer fake.buildRangeMutex.RUnlock()
+	return fake.invocations
+}
+
+func (fake *Ranger) recordInvocation(key string, args []interface{}) {
+	fake.invocationsMutex.Lock()
+	defer fake.invocationsMutex.Unlock()
+	if fake.invocations == nil {
+		fake.invocations = map[string][][]interface{}{}
+	}
+	if fake.invocations[key] == nil {
+		fake.invocations[key] = [][]interface{}{}
+	}
+	fake.invocations[key] = append(fake.invocations[key], args)
 }

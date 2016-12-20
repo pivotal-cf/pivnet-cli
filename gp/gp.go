@@ -147,8 +147,8 @@ func (c Client) DeleteProductFile(productSlug string, releaseID int) (pivnet.Pro
 	return c.client.ProductFiles.Delete(productSlug, releaseID)
 }
 
-func (c Client) DownloadProductFile(location *os.File, productSlug string, releaseID int, productFileID int) error {
-	return c.client.ProductFiles.DownloadForRelease(location, productSlug, releaseID, productFileID)
+func (c Client) DownloadProductFile(location *os.File, productSlug string, releaseID int, productFileID int, progressWriter io.Writer) error {
+	return c.client.ProductFiles.DownloadForRelease(location, productSlug, releaseID, productFileID, progressWriter)
 }
 
 func (c Client) Products() ([]pivnet.Product, error) {

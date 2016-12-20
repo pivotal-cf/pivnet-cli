@@ -2,6 +2,7 @@ package commands
 
 import (
 	"errors"
+	"io"
 
 	pivnet "github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
@@ -90,7 +91,7 @@ type ProductFileClient interface {
 	AddToFileGroup(productSlug string, fileGroupID int, productFileID int) error
 	RemoveFromFileGroup(productSlug string, fileGroupID int, productFileID int) error
 	Delete(productSlug string, productFileID int) error
-	Download(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool) error
+	Download(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool, progressWriter io.Writer) error
 }
 
 var NewProductFileClient = func(client productfile.PivnetClient) ProductFileClient {
@@ -275,5 +276,6 @@ func (command *DownloadProductFilesCommand) Execute([]string) error {
 		command.ProductFileIDs,
 		command.DownloadDir,
 		command.AcceptEULA,
+		LogWriter,
 	)
 }

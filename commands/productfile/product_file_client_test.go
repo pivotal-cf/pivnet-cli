@@ -725,18 +725,20 @@ var _ = Describe("productfile commands", func() {
 				productFileIDs,
 				downloadDir,
 				acceptEULA,
+				GinkgoWriter,
 			)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakePivnetClient.DownloadProductFileCallCount()).To(Equal(2))
 
 			for i, pf := range productFiles {
-				_, invokedProductSlug, invokedReleaseID, invokedProductFileID :=
+				_, invokedProductSlug, invokedReleaseID, invokedProductFileID, w :=
 					fakePivnetClient.DownloadProductFileArgsForCall(i)
 
 				Expect(invokedProductSlug).To(Equal(productSlug))
 				Expect(invokedReleaseID).To(Equal(releaseID))
 				Expect(invokedProductFileID).To(Equal(pf.ID))
+				Expect(w).To(Equal(GinkgoWriter))
 			}
 		})
 
@@ -754,18 +756,20 @@ var _ = Describe("productfile commands", func() {
 					productFileIDs,
 					downloadDir,
 					acceptEULA,
+					GinkgoWriter,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakePivnetClient.DownloadProductFileCallCount()).To(Equal(2))
 
 				for i, pf := range productFiles {
-					_, invokedProductSlug, invokedReleaseID, invokedProductFileID :=
+					_, invokedProductSlug, invokedReleaseID, invokedProductFileID, w :=
 						fakePivnetClient.DownloadProductFileArgsForCall(i)
 
 					Expect(invokedProductSlug).To(Equal(productSlug))
 					Expect(invokedReleaseID).To(Equal(releaseID))
 					Expect(invokedProductFileID).To(Equal(pf.ID))
+					Expect(w).To(Equal(GinkgoWriter))
 				}
 			})
 
@@ -782,6 +786,7 @@ var _ = Describe("productfile commands", func() {
 						productFileIDs,
 						downloadDir,
 						acceptEULA,
+						GinkgoWriter,
 					)
 					Expect(err).NotTo(HaveOccurred())
 
@@ -805,6 +810,7 @@ var _ = Describe("productfile commands", func() {
 					productFileIDs,
 					downloadDir,
 					acceptEULA,
+					GinkgoWriter,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -826,6 +832,7 @@ var _ = Describe("productfile commands", func() {
 					productFileIDs,
 					downloadDir,
 					acceptEULA,
+					GinkgoWriter,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -846,6 +853,7 @@ var _ = Describe("productfile commands", func() {
 					productFileIDs,
 					downloadDir,
 					acceptEULA,
+					GinkgoWriter,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -867,6 +875,7 @@ var _ = Describe("productfile commands", func() {
 					productFileIDs,
 					downloadDir,
 					acceptEULA,
+					GinkgoWriter,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -888,6 +897,7 @@ var _ = Describe("productfile commands", func() {
 					productFileIDs,
 					downloadDir,
 					acceptEULA,
+					GinkgoWriter,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -914,6 +924,7 @@ var _ = Describe("productfile commands", func() {
 					productFileIDs,
 					downloadDir,
 					acceptEULA,
+					GinkgoWriter,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -935,6 +946,7 @@ var _ = Describe("productfile commands", func() {
 					productFileIDs,
 					downloadDir,
 					acceptEULA,
+					GinkgoWriter,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -955,6 +967,7 @@ var _ = Describe("productfile commands", func() {
 					productFileIDs,
 					downloadDir,
 					acceptEULA,
+					GinkgoWriter,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -979,6 +992,7 @@ var _ = Describe("productfile commands", func() {
 						productFileIDs,
 						downloadDir,
 						acceptEULA,
+						GinkgoWriter,
 					)
 					Expect(err).NotTo(HaveOccurred())
 

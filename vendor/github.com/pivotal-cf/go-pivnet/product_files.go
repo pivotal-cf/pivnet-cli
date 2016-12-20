@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 
@@ -454,6 +455,7 @@ func (p ProductFilesService) DownloadForRelease(
 	productSlug string,
 	releaseID int,
 	productFileID int,
+	progressWriter io.Writer,
 ) error {
 	pf, err := p.GetForRelease(
 		productSlug,
@@ -491,7 +493,11 @@ func (p ProductFilesService) DownloadForRelease(
 
 	p.client.logger.Debug("Fetching File", logger.Data{"location": resp.Header.Get("Location")})
 
-	err = p.client.downloader.Get(location, resp.Header.Get("Location"))
+	err = p.client.downloader.Get(
+		location,
+		resp.Header.Get("Location"),
+		progressWriter,
+	)
 	if err != nil {
 		return err
 	}

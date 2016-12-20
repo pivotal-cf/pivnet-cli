@@ -1,6 +1,10 @@
 package download
 
-import pb "gopkg.in/cheggaaa/pb.v1"
+import (
+	"io"
+
+	pb "gopkg.in/cheggaaa/pb.v1"
+)
 
 type Bar struct {
 	*pb.ProgressBar
@@ -18,4 +22,8 @@ func (b Bar) SetTotal(contentLength int64) {
 
 func (b Bar) Kickoff() {
 	b.Start()
+}
+
+func (b Bar) SetOutput(output io.Writer) {
+	b.Output = output
 }

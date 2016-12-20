@@ -2,6 +2,7 @@
 package commandsfakes
 
 import (
+	"io"
 	"sync"
 
 	go_pivnet "github.com/pivotal-cf/go-pivnet"
@@ -99,7 +100,7 @@ type FakeProductFileClient struct {
 	deleteReturns struct {
 		result1 error
 	}
-	DownloadStub        func(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool) error
+	DownloadStub        func(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool, progressWriter io.Writer) error
 	downloadMutex       sync.RWMutex
 	downloadArgsForCall []struct {
 		productSlug    string
@@ -108,6 +109,7 @@ type FakeProductFileClient struct {
 		productFileIDs []int
 		downloadDir    string
 		acceptEULA     bool
+		progressWriter io.Writer
 	}
 	downloadReturns struct {
 		result1 error
@@ -431,7 +433,7 @@ func (fake *FakeProductFileClient) DeleteReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeProductFileClient) Download(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool) error {
+func (fake *FakeProductFileClient) Download(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool, progressWriter io.Writer) error {
 	var globsCopy []string
 	if globs != nil {
 		globsCopy = make([]string, len(globs))
@@ -450,11 +452,12 @@ func (fake *FakeProductFileClient) Download(productSlug string, releaseVersion s
 		productFileIDs []int
 		downloadDir    string
 		acceptEULA     bool
-	}{productSlug, releaseVersion, globsCopy, productFileIDsCopy, downloadDir, acceptEULA})
-	fake.recordInvocation("Download", []interface{}{productSlug, releaseVersion, globsCopy, productFileIDsCopy, downloadDir, acceptEULA})
+		progressWriter io.Writer
+	}{productSlug, releaseVersion, globsCopy, productFileIDsCopy, downloadDir, acceptEULA, progressWriter})
+	fake.recordInvocation("Download", []interface{}{productSlug, releaseVersion, globsCopy, productFileIDsCopy, downloadDir, acceptEULA, progressWriter})
 	fake.downloadMutex.Unlock()
 	if fake.DownloadStub != nil {
-		return fake.DownloadStub(productSlug, releaseVersion, globs, productFileIDs, downloadDir, acceptEULA)
+		return fake.DownloadStub(productSlug, releaseVersion, globs, productFileIDs, downloadDir, acceptEULA, progressWriter)
 	} else {
 		return fake.downloadReturns.result1
 	}
@@ -466,10 +469,10 @@ func (fake *FakeProductFileClient) DownloadCallCount() int {
 	return len(fake.downloadArgsForCall)
 }
 
-func (fake *FakeProductFileClient) DownloadArgsForCall(i int) (string, string, []string, []int, string, bool) {
+func (fake *FakeProductFileClient) DownloadArgsForCall(i int) (string, string, []string, []int, string, bool, io.Writer) {
 	fake.downloadMutex.RLock()
 	defer fake.downloadMutex.RUnlock()
-	return fake.downloadArgsForCall[i].productSlug, fake.downloadArgsForCall[i].releaseVersion, fake.downloadArgsForCall[i].globs, fake.downloadArgsForCall[i].productFileIDs, fake.downloadArgsForCall[i].downloadDir, fake.downloadArgsForCall[i].acceptEULA
+	return fake.downloadArgsForCall[i].productSlug, fake.downloadArgsForCall[i].releaseVersion, fake.downloadArgsForCall[i].globs, fake.downloadArgsForCall[i].productFileIDs, fake.downloadArgsForCall[i].downloadDir, fake.downloadArgsForCall[i].acceptEULA, fake.downloadArgsForCall[i].progressWriter
 }
 
 func (fake *FakeProductFileClient) DownloadReturns(result1 error) {

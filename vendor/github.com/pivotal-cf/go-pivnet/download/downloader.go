@@ -24,6 +24,7 @@ type httpClient interface {
 //go:generate counterfeiter -o ./fakes/bar.go --fake-name Bar . bar
 type bar interface {
 	SetTotal(contentLength int64)
+	SetOutput(output io.Writer)
 	Add(totalWritten int) int
 	Kickoff()
 	Finish()
@@ -43,7 +44,11 @@ func New(httpClient httpClient, ranger ranger, bar bar) Client {
 	}
 }
 
-func (c Client) Get(location *os.File, contentURL string) error {
+func (c Client) Get(
+	location *os.File,
+	contentURL string,
+	progressWriter io.Writer,
+) error {
 	req, err := http.NewRequest("HEAD", contentURL, nil)
 	if err != nil {
 		return fmt.Errorf("failed to construct HEAD request: %s", err)
@@ -61,6 +66,7 @@ func (c Client) Get(location *os.File, contentURL string) error {
 		return fmt.Errorf("failed to construct range: %s", err)
 	}
 
+	c.bar.SetOutput(progressWriter)
 	c.bar.SetTotal(resp.ContentLength)
 	c.bar.Kickoff()
 
