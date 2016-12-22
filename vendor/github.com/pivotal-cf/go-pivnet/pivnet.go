@@ -17,8 +17,9 @@ import (
 )
 
 const (
-	DefaultHost = "https://network.pivotal.io"
-	apiVersion  = "/api/v2"
+	DefaultHost         = "https://network.pivotal.io"
+	apiVersion          = "/api/v2"
+	concurrentDownloads = 10
 )
 
 type Client struct {
@@ -66,7 +67,7 @@ func NewClient(
 		},
 	}
 
-	ranger := download.NewRanger(100)
+	ranger := download.NewRanger(concurrentDownloads)
 	downloader := download.New(
 		http.DefaultClient,
 		ranger,
