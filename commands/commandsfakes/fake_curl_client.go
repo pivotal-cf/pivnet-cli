@@ -8,12 +8,12 @@ import (
 )
 
 type FakeCurlClient struct {
-	MakeRequestStub        func(method string, body string, args []string) error
+	MakeRequestStub        func(method string, body string, url string) error
 	makeRequestMutex       sync.RWMutex
 	makeRequestArgsForCall []struct {
 		method string
 		body   string
-		args   []string
+		url    string
 	}
 	makeRequestReturns struct {
 		result1 error
@@ -22,22 +22,17 @@ type FakeCurlClient struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCurlClient) MakeRequest(method string, body string, args []string) error {
-	var argsCopy []string
-	if args != nil {
-		argsCopy = make([]string, len(args))
-		copy(argsCopy, args)
-	}
+func (fake *FakeCurlClient) MakeRequest(method string, body string, url string) error {
 	fake.makeRequestMutex.Lock()
 	fake.makeRequestArgsForCall = append(fake.makeRequestArgsForCall, struct {
 		method string
 		body   string
-		args   []string
-	}{method, body, argsCopy})
-	fake.recordInvocation("MakeRequest", []interface{}{method, body, argsCopy})
+		url    string
+	}{method, body, url})
+	fake.recordInvocation("MakeRequest", []interface{}{method, body, url})
 	fake.makeRequestMutex.Unlock()
 	if fake.MakeRequestStub != nil {
-		return fake.MakeRequestStub(method, body, args)
+		return fake.MakeRequestStub(method, body, url)
 	} else {
 		return fake.makeRequestReturns.result1
 	}
@@ -49,10 +44,10 @@ func (fake *FakeCurlClient) MakeRequestCallCount() int {
 	return len(fake.makeRequestArgsForCall)
 }
 
-func (fake *FakeCurlClient) MakeRequestArgsForCall(i int) (string, string, []string) {
+func (fake *FakeCurlClient) MakeRequestArgsForCall(i int) (string, string, string) {
 	fake.makeRequestMutex.RLock()
 	defer fake.makeRequestMutex.RUnlock()
-	return fake.makeRequestArgsForCall[i].method, fake.makeRequestArgsForCall[i].body, fake.makeRequestArgsForCall[i].args
+	return fake.makeRequestArgsForCall[i].method, fake.makeRequestArgsForCall[i].body, fake.makeRequestArgsForCall[i].url
 }
 
 func (fake *FakeCurlClient) MakeRequestReturns(result1 error) {

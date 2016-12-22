@@ -58,13 +58,13 @@ var _ = Describe("curl commands", func() {
 		var (
 			method string
 			data   string
-			args   []string
+			url    string
 		)
 
 		BeforeEach(func() {
 			method = "some-method"
 			data = "some-data"
-			args = []string{"some-endpoint", "not-used"}
+			url = "some-endpoint"
 
 			resp = &http.Response{
 				Body: ioutil.NopCloser(bytes.NewReader([]byte{})),
@@ -76,7 +76,7 @@ var _ = Describe("curl commands", func() {
 		})
 
 		It("invokes the client", func() {
-			err := client.MakeRequest(method, data, args)
+			err := client.MakeRequest(method, data, url)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakePivnetClient.MakeRequestCallCount()).To(Equal(1))
@@ -87,7 +87,7 @@ var _ = Describe("curl commands", func() {
 				invokedBody := fakePivnetClient.MakeRequestArgsForCall(0)
 
 			Expect(invokedMethod).To(Equal(method))
-			Expect(invokedEndpoint).To(Equal(args[0]))
+			Expect(invokedEndpoint).To(Equal(url))
 			Expect(invokedExpectedResponseCode).To(Equal(0))
 			Expect(invokedBody).To(Equal(strings.NewReader(data)))
 		})
@@ -98,7 +98,7 @@ var _ = Describe("curl commands", func() {
 			})
 
 			It("invokes the client with nil body", func() {
-				err := client.MakeRequest(method, data, args)
+				err := client.MakeRequest(method, data, url)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakePivnetClient.MakeRequestCallCount()).To(Equal(1))
@@ -118,7 +118,7 @@ var _ = Describe("curl commands", func() {
 			})
 
 			It("invokes the error handler", func() {
-				err := client.MakeRequest(method, data, args)
+				err := client.MakeRequest(method, data, url)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
@@ -135,7 +135,7 @@ var _ = Describe("curl commands", func() {
 			})
 
 			It("invokes the error handler", func() {
-				err := client.MakeRequest(method, data, args)
+				err := client.MakeRequest(method, data, url)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))

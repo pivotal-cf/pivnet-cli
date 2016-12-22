@@ -42,7 +42,7 @@ func NewCurlClient(
 func (c *CurlClient) MakeRequest(
 	method string,
 	data string,
-	args []string,
+	url string,
 ) error {
 	expectedResponseCode := 0
 	var body io.Reader
@@ -53,7 +53,7 @@ func (c *CurlClient) MakeRequest(
 	var output interface{}
 	resp, err := c.pivnetClient.MakeRequest(
 		method,
-		args[0],
+		url,
 		expectedResponseCode,
 		body,
 	)
