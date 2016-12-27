@@ -195,6 +195,22 @@ func (c Client) RemoveReleaseDependency(productSlug string, releaseID int, depen
 	return c.client.ReleaseDependencies.Remove(productSlug, releaseID, dependentReleaseID)
 }
 
+func (c Client) DependencySpecifiers(productSlug string, releaseID int) ([]pivnet.DependencySpecifier, error) {
+	return c.client.DependencySpecifiers.List(productSlug, releaseID)
+}
+
+func (c Client) DependencySpecifier(productSlug string, releaseID int, dependencySpecifierID int) (pivnet.DependencySpecifier, error) {
+	return c.client.DependencySpecifiers.Get(productSlug, releaseID, dependencySpecifierID)
+}
+
+func (c Client) CreateDependencySpecifier(productSlug string, releaseID int, dependentProductSlug string, specifier string) (pivnet.DependencySpecifier, error) {
+	return c.client.DependencySpecifiers.Create(productSlug, releaseID, dependentProductSlug, specifier)
+}
+
+func (c Client) DeleteDependencySpecifier(productSlug string, releaseID int, dependencySpecifierID int) error {
+	return c.client.DependencySpecifiers.Delete(productSlug, releaseID, dependencySpecifierID)
+}
+
 func (c Client) ReleaseUpgradePaths(productSlug string, releaseID int) ([]pivnet.ReleaseUpgradePath, error) {
 	return c.client.ReleaseUpgradePaths.Get(productSlug, releaseID)
 }

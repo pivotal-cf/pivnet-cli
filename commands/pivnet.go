@@ -114,6 +114,11 @@ type PivnetCommand struct {
 	AddReleaseDependency    AddReleaseDependencyCommand    `command:"add-release-dependency" alias:"ard" description:"Add release dependency"`
 	RemoveReleaseDependency RemoveReleaseDependencyCommand `command:"remove-release-dependency" alias:"rrd" description:"Remove release dependency"`
 
+	DependencySpecifiers      DependencySpecifiersCommand      `command:"dependency-specifiers" alias:"dss" description:"List dependency specifiers"`
+	DependencySpecifier       DependencySpecifierCommand       `command:"dependency-specifier" alias:"ds" description:"Get dependency specifier"`
+	CreateDependencySpecifier CreateDependencySpecifierCommand `command:"create-dependency-specifier" alias:"cds" description:"Create dependency specifier"`
+	DeleteDependencySpecifier DeleteDependencySpecifierCommand `command:"delete-dependency-specifier" alias:"dds" description:"Delete dependency specifier"`
+
 	ReleaseUpgradePaths      ReleaseUpgradePathsCommand      `command:"release-upgrade-paths" alias:"rups" description:"List release upgrade paths"`
 	AddReleaseUpgradePath    AddReleaseUpgradePathCommand    `command:"add-release-upgrade-path" alias:"arup" description:"Add release upgrade path"`
 	RemoveReleaseUpgradePath RemoveReleaseUpgradePathCommand `command:"remove-release-upgrade-path" alias:"rrup" description:"Remove release upgrade path"`

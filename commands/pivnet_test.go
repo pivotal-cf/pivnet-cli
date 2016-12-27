@@ -771,6 +771,48 @@ var _ = Describe("Pivnet commands", func() {
 		})
 	})
 
+	Describe("DependencySpecifiers command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "DependencySpecifiers")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("dependency-specifiers"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("dss"))
+		})
+	})
+
+	Describe("DependencySpecifier command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "DependencySpecifier")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("dependency-specifier"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("ds"))
+		})
+	})
+
+	Describe("CreateDependencySpecifier command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "CreateDependencySpecifier")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("create-dependency-specifier"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("cds"))
+		})
+	})
+
 	Describe("ReleaseUpgradePaths command", func() {
 		BeforeEach(func() {
 			field = fieldFor(commands.Pivnet, "ReleaseUpgradePaths")
