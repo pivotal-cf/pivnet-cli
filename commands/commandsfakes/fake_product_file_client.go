@@ -37,13 +37,12 @@ type FakeProductFileClient struct {
 	createReturns struct {
 		result1 error
 	}
-	UpdateStub        func(productFileID int, productSlug string, name *string, fileType *string, fileVersion *string, md5 *string, description *string) error
+	UpdateStub        func(productFileID int, productSlug string, name *string, fileVersion *string, md5 *string, description *string) error
 	updateMutex       sync.RWMutex
 	updateArgsForCall []struct {
 		productFileID int
 		productSlug   string
 		name          *string
-		fileType      *string
 		fileVersion   *string
 		md5           *string
 		description   *string
@@ -220,21 +219,20 @@ func (fake *FakeProductFileClient) CreateReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeProductFileClient) Update(productFileID int, productSlug string, name *string, fileType *string, fileVersion *string, md5 *string, description *string) error {
+func (fake *FakeProductFileClient) Update(productFileID int, productSlug string, name *string, fileVersion *string, md5 *string, description *string) error {
 	fake.updateMutex.Lock()
 	fake.updateArgsForCall = append(fake.updateArgsForCall, struct {
 		productFileID int
 		productSlug   string
 		name          *string
-		fileType      *string
 		fileVersion   *string
 		md5           *string
 		description   *string
-	}{productFileID, productSlug, name, fileType, fileVersion, md5, description})
-	fake.recordInvocation("Update", []interface{}{productFileID, productSlug, name, fileType, fileVersion, md5, description})
+	}{productFileID, productSlug, name, fileVersion, md5, description})
+	fake.recordInvocation("Update", []interface{}{productFileID, productSlug, name, fileVersion, md5, description})
 	fake.updateMutex.Unlock()
 	if fake.UpdateStub != nil {
-		return fake.UpdateStub(productFileID, productSlug, name, fileType, fileVersion, md5, description)
+		return fake.UpdateStub(productFileID, productSlug, name, fileVersion, md5, description)
 	} else {
 		return fake.updateReturns.result1
 	}
@@ -246,10 +244,10 @@ func (fake *FakeProductFileClient) UpdateCallCount() int {
 	return len(fake.updateArgsForCall)
 }
 
-func (fake *FakeProductFileClient) UpdateArgsForCall(i int) (int, string, *string, *string, *string, *string, *string) {
+func (fake *FakeProductFileClient) UpdateArgsForCall(i int) (int, string, *string, *string, *string, *string) {
 	fake.updateMutex.RLock()
 	defer fake.updateMutex.RUnlock()
-	return fake.updateArgsForCall[i].productFileID, fake.updateArgsForCall[i].productSlug, fake.updateArgsForCall[i].name, fake.updateArgsForCall[i].fileType, fake.updateArgsForCall[i].fileVersion, fake.updateArgsForCall[i].md5, fake.updateArgsForCall[i].description
+	return fake.updateArgsForCall[i].productFileID, fake.updateArgsForCall[i].productSlug, fake.updateArgsForCall[i].name, fake.updateArgsForCall[i].fileVersion, fake.updateArgsForCall[i].md5, fake.updateArgsForCall[i].description
 }
 
 func (fake *FakeProductFileClient) UpdateReturns(result1 error) {

@@ -531,7 +531,6 @@ var _ = Describe("product file commands", func() {
 			productFileID int
 
 			description string
-			fileType    string
 			fileVersion string
 			md5         string
 			name        string
@@ -544,7 +543,6 @@ var _ = Describe("product file commands", func() {
 			productFileID = 1234
 
 			description = "some description"
-			fileType = "some file type"
 			fileVersion = "some file version"
 			md5 = "some md5"
 			name = "some product file"
@@ -554,7 +552,6 @@ var _ = Describe("product file commands", func() {
 				ProductFileID: productFileID,
 				Name:          &name,
 				Description:   &description,
-				FileType:      &fileType,
 				FileVersion:   &fileVersion,
 				MD5:           &md5,
 			}
@@ -570,7 +567,6 @@ var _ = Describe("product file commands", func() {
 			invokedProductFileID,
 				invokedProductSlug,
 				invokedName,
-				invokedFileType,
 				invokedFileVersion,
 				invokedMD5,
 				invokedDescription := fakeProductFileClient.UpdateArgsForCall(0)
@@ -578,7 +574,6 @@ var _ = Describe("product file commands", func() {
 			Expect(invokedProductFileID).To(Equal(productFileID))
 			Expect(invokedProductSlug).To(Equal(productSlug))
 			Expect(*invokedName).To(Equal(name))
-			Expect(*invokedFileType).To(Equal(fileType))
 			Expect(*invokedFileVersion).To(Equal(fileVersion))
 			Expect(*invokedMD5).To(Equal(md5))
 			Expect(*invokedDescription).To(Equal(description))
@@ -686,20 +681,6 @@ var _ = Describe("product file commands", func() {
 
 			It("contains long name", func() {
 				Expect(longTag(field)).To(Equal("description"))
-			})
-		})
-
-		Describe("FileType flag", func() {
-			BeforeEach(func() {
-				field = fieldFor(cmd, "FileType")
-			})
-
-			It("is not required", func() {
-				Expect(isRequired(field)).To(BeFalse())
-			})
-
-			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("file-type"))
 			})
 		})
 

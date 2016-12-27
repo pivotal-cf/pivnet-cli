@@ -380,7 +380,6 @@ var _ = Describe("productfile commands", func() {
 				productFileID,
 				productSlug,
 				&name,
-				&fileType,
 				&fileVersion,
 				&md5,
 				&description,
@@ -397,7 +396,6 @@ var _ = Describe("productfile commands", func() {
 			Expect(invokedProductSlug).To(Equal(productSlug))
 			Expect(invokedProductFile.ID).To(Equal(productFileID))
 			Expect(invokedProductFile.Name).To(Equal(name))
-			Expect(invokedProductFile.FileType).To(Equal(fileType))
 			Expect(invokedProductFile.FileVersion).To(Equal(fileVersion))
 			Expect(invokedProductFile.MD5).To(Equal(md5))
 			Expect(invokedProductFile.Description).To(Equal(description))
@@ -408,7 +406,6 @@ var _ = Describe("productfile commands", func() {
 				err := client.Update(
 					productFileID,
 					productSlug,
-					nil,
 					nil,
 					nil,
 					nil,
@@ -426,7 +423,6 @@ var _ = Describe("productfile commands", func() {
 				Expect(invokedProductSlug).To(Equal(productSlug))
 				Expect(invokedProductFile.ID).To(Equal(productFileID))
 				Expect(invokedProductFile.Name).To(Equal(existingName))
-				Expect(invokedProductFile.FileType).To(Equal(existingFileType))
 				Expect(invokedProductFile.FileVersion).To(Equal(existingFileVersion))
 				Expect(invokedProductFile.MD5).To(Equal(existingMD5))
 				Expect(invokedProductFile.Description).To(Equal(existingDescription))
@@ -448,7 +444,6 @@ var _ = Describe("productfile commands", func() {
 					productFileID,
 					productSlug,
 					&name,
-					&fileType,
 					&fileVersion,
 					&md5,
 					&description,

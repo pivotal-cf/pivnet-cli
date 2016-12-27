@@ -213,7 +213,6 @@ func (c *ProductFileClient) Update(
 	productFileID int,
 	productSlug string,
 	name *string,
-	fileType *string,
 	fileVersion *string,
 	md5 *string,
 	description *string,
@@ -228,10 +227,6 @@ func (c *ProductFileClient) Update(
 
 	if name != nil {
 		productFile.Name = *name
-	}
-
-	if fileType != nil {
-		productFile.FileType = *fileType
 	}
 
 	if fileVersion != nil {

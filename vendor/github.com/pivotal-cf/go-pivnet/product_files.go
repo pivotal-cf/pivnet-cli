@@ -233,7 +233,6 @@ func (p ProductFilesService) Update(productSlug string, productFile ProductFile)
 	body := createUpdateProductFileBody{
 		ProductFile: ProductFile{
 			Description: productFile.Description,
-			FileType:    productFile.FileType,
 			FileVersion: productFile.FileVersion,
 			MD5:         productFile.MD5,
 			Name:        productFile.Name,
