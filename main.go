@@ -24,6 +24,11 @@ func main() {
 
 	parser := flags.NewParser(&commands.Pivnet, flags.HelpFlag)
 
+	if len(os.Args) > 1 && os.Args[1] == "manpage" {
+		parser.WriteManPage(os.Stdout)
+		return
+	}
+
 	_, err := parser.Parse()
 	if err != nil {
 		if err == commands.ErrShowHelpMessage {
