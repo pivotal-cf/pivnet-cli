@@ -18,6 +18,8 @@ type PivnetClient interface {
 	ReleaseForVersion(productSlug string, releaseVersion string) (pivnet.Release, error)
 	CreateRelease(config pivnet.CreateReleaseConfig) (pivnet.Release, error)
 	DeleteRelease(productSlug string, release pivnet.Release) error
+	EULAs() ([]pivnet.EULA, error)
+	ReleaseTypes() ([]pivnet.ReleaseType, error)
 }
 
 type ReleaseClient struct {
@@ -135,6 +137,16 @@ func (c *ReleaseClient) Create(
 	releaseType string,
 	eulaSlug string,
 ) error {
+	err := c.validateEULA(eulaSlug)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	err = c.validateReleaseType(releaseType)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
 	newReleaseConfig := pivnet.CreateReleaseConfig{
 		ProductSlug: productSlug,
 		Version:     releaseVersion,
@@ -178,4 +190,71 @@ func (c *ReleaseClient) Delete(productSlug string, releaseVersion string) error 
 	}
 
 	return nil
+}
+
+func (c *ReleaseClient) validateEULA(eulaSlug string) error {
+	eulas, err := c.pivnetClient.EULAs()
+	if err != nil {
+		return err
+	}
+
+	eulaSlugs := eulaSlugsFromEULAs(eulas)
+
+	if !stringsContains(eulaSlugs, eulaSlug) {
+		err := fmt.Errorf(
+			"provided EULA Slug: '%s' must be one of: %v",
+			eulaSlug,
+			eulaSlugs,
+		)
+		return err
+	}
+
+	return nil
+}
+
+func (c *ReleaseClient) validateReleaseType(releaseType string) error {
+	releaseTypes, err := c.pivnetClient.ReleaseTypes()
+	if err != nil {
+		return err
+	}
+
+	releaseTypesStrings := releaseTypesToStrings(releaseTypes)
+
+	if !stringsContains(releaseTypesStrings, releaseType) {
+		err := fmt.Errorf(
+			"provided release type: '%s' must be one of: %v",
+			releaseType,
+			releaseTypes,
+		)
+		return err
+	}
+
+	return nil
+}
+
+func releaseTypesToStrings(releaseTypes []pivnet.ReleaseType) []string {
+	var releaseTypeStrings []string
+	for _, r := range releaseTypes {
+		releaseTypeStrings = append(releaseTypeStrings, string(r))
+	}
+
+	return releaseTypeStrings
+}
+
+func eulaSlugsFromEULAs(eulas []pivnet.EULA) []string {
+	var eulaSlugs []string
+	for _, e := range eulas {
+		eulaSlugs = append(eulaSlugs, e.Slug)
+	}
+
+	return eulaSlugs
+}
+
+func stringsContains(strings []string, val string) bool {
+	for _, s := range strings {
+		if s == val {
+			return true
+		}
+	}
+	return false
 }

@@ -46,6 +46,20 @@ type FakePivnetClient struct {
 	deleteReleaseReturns struct {
 		result1 error
 	}
+	EULAsStub        func() ([]go_pivnet.EULA, error)
+	eULAsMutex       sync.RWMutex
+	eULAsArgsForCall []struct{}
+	eULAsReturns     struct {
+		result1 []go_pivnet.EULA
+		result2 error
+	}
+	ReleaseTypesStub        func() ([]go_pivnet.ReleaseType, error)
+	releaseTypesMutex       sync.RWMutex
+	releaseTypesArgsForCall []struct{}
+	releaseTypesReturns     struct {
+		result1 []go_pivnet.ReleaseType
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -187,6 +201,58 @@ func (fake *FakePivnetClient) DeleteReleaseReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *FakePivnetClient) EULAs() ([]go_pivnet.EULA, error) {
+	fake.eULAsMutex.Lock()
+	fake.eULAsArgsForCall = append(fake.eULAsArgsForCall, struct{}{})
+	fake.recordInvocation("EULAs", []interface{}{})
+	fake.eULAsMutex.Unlock()
+	if fake.EULAsStub != nil {
+		return fake.EULAsStub()
+	} else {
+		return fake.eULAsReturns.result1, fake.eULAsReturns.result2
+	}
+}
+
+func (fake *FakePivnetClient) EULAsCallCount() int {
+	fake.eULAsMutex.RLock()
+	defer fake.eULAsMutex.RUnlock()
+	return len(fake.eULAsArgsForCall)
+}
+
+func (fake *FakePivnetClient) EULAsReturns(result1 []go_pivnet.EULA, result2 error) {
+	fake.EULAsStub = nil
+	fake.eULAsReturns = struct {
+		result1 []go_pivnet.EULA
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) ReleaseTypes() ([]go_pivnet.ReleaseType, error) {
+	fake.releaseTypesMutex.Lock()
+	fake.releaseTypesArgsForCall = append(fake.releaseTypesArgsForCall, struct{}{})
+	fake.recordInvocation("ReleaseTypes", []interface{}{})
+	fake.releaseTypesMutex.Unlock()
+	if fake.ReleaseTypesStub != nil {
+		return fake.ReleaseTypesStub()
+	} else {
+		return fake.releaseTypesReturns.result1, fake.releaseTypesReturns.result2
+	}
+}
+
+func (fake *FakePivnetClient) ReleaseTypesCallCount() int {
+	fake.releaseTypesMutex.RLock()
+	defer fake.releaseTypesMutex.RUnlock()
+	return len(fake.releaseTypesArgsForCall)
+}
+
+func (fake *FakePivnetClient) ReleaseTypesReturns(result1 []go_pivnet.ReleaseType, result2 error) {
+	fake.ReleaseTypesStub = nil
+	fake.releaseTypesReturns = struct {
+		result1 []go_pivnet.ReleaseType
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -198,6 +264,10 @@ func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {
 	defer fake.createReleaseMutex.RUnlock()
 	fake.deleteReleaseMutex.RLock()
 	defer fake.deleteReleaseMutex.RUnlock()
+	fake.eULAsMutex.RLock()
+	defer fake.eULAsMutex.RUnlock()
+	fake.releaseTypesMutex.RLock()
+	defer fake.releaseTypesMutex.RUnlock()
 	return fake.invocations
 }
 
