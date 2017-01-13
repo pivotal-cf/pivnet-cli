@@ -31,17 +31,9 @@ type bar interface {
 }
 
 type Client struct {
-	httpClient httpClient
-	ranger     ranger
-	bar        bar
-}
-
-func New(httpClient httpClient, ranger ranger, bar bar) Client {
-	return Client{
-		httpClient: httpClient,
-		ranger:     ranger,
-		bar:        bar,
-	}
+	HTTPClient httpClient
+	Ranger     ranger
+	Bar        bar
 }
 
 func (c Client) Get(
@@ -54,23 +46,23 @@ func (c Client) Get(
 		return fmt.Errorf("failed to construct HEAD request: %s", err)
 	}
 
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to make HEAD request: %s", err)
 	}
 
 	contentURL = resp.Request.URL.String()
 
-	ranges, err := c.ranger.BuildRange(resp.ContentLength)
+	ranges, err := c.Ranger.BuildRange(resp.ContentLength)
 	if err != nil {
 		return fmt.Errorf("failed to construct range: %s", err)
 	}
 
-	c.bar.SetOutput(progressWriter)
-	c.bar.SetTotal(resp.ContentLength)
-	c.bar.Kickoff()
+	c.Bar.SetOutput(progressWriter)
+	c.Bar.SetTotal(resp.ContentLength)
+	c.Bar.Kickoff()
 
-	defer c.bar.Finish()
+	defer c.Bar.Finish()
 
 	var g errgroup.Group
 	for _, r := range ranges {
@@ -86,7 +78,7 @@ func (c Client) Get(
 				return fmt.Errorf("failed to write file: %s", err)
 			}
 
-			c.bar.Add(bytesWritten)
+			c.Bar.Add(bytesWritten)
 
 			return nil
 		})
@@ -108,7 +100,7 @@ func (c Client) retryableRequest(url string, rangeHeader http.Header) ([]byte, e
 	req.Header = rangeHeader
 
 Retry:
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		if netErr, ok := err.(net.Error); ok {
 			if netErr.Temporary() {

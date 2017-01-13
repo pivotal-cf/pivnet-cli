@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/pivotal-cf/go-pivnet/download"
 	"github.com/pivotal-cf/go-pivnet/logger"
 )
 
@@ -491,6 +492,8 @@ func (p ProductFilesService) DownloadForRelease(
 	p.client.HTTP.CheckRedirect = nil
 
 	p.client.logger.Debug("Fetching File", logger.Data{"location": resp.Header.Get("Location")})
+
+	p.client.downloader.Bar = download.NewBar()
 
 	err = p.client.downloader.Get(
 		location,
