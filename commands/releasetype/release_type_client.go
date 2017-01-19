@@ -47,7 +47,7 @@ func (c *ReleaseTypeClient) List() error {
 	switch c.format {
 	case printer.PrintAsTable:
 		table := tablewriter.NewWriter(c.outputWriter)
-		table.SetHeader([]string{"ReleaseTypes"})
+		table.SetHeader([]string{"Release Types"})
 
 		for _, r := range releaseTypes {
 			table.Append([]string{string(r)})
