@@ -112,6 +112,8 @@ func (c *ReleaseClient) printRelease(release pivnet.Release) error {
 			"Version",
 			"Description",
 			"Updated At",
+			"Availability",
+			"Release Type",
 		})
 
 		releaseAsString := []string{
@@ -119,6 +121,8 @@ func (c *ReleaseClient) printRelease(release pivnet.Release) error {
 			release.Version,
 			release.Description,
 			release.UpdatedAt,
+			release.Availability,
+			string(release.ReleaseType),
 		}
 		table.Append(releaseAsString)
 		table.Render()
