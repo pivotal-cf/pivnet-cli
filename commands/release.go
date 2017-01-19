@@ -15,6 +15,7 @@ type UpdateReleaseCommand struct {
 	ProductSlug    string  `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
 	ReleaseVersion string  `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1" required:"true"`
 	Availability   *string `long:"availability" description:"Release availability. Optional." choice:"admins" choice:"selected-user-groups" choice:"all"`
+	ReleaseType    *string `long:"release-type" description:"Release type. Optional." choice:"all-in-one" choice:"major" choice:"minor" choice:"service" choice:"maintenance" choice:"security" choice:"alpha" choice:"beta" choice:"edge"`
 }
 
 type DeleteReleaseCommand struct {
@@ -34,7 +35,7 @@ type ReleaseClient interface {
 	List(productSlug string) error
 	Get(productSlug string, releaseVersion string) error
 	Create(productSlug string, releaseVersion string, releaseType string, eulaSlug string) error
-	Update(productSlug string, releaseVersion string, availability *string) error
+	Update(productSlug string, releaseVersion string, availability *string, releaseType *string) error
 	Delete(productSlug string, releaseVersion string) error
 }
 
@@ -114,6 +115,7 @@ func (command *UpdateReleaseCommand) Execute([]string) error {
 		command.ProductSlug,
 		command.ReleaseVersion,
 		command.Availability,
+		command.ReleaseType,
 	)
 }
 

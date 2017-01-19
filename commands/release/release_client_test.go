@@ -350,19 +350,26 @@ var _ = Describe("release commands", func() {
 			productSlug    string
 			releaseVersion string
 			availability   *string
+			releaseType    *string
 		)
 
 		BeforeEach(func() {
 			productSlug = "some-product-slug"
 			releaseVersion = releases[0].Version
 			availability = nil
+			releaseType = nil
 
 			fakePivnetClient.ReleaseForVersionReturns(releases[0], nil)
 			fakePivnetClient.UpdateReleaseReturns(releases[0], nil)
 		})
 
 		It("updates Release", func() {
-			err := client.Update(productSlug, releaseVersion, availability)
+			err := client.Update(
+				productSlug,
+				releaseVersion,
+				availability,
+				releaseType,
+			)
 			Expect(err).NotTo(HaveOccurred())
 		})
 
@@ -377,7 +384,12 @@ var _ = Describe("release commands", func() {
 			})
 
 			It("invokes the error handler", func() {
-				err := client.Update(productSlug, releaseVersion, availability)
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
@@ -396,7 +408,12 @@ var _ = Describe("release commands", func() {
 			})
 
 			It("invokes the error handler", func() {
-				err := client.Update(productSlug, releaseVersion, availability)
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
@@ -415,7 +432,12 @@ var _ = Describe("release commands", func() {
 			})
 
 			It("sets availability on release", func() {
-				err := client.Update(productSlug, releaseVersion, availability)
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
@@ -427,7 +449,12 @@ var _ = Describe("release commands", func() {
 				availabilityVar = "admins"
 				availability = &availabilityVar
 
-				err := client.Update(productSlug, releaseVersion, availability)
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
@@ -439,7 +466,12 @@ var _ = Describe("release commands", func() {
 				availabilityVar = "selected-user-groups"
 				availability = &availabilityVar
 
-				err := client.Update(productSlug, releaseVersion, availability)
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
@@ -454,7 +486,193 @@ var _ = Describe("release commands", func() {
 				})
 
 				It("invokes the error handler", func() {
-					err := client.Update(productSlug, releaseVersion, availability)
+					err := client.Update(
+						productSlug,
+						releaseVersion,
+						availability,
+						releaseType,
+					)
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+					Expect(fakeErrorHandler.HandleErrorArgsForCall(0).Error()).To(MatchRegexp(".*bad value.*"))
+				})
+			})
+		})
+
+		Context("when release type is provided", func() {
+			var (
+				releaseTypeVar string
+			)
+
+			BeforeEach(func() {
+				releaseTypeVar = "all-in-one"
+				releaseType = &releaseTypeVar
+			})
+
+			It("sets availability on release", func() {
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.ReleaseType).To(Equal(pivnet.ReleaseType("All-In-One")))
+			})
+
+			It("correctly sets major", func() {
+				releaseTypeVar = "major"
+				releaseType = &releaseTypeVar
+
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.ReleaseType).To(Equal(pivnet.ReleaseType("Major Release")))
+			})
+
+			It("correctly sets minor", func() {
+				releaseTypeVar = "minor"
+				releaseType = &releaseTypeVar
+
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.ReleaseType).To(Equal(pivnet.ReleaseType("Minor Release")))
+			})
+
+			It("correctly sets service", func() {
+				releaseTypeVar = "service"
+				releaseType = &releaseTypeVar
+
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.ReleaseType).To(Equal(pivnet.ReleaseType("Service Release")))
+			})
+
+			It("correctly sets maintenance", func() {
+				releaseTypeVar = "maintenance"
+				releaseType = &releaseTypeVar
+
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.ReleaseType).To(Equal(pivnet.ReleaseType("Maintenance Release")))
+			})
+
+			It("correctly sets security", func() {
+				releaseTypeVar = "security"
+				releaseType = &releaseTypeVar
+
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.ReleaseType).To(Equal(pivnet.ReleaseType("Security Release")))
+			})
+
+			It("correctly sets alpha", func() {
+				releaseTypeVar = "alpha"
+				releaseType = &releaseTypeVar
+
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.ReleaseType).To(Equal(pivnet.ReleaseType("Alpha Release")))
+			})
+
+			It("correctly sets beta", func() {
+				releaseTypeVar = "beta"
+				releaseType = &releaseTypeVar
+
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.ReleaseType).To(Equal(pivnet.ReleaseType("Beta Release")))
+			})
+
+			It("correctly sets edge", func() {
+				releaseTypeVar = "edge"
+				releaseType = &releaseTypeVar
+
+				err := client.Update(
+					productSlug,
+					releaseVersion,
+					availability,
+					releaseType,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.ReleaseType).To(Equal(pivnet.ReleaseType("Edge Release")))
+			})
+
+			Context("when an unrecognized release type is provided", func() {
+				BeforeEach(func() {
+					releaseTypeVar = "bad value"
+					releaseType = &releaseTypeVar
+				})
+
+				It("invokes the error handler", func() {
+					err := client.Update(
+						productSlug,
+						releaseVersion,
+						availability,
+						releaseType,
+					)
 					Expect(err).NotTo(HaveOccurred())
 
 					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))

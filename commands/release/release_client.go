@@ -171,6 +171,7 @@ func (c *ReleaseClient) Update(
 	productSlug string,
 	releaseVersion string,
 	availability *string,
+	releaseType *string,
 ) error {
 	release, err := c.pivnetClient.ReleaseForVersion(
 		productSlug,
@@ -187,6 +188,15 @@ func (c *ReleaseClient) Update(
 		}
 
 		release.Availability = a
+	}
+
+	if releaseType != nil {
+		rt, err := convertReleaseType(*releaseType)
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
+
+		release.ReleaseType = rt
 	}
 
 	release, err = c.pivnetClient.UpdateRelease(productSlug, release)
@@ -304,5 +314,30 @@ func convertAvailability(in string) (string, error) {
 		return "All Users", nil
 	default:
 		return "", fmt.Errorf("Unexpected availability: %s", in)
+	}
+}
+
+func convertReleaseType(in string) (pivnet.ReleaseType, error) {
+	switch in {
+	case "all-in-one":
+		return pivnet.ReleaseType("All-In-One"), nil
+	case "major":
+		return pivnet.ReleaseType("Major Release"), nil
+	case "minor":
+		return pivnet.ReleaseType("Minor Release"), nil
+	case "service":
+		return pivnet.ReleaseType("Service Release"), nil
+	case "maintenance":
+		return pivnet.ReleaseType("Maintenance Release"), nil
+	case "security":
+		return pivnet.ReleaseType("Security Release"), nil
+	case "alpha":
+		return pivnet.ReleaseType("Alpha Release"), nil
+	case "beta":
+		return pivnet.ReleaseType("Beta Release"), nil
+	case "edge":
+		return pivnet.ReleaseType("Edge Release"), nil
+	default:
+		return "", fmt.Errorf("Unexpected release type: %s", in)
 	}
 }

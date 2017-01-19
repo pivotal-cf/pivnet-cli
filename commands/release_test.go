@@ -437,6 +437,20 @@ var _ = Describe("release commands", func() {
 				Expect(longTag(field)).To(Equal("availability"))
 			})
 		})
+
+		Describe("ReleaseType flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "ReleaseType")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("release-type"))
+			})
+		})
 	})
 
 	Describe("DeleteReleaseCommand", func() {

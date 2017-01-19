@@ -36,12 +36,13 @@ type FakeReleaseClient struct {
 	createReturns struct {
 		result1 error
 	}
-	UpdateStub        func(productSlug string, releaseVersion string, availability *string) error
+	UpdateStub        func(productSlug string, releaseVersion string, availability *string, releaseType *string) error
 	updateMutex       sync.RWMutex
 	updateArgsForCall []struct {
 		productSlug    string
 		releaseVersion string
 		availability   *string
+		releaseType    *string
 	}
 	updateReturns struct {
 		result1 error
@@ -162,17 +163,18 @@ func (fake *FakeReleaseClient) CreateReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeReleaseClient) Update(productSlug string, releaseVersion string, availability *string) error {
+func (fake *FakeReleaseClient) Update(productSlug string, releaseVersion string, availability *string, releaseType *string) error {
 	fake.updateMutex.Lock()
 	fake.updateArgsForCall = append(fake.updateArgsForCall, struct {
 		productSlug    string
 		releaseVersion string
 		availability   *string
-	}{productSlug, releaseVersion, availability})
-	fake.recordInvocation("Update", []interface{}{productSlug, releaseVersion, availability})
+		releaseType    *string
+	}{productSlug, releaseVersion, availability, releaseType})
+	fake.recordInvocation("Update", []interface{}{productSlug, releaseVersion, availability, releaseType})
 	fake.updateMutex.Unlock()
 	if fake.UpdateStub != nil {
-		return fake.UpdateStub(productSlug, releaseVersion, availability)
+		return fake.UpdateStub(productSlug, releaseVersion, availability, releaseType)
 	} else {
 		return fake.updateReturns.result1
 	}
@@ -184,10 +186,10 @@ func (fake *FakeReleaseClient) UpdateCallCount() int {
 	return len(fake.updateArgsForCall)
 }
 
-func (fake *FakeReleaseClient) UpdateArgsForCall(i int) (string, string, *string) {
+func (fake *FakeReleaseClient) UpdateArgsForCall(i int) (string, string, *string, *string) {
 	fake.updateMutex.RLock()
 	defer fake.updateMutex.RUnlock()
-	return fake.updateArgsForCall[i].productSlug, fake.updateArgsForCall[i].releaseVersion, fake.updateArgsForCall[i].availability
+	return fake.updateArgsForCall[i].productSlug, fake.updateArgsForCall[i].releaseVersion, fake.updateArgsForCall[i].availability, fake.updateArgsForCall[i].releaseType
 }
 
 func (fake *FakeReleaseClient) UpdateReturns(result1 error) {
