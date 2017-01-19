@@ -345,6 +345,125 @@ var _ = Describe("release commands", func() {
 
 	})
 
+	Describe("Update", func() {
+		var (
+			productSlug    string
+			releaseVersion string
+			availability   *string
+		)
+
+		BeforeEach(func() {
+			productSlug = "some-product-slug"
+			releaseVersion = releases[0].Version
+			availability = nil
+
+			fakePivnetClient.ReleaseForVersionReturns(releases[0], nil)
+			fakePivnetClient.UpdateReleaseReturns(releases[0], nil)
+		})
+
+		It("updates Release", func() {
+			err := client.Update(productSlug, releaseVersion, availability)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		Context("when there is an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("release error")
+				fakePivnetClient.UpdateReleaseReturns(pivnet.Release{}, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.Update(productSlug, releaseVersion, availability)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when there is an error getting release", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("release error")
+				fakePivnetClient.ReleaseForVersionReturns(pivnet.Release{}, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.Update(productSlug, releaseVersion, availability)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when availability is provided", func() {
+			var (
+				availabilityVar string
+			)
+
+			BeforeEach(func() {
+				availabilityVar = "all"
+				availability = &availabilityVar
+			})
+
+			It("sets availability on release", func() {
+				err := client.Update(productSlug, releaseVersion, availability)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.Availability).To(Equal("All Users"))
+			})
+
+			It("correctly sets admins only", func() {
+				availabilityVar = "admins"
+				availability = &availabilityVar
+
+				err := client.Update(productSlug, releaseVersion, availability)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.Availability).To(Equal("Admins Only"))
+			})
+
+			It("correctly sets selected user groups only", func() {
+				availabilityVar = "selected-user-groups"
+				availability = &availabilityVar
+
+				err := client.Update(productSlug, releaseVersion, availability)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakePivnetClient.UpdateReleaseCallCount()).To(Equal(1))
+				_, providedRelease := fakePivnetClient.UpdateReleaseArgsForCall(0)
+				Expect(providedRelease.Availability).To(Equal("Selected User Groups Only"))
+			})
+
+			Context("when an unrecognized availability is provided", func() {
+				BeforeEach(func() {
+					availabilityVar = "bad value"
+					availability = &availabilityVar
+				})
+
+				It("invokes the error handler", func() {
+					err := client.Update(productSlug, releaseVersion, availability)
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+					Expect(fakeErrorHandler.HandleErrorArgsForCall(0).Error()).To(MatchRegexp(".*bad value.*"))
+				})
+			})
+		})
+	})
+
 	Describe("Delete", func() {
 		var (
 			productSlug    string

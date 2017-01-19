@@ -98,6 +98,7 @@ type PivnetCommand struct {
 	Release       ReleaseCommand       `command:"release" alias:"r" description:"Show release"`
 	CreateRelease CreateReleaseCommand `command:"create-release" alias:"cr" description:"Create release"`
 	DeleteRelease DeleteReleaseCommand `command:"delete-release" alias:"dr" description:"Delete release"`
+	UpdateRelease UpdateReleaseCommand `command:"update-release" alias:"ur" description:"Update release"`
 
 	UserGroups      UserGroupsCommand      `command:"user-groups" alias:"ugs" description:"List user groups"`
 	UserGroup       UserGroupCommand       `command:"user-group" alias:"ug" description:"Show user group"`

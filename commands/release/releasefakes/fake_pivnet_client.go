@@ -37,6 +37,16 @@ type FakePivnetClient struct {
 		result1 go_pivnet.Release
 		result2 error
 	}
+	UpdateReleaseStub        func(productSlug string, release go_pivnet.Release) (go_pivnet.Release, error)
+	updateReleaseMutex       sync.RWMutex
+	updateReleaseArgsForCall []struct {
+		productSlug string
+		release     go_pivnet.Release
+	}
+	updateReleaseReturns struct {
+		result1 go_pivnet.Release
+		result2 error
+	}
 	DeleteReleaseStub        func(productSlug string, release go_pivnet.Release) error
 	deleteReleaseMutex       sync.RWMutex
 	deleteReleaseArgsForCall []struct {
@@ -167,6 +177,41 @@ func (fake *FakePivnetClient) CreateReleaseReturns(result1 go_pivnet.Release, re
 	}{result1, result2}
 }
 
+func (fake *FakePivnetClient) UpdateRelease(productSlug string, release go_pivnet.Release) (go_pivnet.Release, error) {
+	fake.updateReleaseMutex.Lock()
+	fake.updateReleaseArgsForCall = append(fake.updateReleaseArgsForCall, struct {
+		productSlug string
+		release     go_pivnet.Release
+	}{productSlug, release})
+	fake.recordInvocation("UpdateRelease", []interface{}{productSlug, release})
+	fake.updateReleaseMutex.Unlock()
+	if fake.UpdateReleaseStub != nil {
+		return fake.UpdateReleaseStub(productSlug, release)
+	} else {
+		return fake.updateReleaseReturns.result1, fake.updateReleaseReturns.result2
+	}
+}
+
+func (fake *FakePivnetClient) UpdateReleaseCallCount() int {
+	fake.updateReleaseMutex.RLock()
+	defer fake.updateReleaseMutex.RUnlock()
+	return len(fake.updateReleaseArgsForCall)
+}
+
+func (fake *FakePivnetClient) UpdateReleaseArgsForCall(i int) (string, go_pivnet.Release) {
+	fake.updateReleaseMutex.RLock()
+	defer fake.updateReleaseMutex.RUnlock()
+	return fake.updateReleaseArgsForCall[i].productSlug, fake.updateReleaseArgsForCall[i].release
+}
+
+func (fake *FakePivnetClient) UpdateReleaseReturns(result1 go_pivnet.Release, result2 error) {
+	fake.UpdateReleaseStub = nil
+	fake.updateReleaseReturns = struct {
+		result1 go_pivnet.Release
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakePivnetClient) DeleteRelease(productSlug string, release go_pivnet.Release) error {
 	fake.deleteReleaseMutex.Lock()
 	fake.deleteReleaseArgsForCall = append(fake.deleteReleaseArgsForCall, struct {
@@ -262,6 +307,8 @@ func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {
 	defer fake.releaseForVersionMutex.RUnlock()
 	fake.createReleaseMutex.RLock()
 	defer fake.createReleaseMutex.RUnlock()
+	fake.updateReleaseMutex.RLock()
+	defer fake.updateReleaseMutex.RUnlock()
 	fake.deleteReleaseMutex.RLock()
 	defer fake.deleteReleaseMutex.RUnlock()
 	fake.eULAsMutex.RLock()

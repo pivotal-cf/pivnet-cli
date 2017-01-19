@@ -36,6 +36,16 @@ type FakeReleaseClient struct {
 	createReturns struct {
 		result1 error
 	}
+	UpdateStub        func(productSlug string, releaseVersion string, availability *string) error
+	updateMutex       sync.RWMutex
+	updateArgsForCall []struct {
+		productSlug    string
+		releaseVersion string
+		availability   *string
+	}
+	updateReturns struct {
+		result1 error
+	}
 	DeleteStub        func(productSlug string, releaseVersion string) error
 	deleteMutex       sync.RWMutex
 	deleteArgsForCall []struct {
@@ -152,6 +162,41 @@ func (fake *FakeReleaseClient) CreateReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *FakeReleaseClient) Update(productSlug string, releaseVersion string, availability *string) error {
+	fake.updateMutex.Lock()
+	fake.updateArgsForCall = append(fake.updateArgsForCall, struct {
+		productSlug    string
+		releaseVersion string
+		availability   *string
+	}{productSlug, releaseVersion, availability})
+	fake.recordInvocation("Update", []interface{}{productSlug, releaseVersion, availability})
+	fake.updateMutex.Unlock()
+	if fake.UpdateStub != nil {
+		return fake.UpdateStub(productSlug, releaseVersion, availability)
+	} else {
+		return fake.updateReturns.result1
+	}
+}
+
+func (fake *FakeReleaseClient) UpdateCallCount() int {
+	fake.updateMutex.RLock()
+	defer fake.updateMutex.RUnlock()
+	return len(fake.updateArgsForCall)
+}
+
+func (fake *FakeReleaseClient) UpdateArgsForCall(i int) (string, string, *string) {
+	fake.updateMutex.RLock()
+	defer fake.updateMutex.RUnlock()
+	return fake.updateArgsForCall[i].productSlug, fake.updateArgsForCall[i].releaseVersion, fake.updateArgsForCall[i].availability
+}
+
+func (fake *FakeReleaseClient) UpdateReturns(result1 error) {
+	fake.UpdateStub = nil
+	fake.updateReturns = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeReleaseClient) Delete(productSlug string, releaseVersion string) error {
 	fake.deleteMutex.Lock()
 	fake.deleteArgsForCall = append(fake.deleteArgsForCall, struct {
@@ -195,6 +240,8 @@ func (fake *FakeReleaseClient) Invocations() map[string][][]interface{} {
 	defer fake.getMutex.RUnlock()
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
+	fake.updateMutex.RLock()
+	defer fake.updateMutex.RUnlock()
 	fake.deleteMutex.RLock()
 	defer fake.deleteMutex.RUnlock()
 	return fake.invocations

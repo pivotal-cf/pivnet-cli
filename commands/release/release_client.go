@@ -17,6 +17,7 @@ type PivnetClient interface {
 	ReleasesForProductSlug(productSlug string) ([]pivnet.Release, error)
 	ReleaseForVersion(productSlug string, releaseVersion string) (pivnet.Release, error)
 	CreateRelease(config pivnet.CreateReleaseConfig) (pivnet.Release, error)
+	UpdateRelease(productSlug string, release pivnet.Release) (pivnet.Release, error)
 	DeleteRelease(productSlug string, release pivnet.Release) error
 	EULAs() ([]pivnet.EULA, error)
 	ReleaseTypes() ([]pivnet.ReleaseType, error)
@@ -162,6 +163,36 @@ func (c *ReleaseClient) Create(
 	return c.printRelease(release)
 }
 
+func (c *ReleaseClient) Update(
+	productSlug string,
+	releaseVersion string,
+	availability *string,
+) error {
+	release, err := c.pivnetClient.ReleaseForVersion(
+		productSlug,
+		releaseVersion,
+	)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	if availability != nil {
+		a, err := convertAvailability(*availability)
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
+
+		release.Availability = a
+	}
+
+	release, err = c.pivnetClient.UpdateRelease(productSlug, release)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	return c.printRelease(release)
+}
+
 func (c *ReleaseClient) Delete(productSlug string, releaseVersion string) error {
 	release, err := c.pivnetClient.ReleaseForVersion(productSlug, releaseVersion)
 	if err != nil {
@@ -257,4 +288,17 @@ func stringsContains(strings []string, val string) bool {
 		}
 	}
 	return false
+}
+
+func convertAvailability(in string) (string, error) {
+	switch in {
+	case "admins":
+		return "Admins Only", nil
+	case "selected-user-groups":
+		return "Selected User Groups Only", nil
+	case "all":
+		return "All Users", nil
+	default:
+		return "", fmt.Errorf("Unexpected availability: %s", in)
+	}
 }

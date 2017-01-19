@@ -330,6 +330,115 @@ var _ = Describe("release commands", func() {
 		})
 	})
 
+	Describe("UpdateReleaseCommand", func() {
+		var (
+			cmd commands.UpdateReleaseCommand
+		)
+
+		BeforeEach(func() {
+			cmd = commands.UpdateReleaseCommand{}
+		})
+
+		It("invokes the Release client", func() {
+			err := cmd.Execute(nil)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(fakeReleaseClient.UpdateCallCount()).To(Equal(1))
+		})
+
+		Context("when the Release client returns an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("expected error")
+				fakeReleaseClient.UpdateReturns(expectedErr)
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
+		Describe("ProductSlug flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "ProductSlug")
+			})
+
+			It("is required", func() {
+				Expect(isRequired(field)).To(BeTrue())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("p"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("product-slug"))
+			})
+		})
+
+		Describe("ReleaseVersion flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "ReleaseVersion")
+			})
+
+			It("is required", func() {
+				Expect(isRequired(field)).To(BeTrue())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("r"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("release-version"))
+			})
+		})
+
+		Describe("Availability flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "Availability")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("availability"))
+			})
+		})
+	})
+
 	Describe("DeleteReleaseCommand", func() {
 		var (
 			cmd commands.DeleteReleaseCommand
