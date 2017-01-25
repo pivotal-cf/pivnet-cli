@@ -38,7 +38,7 @@ $ pivnet products
 |     |                                                      | Runtime                        |
 +-----+------------------------------------------------------+--------------------------------+
 
-$ pivnet --api-token='my-api-token' r -p elastic-runtime -r 1.8.8 --format json \
+$ pivnet r -p elastic-runtime -r 1.8.8 --format json \
   | jq '{"id": .id, "release_date": .release_date, "release_type": .release_type}'
 
 {
