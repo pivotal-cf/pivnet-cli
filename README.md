@@ -28,7 +28,8 @@ for more details on obtaining a Pivotal Network API token.
 Example usage:
 
 ```sh
-$ pivnet --api-token='my-api-token' products
+$ pivnet login --api-token='my-api-token'
+$ pivnet products
 
 +-----+------------------------------------------------------+--------------------------------+
 | ID  |                         SLUG                         |              NAME              |
