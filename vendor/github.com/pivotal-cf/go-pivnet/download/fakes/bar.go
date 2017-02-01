@@ -25,14 +25,22 @@ type Bar struct {
 	addReturns struct {
 		result1 int
 	}
-	KickoffStub        func()
-	kickoffMutex       sync.RWMutex
-	kickoffArgsForCall []struct{}
-	FinishStub         func()
-	finishMutex        sync.RWMutex
-	finishArgsForCall  []struct{}
-	invocations        map[string][][]interface{}
-	invocationsMutex   sync.RWMutex
+	KickoffStub               func()
+	kickoffMutex              sync.RWMutex
+	kickoffArgsForCall        []struct{}
+	FinishStub                func()
+	finishMutex               sync.RWMutex
+	finishArgsForCall         []struct{}
+	NewProxyReaderStub        func(reader io.Reader) io.Reader
+	newProxyReaderMutex       sync.RWMutex
+	newProxyReaderArgsForCall []struct {
+		reader io.Reader
+	}
+	newProxyReaderReturns struct {
+		result1 io.Reader
+	}
+	invocations      map[string][][]interface{}
+	invocationsMutex sync.RWMutex
 }
 
 func (fake *Bar) SetTotal(contentLength int64) {
@@ -92,9 +100,8 @@ func (fake *Bar) Add(totalWritten int) int {
 	fake.addMutex.Unlock()
 	if fake.AddStub != nil {
 		return fake.AddStub(totalWritten)
-	} else {
-		return fake.addReturns.result1
 	}
+	return fake.addReturns.result1
 }
 
 func (fake *Bar) AddCallCount() int {
@@ -148,6 +155,38 @@ func (fake *Bar) FinishCallCount() int {
 	return len(fake.finishArgsForCall)
 }
 
+func (fake *Bar) NewProxyReader(reader io.Reader) io.Reader {
+	fake.newProxyReaderMutex.Lock()
+	fake.newProxyReaderArgsForCall = append(fake.newProxyReaderArgsForCall, struct {
+		reader io.Reader
+	}{reader})
+	fake.recordInvocation("NewProxyReader", []interface{}{reader})
+	fake.newProxyReaderMutex.Unlock()
+	if fake.NewProxyReaderStub != nil {
+		return fake.NewProxyReaderStub(reader)
+	}
+	return fake.newProxyReaderReturns.result1
+}
+
+func (fake *Bar) NewProxyReaderCallCount() int {
+	fake.newProxyReaderMutex.RLock()
+	defer fake.newProxyReaderMutex.RUnlock()
+	return len(fake.newProxyReaderArgsForCall)
+}
+
+func (fake *Bar) NewProxyReaderArgsForCall(i int) io.Reader {
+	fake.newProxyReaderMutex.RLock()
+	defer fake.newProxyReaderMutex.RUnlock()
+	return fake.newProxyReaderArgsForCall[i].reader
+}
+
+func (fake *Bar) NewProxyReaderReturns(result1 io.Reader) {
+	fake.NewProxyReaderStub = nil
+	fake.newProxyReaderReturns = struct {
+		result1 io.Reader
+	}{result1}
+}
+
 func (fake *Bar) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -161,6 +200,8 @@ func (fake *Bar) Invocations() map[string][][]interface{} {
 	defer fake.kickoffMutex.RUnlock()
 	fake.finishMutex.RLock()
 	defer fake.finishMutex.RUnlock()
+	fake.newProxyReaderMutex.RLock()
+	defer fake.newProxyReaderMutex.RUnlock()
 	return fake.invocations
 }
 

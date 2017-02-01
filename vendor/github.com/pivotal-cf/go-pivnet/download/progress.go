@@ -28,3 +28,7 @@ func (b Bar) Kickoff() {
 func (b Bar) SetOutput(output io.Writer) {
 	b.Output = output
 }
+
+func (b Bar) NewProxyReader(reader io.Reader) (io.Reader) {
+	return b.ProgressBar.NewProxyReader(reader)
+}

@@ -473,31 +473,13 @@ func (p ProductFilesService) DownloadForRelease(
 
 	p.client.logger.Debug("Downloading file", logger.Data{"downloadLink": downloadLink})
 
-	p.client.HTTP.CheckRedirect = func(req *http.Request, via []*http.Request) error {
-		return http.ErrUseLastResponse
-	}
-
-	resp, err := p.client.MakeRequest(
-		"POST",
-		downloadLink,
-		http.StatusFound,
-		nil,
-	)
-	if err != nil {
-		// Untested as we cannot force CreateRequest to return an error.
-		return err
-	}
-	defer resp.Body.Close()
-
-	p.client.HTTP.CheckRedirect = nil
-
-	p.client.logger.Debug("Fetching File", logger.Data{"location": resp.Header.Get("Location")})
+	productFileDownloadLinkFetcher := NewProductFileLinkFetcher(downloadLink, p.client)
 
 	p.client.downloader.Bar = download.NewBar()
 
 	err = p.client.downloader.Get(
 		location,
-		resp.Header.Get("Location"),
+		productFileDownloadLinkFetcher,
 		progressWriter,
 	)
 	if err != nil {

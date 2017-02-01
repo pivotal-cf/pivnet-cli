@@ -30,9 +30,8 @@ func (fake *Ranger) BuildRange(contentLength int64) ([]download.Range, error) {
 	fake.buildRangeMutex.Unlock()
 	if fake.BuildRangeStub != nil {
 		return fake.BuildRangeStub(contentLength)
-	} else {
-		return fake.buildRangeReturns.result1, fake.buildRangeReturns.result2
 	}
+	return fake.buildRangeReturns.result1, fake.buildRangeReturns.result2
 }
 
 func (fake *Ranger) BuildRangeCallCount() int {

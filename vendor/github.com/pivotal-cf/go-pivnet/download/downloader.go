@@ -3,12 +3,11 @@ package download
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
-
 	"golang.org/x/sync/errgroup"
+	"github.com/pivotal-cf/go-pivnet/logger"
 )
 
 //go:generate counterfeiter -o ./fakes/ranger.go --fake-name Ranger . ranger
@@ -21,6 +20,10 @@ type httpClient interface {
 	Do(*http.Request) (*http.Response, error)
 }
 
+type downloadLinkFetcher interface {
+	NewDownloadLink() (string, error)
+}
+
 //go:generate counterfeiter -o ./fakes/bar.go --fake-name Bar . bar
 type bar interface {
 	SetTotal(contentLength int64)
@@ -28,19 +31,26 @@ type bar interface {
 	Add(totalWritten int) int
 	Kickoff()
 	Finish()
+	NewProxyReader(reader io.Reader) io.Reader
 }
 
 type Client struct {
 	HTTPClient httpClient
 	Ranger     ranger
 	Bar        bar
+	Logger     logger.Logger
 }
 
 func (c Client) Get(
 	location *os.File,
-	contentURL string,
+	downloadLinkFetcher downloadLinkFetcher,
 	progressWriter io.Writer,
 ) error {
+	contentURL, err := downloadLinkFetcher.NewDownloadLink()
+	if err != nil {
+		return err
+	}
+
 	req, err := http.NewRequest("HEAD", contentURL, nil)
 	if err != nil {
 		return fmt.Errorf("failed to construct HEAD request: %s", err)
@@ -63,22 +73,30 @@ func (c Client) Get(
 	c.Bar.Kickoff()
 
 	defer c.Bar.Finish()
+	fileInfo, err := location.Stat()
+	if err != nil {
+		return fmt.Errorf("failed to write file: %s", err)
+	}
 
 	var g errgroup.Group
 	for _, r := range ranges {
 		byteRange := r
+
+		fileWriter, err := os.OpenFile(location.Name(), os.O_RDWR, fileInfo.Mode())
+		if err != nil {
+			return fmt.Errorf("failed to write file: %s", err)
+		}
+
+		_, err = fileWriter.Seek(byteRange.Lower, 0)
+		if err != nil {
+			return fmt.Errorf("failed to write file: %s", err)
+		}
+
 		g.Go(func() error {
-			respBytes, err := c.retryableRequest(contentURL, byteRange.HTTPHeader)
+			err := c.retryableRequest(contentURL, byteRange.HTTPHeader, fileWriter, downloadLinkFetcher)
 			if err != nil {
 				return fmt.Errorf("failed during retryable request: %s", err)
 			}
-
-			bytesWritten, err := location.WriteAt(respBytes, byteRange.Lower)
-			if err != nil {
-				return fmt.Errorf("failed to write file: %s", err)
-			}
-
-			c.Bar.Add(bytesWritten)
 
 			return nil
 		})
@@ -91,15 +109,17 @@ func (c Client) Get(
 	return nil
 }
 
-func (c Client) retryableRequest(url string, rangeHeader http.Header) ([]byte, error) {
-	req, err := http.NewRequest("GET", url, nil)
+func (c Client) retryableRequest(contentURL string, rangeHeader http.Header, fileWriter *os.File, downloadLinkFetcher downloadLinkFetcher) (error) {
+	currentURL := contentURL
+	defer fileWriter.Close()
+Retry:
+	req, err := http.NewRequest("GET", currentURL, nil)
 	if err != nil {
-		return []byte{}, err
+		return err
 	}
 
 	req.Header = rangeHeader
 
-Retry:
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		if netErr, ok := err.(net.Error); ok {
@@ -108,24 +128,36 @@ Retry:
 			}
 		}
 
-		return []byte{}, err
+		return err
 	}
 
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusPartialContent {
-		return []byte{}, fmt.Errorf("during GET unexpected status code was returned: %d", resp.StatusCode)
+	if resp.StatusCode == http.StatusForbidden {
+		c.Logger.Debug("Received unsuccessful status code: %d", logger.Data{"statusCode": resp.StatusCode})
+		currentURL, err = downloadLinkFetcher.NewDownloadLink()
+		if err != nil {
+			return err
+		}
+		c.Logger.Debug("Fetched new download url: %d", logger.Data{"url": currentURL})
+
+		goto Retry
 	}
 
-	var respBytes []byte
-	respBytes, err = ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusPartialContent {
+		return fmt.Errorf("during GET unexpected status code was returned: %d", resp.StatusCode)
+	}
+
+	var proxyReader io.Reader
+	proxyReader = c.Bar.NewProxyReader(resp.Body)
+
+	_, err = io.Copy(fileWriter, proxyReader)
 	if err != nil {
 		if err == io.ErrUnexpectedEOF {
 			goto Retry
 		}
-
-		return []byte{}, err
+		return fmt.Errorf("failed to write file: %s", err)
 	}
 
-	return respBytes, err
+	return nil
 }

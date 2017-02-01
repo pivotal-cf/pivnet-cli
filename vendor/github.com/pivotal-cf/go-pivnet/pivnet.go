@@ -72,6 +72,7 @@ func NewClient(
 	downloader := download.Client{
 		HTTPClient: http.DefaultClient,
 		Ranger:     ranger,
+		Logger:     logger,
 	}
 
 	client := Client{
