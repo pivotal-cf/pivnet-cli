@@ -4,6 +4,7 @@ import (
 	"io"
 
 	pb "gopkg.in/cheggaaa/pb.v1"
+	"time"
 )
 
 type Bar struct {
@@ -14,6 +15,7 @@ func NewBar() Bar {
 	b := pb.New(0)
 	b.SetUnits(pb.U_BYTES)
 	b.SetWidth(80)
+	b.SetRefreshRate(2 * time.Second)
 	return Bar{b}
 }
 
