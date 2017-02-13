@@ -8,6 +8,7 @@ import (
 	"os"
 	"golang.org/x/sync/errgroup"
 	"github.com/pivotal-cf/go-pivnet/logger"
+	"syscall"
 )
 
 //go:generate counterfeiter -o ./fakes/ranger.go --fake-name Ranger . ranger
@@ -75,7 +76,7 @@ func (c Client) Get(
 	defer c.Bar.Finish()
 	fileInfo, err := location.Stat()
 	if err != nil {
-		return fmt.Errorf("failed to write file: %s", err)
+		return fmt.Errorf("failed to read information from output file: %s", err)
 	}
 
 	var g errgroup.Group
@@ -84,7 +85,7 @@ func (c Client) Get(
 
 		fileWriter, err := os.OpenFile(location.Name(), os.O_RDWR, fileInfo.Mode())
 		if err != nil {
-			return fmt.Errorf("failed to write file: %s", err)
+			return fmt.Errorf("failed to open file for writing: %s", err)
 		}
 
 		g.Go(func() error {
@@ -112,7 +113,7 @@ func (c Client) retryableRequest(contentURL string, rangeHeader http.Header, fil
 Retry:
 	_, err = fileWriter.Seek(startingByte, 0)
 	if err != nil {
-		return fmt.Errorf("failed to write file: %s", err)
+		return fmt.Errorf("failed to seek to correct byte of output file: %s", err)
 	}
 
 	req, err := http.NewRequest("GET", currentURL, nil)
@@ -130,18 +131,18 @@ Retry:
 			}
 		}
 
-		return err
+		return fmt.Errorf("download request failed: %s", err)
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusForbidden {
-		c.Logger.Debug("Received unsuccessful status code: %d", logger.Data{"statusCode": resp.StatusCode})
+		c.Logger.Debug("received unsuccessful status code: %d", logger.Data{"statusCode": resp.StatusCode})
 		currentURL, err = downloadLinkFetcher.NewDownloadLink()
 		if err != nil {
 			return err
 		}
-		c.Logger.Debug("Fetched new download url: %d", logger.Data{"url": currentURL})
+		c.Logger.Debug("fetched new download url: %d", logger.Data{"url": currentURL})
 
 		goto Retry
 	}
@@ -159,7 +160,12 @@ Retry:
 			c.Bar.Add(int(-1 * bytesWritten))
 			goto Retry
 		}
-		return fmt.Errorf("failed to write file: %s", err)
+		operr, _ := err.(*net.OpError)
+		if operr.Err.Error() == syscall.ECONNRESET.Error() {
+			c.Bar.Add(int(-1 * bytesWritten))
+			goto Retry
+		}
+		return fmt.Errorf("failed to write file during io.Copy: %s", err)
 	}
 
 	return nil
