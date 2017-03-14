@@ -8,8 +8,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
 	"github.com/pivotal-cf/go-pivnet"
-	"github.com/pivotal-cf/pivnet-cli/gp"
 	"github.com/pivotal-cf/go-pivnet/logger/loggerfakes"
+	"github.com/pivotal-cf/pivnet-cli/gp"
 )
 
 const (

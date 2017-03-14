@@ -24,6 +24,7 @@ type CreateProductFileConfig struct {
 	FileType           string
 	FileVersion        string
 	IncludedFiles      []string
+	SHA256             string
 	MD5                string
 	Name               string
 	Platforms          []string
@@ -49,6 +50,7 @@ type ProductFile struct {
 	FileVersion        string   `json:"file_version,omitempty" yaml:"file_version,omitempty"`
 	HasSignatureFile   bool     `json:"has_signature_file,omitempty" yaml:"has_signature_file,omitempty"`
 	IncludedFiles      []string `json:"included_files,omitempty" yaml:"included_files,omitempty"`
+	SHA256             string   `json:"sha256,omitempty" yaml:"sha256,omitempty"`
 	MD5                string   `json:"md5,omitempty" yaml:"md5,omitempty"`
 	Name               string   `json:"name,omitempty" yaml:"name,omitempty"`
 	Platforms          []string `json:"platforms,omitempty" yaml:"platforms,omitempty"`
@@ -193,6 +195,7 @@ func (p ProductFilesService) Create(config CreateProductFileConfig) (ProductFile
 			FileType:           config.FileType,
 			FileVersion:        config.FileVersion,
 			IncludedFiles:      config.IncludedFiles,
+			SHA256:             config.SHA256,
 			MD5:                config.MD5,
 			Name:               config.Name,
 			Platforms:          config.Platforms,
@@ -235,6 +238,7 @@ func (p ProductFilesService) Update(productSlug string, productFile ProductFile)
 		ProductFile: ProductFile{
 			Description: productFile.Description,
 			FileVersion: productFile.FileVersion,
+			SHA256:      productFile.SHA256,
 			MD5:         productFile.MD5,
 			Name:        productFile.Name,
 		},

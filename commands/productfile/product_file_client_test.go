@@ -334,12 +334,14 @@ var _ = Describe("productfile commands", func() {
 			existingName        string
 			existingFileType    string
 			existingFileVersion string
+			existingSHA256      string
 			existingMD5         string
 			existingDescription string
 
 			name        string
 			fileType    string
 			fileVersion string
+			sha256      string
 			md5         string
 			description string
 
@@ -353,12 +355,14 @@ var _ = Describe("productfile commands", func() {
 			existingName = "some-name"
 			existingFileType = "some-file-type"
 			existingFileVersion = "some-file-type"
+			existingSHA256 = "some-sha256"
 			existingMD5 = "some-md5"
 			existingDescription = "some-description"
 
 			name = "some-new-name"
 			fileType = "some-new-file-type"
 			fileVersion = "some-new-file-type"
+			sha256 = "some-new-sha256"
 			md5 = "some-new-md5"
 			description = "some-new-description"
 
@@ -381,6 +385,7 @@ var _ = Describe("productfile commands", func() {
 				productSlug,
 				&name,
 				&fileVersion,
+				&sha256,
 				&md5,
 				&description,
 			)
@@ -397,6 +402,7 @@ var _ = Describe("productfile commands", func() {
 			Expect(invokedProductFile.ID).To(Equal(productFileID))
 			Expect(invokedProductFile.Name).To(Equal(name))
 			Expect(invokedProductFile.FileVersion).To(Equal(fileVersion))
+			Expect(invokedProductFile.SHA256).To(Equal(sha256))
 			Expect(invokedProductFile.MD5).To(Equal(md5))
 			Expect(invokedProductFile.Description).To(Equal(description))
 		})
@@ -406,6 +412,7 @@ var _ = Describe("productfile commands", func() {
 				err := client.Update(
 					productFileID,
 					productSlug,
+					nil,
 					nil,
 					nil,
 					nil,
@@ -445,6 +452,7 @@ var _ = Describe("productfile commands", func() {
 					productSlug,
 					&name,
 					&fileVersion,
+					&sha256,
 					&md5,
 					&description,
 				)

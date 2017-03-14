@@ -140,6 +140,7 @@ func (c *ProductFileClient) printProductFile(productFile pivnet.ProductFile) err
 			"File Version",
 			"File Type",
 			"Description",
+			"SHA256",
 			"MD5",
 			"AWS Object Key",
 			"Size (Bytes)",
@@ -151,6 +152,7 @@ func (c *ProductFileClient) printProductFile(productFile pivnet.ProductFile) err
 			productFile.FileVersion,
 			productFile.FileType,
 			productFile.Description,
+			productFile.SHA256,
 			productFile.MD5,
 			productFile.AWSObjectKey,
 			fmt.Sprintf("%d", productFile.Size),
@@ -214,6 +216,7 @@ func (c *ProductFileClient) Update(
 	productSlug string,
 	name *string,
 	fileVersion *string,
+	sha256 *string,
 	md5 *string,
 	description *string,
 ) error {
@@ -231,6 +234,10 @@ func (c *ProductFileClient) Update(
 
 	if fileVersion != nil {
 		productFile.FileVersion = *fileVersion
+	}
+
+	if sha256 != nil {
+		productFile.SHA256 = *sha256
 	}
 
 	if md5 != nil {

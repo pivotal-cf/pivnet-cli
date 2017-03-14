@@ -25,6 +25,7 @@ type CreateProductFileCommand struct {
 	AWSObjectKey       string   `long:"aws-object-key" description:"AWS Object Key e.g. 'product_files/P-MySQL/p-mysql-1.7.13.pivotal'" required:"true"`
 	FileType           string   `long:"file-type" description:"File Type e.g. 'Software'" required:"true"`
 	FileVersion        string   `long:"file-version" description:"File Version e.g. '1.7.13'" required:"true"`
+	SHA256             string   `long:"sha256" description:"SHA256 of file"`
 	MD5                string   `long:"md5" description:"MD5 of file" required:"true"`
 	Description        string   `long:"description" description:"Description of file"`
 	DocsURL            string   `long:"docs-url" description:"URL of docs for file"`
@@ -39,6 +40,7 @@ type UpdateProductFileCommand struct {
 	ProductFileID int     `long:"product-file-id" short:"i" description:"Product file ID e.g. 1234" required:"true"`
 	Name          *string `long:"name" description:"Name e.g. p-mysql 1.7.13"`
 	FileVersion   *string `long:"file-version" description:"File Version e.g. '1.7.13'"`
+	SHA256        *string `long:"sha256" description:"SHA256 of file"`
 	MD5           *string `long:"md5" description:"MD5 of file"`
 	Description   *string `long:"description" description:"File description e.g. 'This is a file description.'"`
 }
@@ -81,6 +83,7 @@ type ProductFileClient interface {
 		productSlug string,
 		name *string,
 		fileVersion *string,
+		sha256 *string,
 		md5 *string,
 		description *string,
 	) error
@@ -155,6 +158,7 @@ func (command *CreateProductFileCommand) Execute([]string) error {
 		FileType:           command.FileType,
 		FileVersion:        command.FileVersion,
 		IncludedFiles:      command.IncludedFiles,
+		SHA256:             command.SHA256,
 		MD5:                command.MD5,
 		Name:               command.Name,
 		Platforms:          command.Platforms,
@@ -182,6 +186,7 @@ func (command *UpdateProductFileCommand) Execute([]string) error {
 		command.ProductSlug,
 		command.Name,
 		command.FileVersion,
+		command.SHA256,
 		command.MD5,
 		command.Description,
 	)

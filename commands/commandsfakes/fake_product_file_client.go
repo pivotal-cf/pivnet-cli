@@ -5,7 +5,7 @@ import (
 	"io"
 	"sync"
 
-	go_pivnet "github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 )
 
@@ -19,6 +19,9 @@ type FakeProductFileClient struct {
 	listReturns struct {
 		result1 error
 	}
+	listReturnsOnCall map[int]struct {
+		result1 error
+	}
 	GetStub        func(productSlug string, releaseVersion string, productFileID int) error
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
@@ -29,25 +32,35 @@ type FakeProductFileClient struct {
 	getReturns struct {
 		result1 error
 	}
-	CreateStub        func(config go_pivnet.CreateProductFileConfig) error
+	getReturnsOnCall map[int]struct {
+		result1 error
+	}
+	CreateStub        func(config pivnet.CreateProductFileConfig) error
 	createMutex       sync.RWMutex
 	createArgsForCall []struct {
-		config go_pivnet.CreateProductFileConfig
+		config pivnet.CreateProductFileConfig
 	}
 	createReturns struct {
 		result1 error
 	}
-	UpdateStub        func(productFileID int, productSlug string, name *string, fileVersion *string, md5 *string, description *string) error
+	createReturnsOnCall map[int]struct {
+		result1 error
+	}
+	UpdateStub        func(productFileID int, productSlug string, name *string, fileVersion *string, sha256 *string, md5 *string, description *string) error
 	updateMutex       sync.RWMutex
 	updateArgsForCall []struct {
 		productFileID int
 		productSlug   string
 		name          *string
 		fileVersion   *string
+		sha256        *string
 		md5           *string
 		description   *string
 	}
 	updateReturns struct {
+		result1 error
+	}
+	updateReturnsOnCall map[int]struct {
 		result1 error
 	}
 	AddToReleaseStub        func(productSlug string, releaseVersion string, productFileID int) error
@@ -60,6 +73,9 @@ type FakeProductFileClient struct {
 	addToReleaseReturns struct {
 		result1 error
 	}
+	addToReleaseReturnsOnCall map[int]struct {
+		result1 error
+	}
 	RemoveFromReleaseStub        func(productSlug string, releaseVersion string, productFileID int) error
 	removeFromReleaseMutex       sync.RWMutex
 	removeFromReleaseArgsForCall []struct {
@@ -68,6 +84,9 @@ type FakeProductFileClient struct {
 		productFileID  int
 	}
 	removeFromReleaseReturns struct {
+		result1 error
+	}
+	removeFromReleaseReturnsOnCall map[int]struct {
 		result1 error
 	}
 	AddToFileGroupStub        func(productSlug string, fileGroupID int, productFileID int) error
@@ -80,6 +99,9 @@ type FakeProductFileClient struct {
 	addToFileGroupReturns struct {
 		result1 error
 	}
+	addToFileGroupReturnsOnCall map[int]struct {
+		result1 error
+	}
 	RemoveFromFileGroupStub        func(productSlug string, fileGroupID int, productFileID int) error
 	removeFromFileGroupMutex       sync.RWMutex
 	removeFromFileGroupArgsForCall []struct {
@@ -90,6 +112,9 @@ type FakeProductFileClient struct {
 	removeFromFileGroupReturns struct {
 		result1 error
 	}
+	removeFromFileGroupReturnsOnCall map[int]struct {
+		result1 error
+	}
 	DeleteStub        func(productSlug string, productFileID int) error
 	deleteMutex       sync.RWMutex
 	deleteArgsForCall []struct {
@@ -97,6 +122,9 @@ type FakeProductFileClient struct {
 		productFileID int
 	}
 	deleteReturns struct {
+		result1 error
+	}
+	deleteReturnsOnCall map[int]struct {
 		result1 error
 	}
 	DownloadStub        func(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool, progressWriter io.Writer) error
@@ -113,12 +141,16 @@ type FakeProductFileClient struct {
 	downloadReturns struct {
 		result1 error
 	}
+	downloadReturnsOnCall map[int]struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
 func (fake *FakeProductFileClient) List(productSlug string, releaseVersion string) error {
 	fake.listMutex.Lock()
+	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
 	fake.listArgsForCall = append(fake.listArgsForCall, struct {
 		productSlug    string
 		releaseVersion string
@@ -127,9 +159,11 @@ func (fake *FakeProductFileClient) List(productSlug string, releaseVersion strin
 	fake.listMutex.Unlock()
 	if fake.ListStub != nil {
 		return fake.ListStub(productSlug, releaseVersion)
-	} else {
-		return fake.listReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.listReturns.result1
 }
 
 func (fake *FakeProductFileClient) ListCallCount() int {
@@ -151,8 +185,21 @@ func (fake *FakeProductFileClient) ListReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *FakeProductFileClient) ListReturnsOnCall(i int, result1 error) {
+	fake.ListStub = nil
+	if fake.listReturnsOnCall == nil {
+		fake.listReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.listReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeProductFileClient) Get(productSlug string, releaseVersion string, productFileID int) error {
 	fake.getMutex.Lock()
+	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
 		productSlug    string
 		releaseVersion string
@@ -162,9 +209,11 @@ func (fake *FakeProductFileClient) Get(productSlug string, releaseVersion string
 	fake.getMutex.Unlock()
 	if fake.GetStub != nil {
 		return fake.GetStub(productSlug, releaseVersion, productFileID)
-	} else {
-		return fake.getReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.getReturns.result1
 }
 
 func (fake *FakeProductFileClient) GetCallCount() int {
@@ -186,18 +235,33 @@ func (fake *FakeProductFileClient) GetReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeProductFileClient) Create(config go_pivnet.CreateProductFileConfig) error {
+func (fake *FakeProductFileClient) GetReturnsOnCall(i int, result1 error) {
+	fake.GetStub = nil
+	if fake.getReturnsOnCall == nil {
+		fake.getReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.getReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) Create(config pivnet.CreateProductFileConfig) error {
 	fake.createMutex.Lock()
+	ret, specificReturn := fake.createReturnsOnCall[len(fake.createArgsForCall)]
 	fake.createArgsForCall = append(fake.createArgsForCall, struct {
-		config go_pivnet.CreateProductFileConfig
+		config pivnet.CreateProductFileConfig
 	}{config})
 	fake.recordInvocation("Create", []interface{}{config})
 	fake.createMutex.Unlock()
 	if fake.CreateStub != nil {
 		return fake.CreateStub(config)
-	} else {
-		return fake.createReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.createReturns.result1
 }
 
 func (fake *FakeProductFileClient) CreateCallCount() int {
@@ -206,7 +270,7 @@ func (fake *FakeProductFileClient) CreateCallCount() int {
 	return len(fake.createArgsForCall)
 }
 
-func (fake *FakeProductFileClient) CreateArgsForCall(i int) go_pivnet.CreateProductFileConfig {
+func (fake *FakeProductFileClient) CreateArgsForCall(i int) pivnet.CreateProductFileConfig {
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
 	return fake.createArgsForCall[i].config
@@ -219,23 +283,39 @@ func (fake *FakeProductFileClient) CreateReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeProductFileClient) Update(productFileID int, productSlug string, name *string, fileVersion *string, md5 *string, description *string) error {
+func (fake *FakeProductFileClient) CreateReturnsOnCall(i int, result1 error) {
+	fake.CreateStub = nil
+	if fake.createReturnsOnCall == nil {
+		fake.createReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.createReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) Update(productFileID int, productSlug string, name *string, fileVersion *string, sha256 *string, md5 *string, description *string) error {
 	fake.updateMutex.Lock()
+	ret, specificReturn := fake.updateReturnsOnCall[len(fake.updateArgsForCall)]
 	fake.updateArgsForCall = append(fake.updateArgsForCall, struct {
 		productFileID int
 		productSlug   string
 		name          *string
 		fileVersion   *string
+		sha256        *string
 		md5           *string
 		description   *string
-	}{productFileID, productSlug, name, fileVersion, md5, description})
-	fake.recordInvocation("Update", []interface{}{productFileID, productSlug, name, fileVersion, md5, description})
+	}{productFileID, productSlug, name, fileVersion, sha256, md5, description})
+	fake.recordInvocation("Update", []interface{}{productFileID, productSlug, name, fileVersion, sha256, md5, description})
 	fake.updateMutex.Unlock()
 	if fake.UpdateStub != nil {
-		return fake.UpdateStub(productFileID, productSlug, name, fileVersion, md5, description)
-	} else {
-		return fake.updateReturns.result1
+		return fake.UpdateStub(productFileID, productSlug, name, fileVersion, sha256, md5, description)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.updateReturns.result1
 }
 
 func (fake *FakeProductFileClient) UpdateCallCount() int {
@@ -244,10 +324,10 @@ func (fake *FakeProductFileClient) UpdateCallCount() int {
 	return len(fake.updateArgsForCall)
 }
 
-func (fake *FakeProductFileClient) UpdateArgsForCall(i int) (int, string, *string, *string, *string, *string) {
+func (fake *FakeProductFileClient) UpdateArgsForCall(i int) (int, string, *string, *string, *string, *string, *string) {
 	fake.updateMutex.RLock()
 	defer fake.updateMutex.RUnlock()
-	return fake.updateArgsForCall[i].productFileID, fake.updateArgsForCall[i].productSlug, fake.updateArgsForCall[i].name, fake.updateArgsForCall[i].fileVersion, fake.updateArgsForCall[i].md5, fake.updateArgsForCall[i].description
+	return fake.updateArgsForCall[i].productFileID, fake.updateArgsForCall[i].productSlug, fake.updateArgsForCall[i].name, fake.updateArgsForCall[i].fileVersion, fake.updateArgsForCall[i].sha256, fake.updateArgsForCall[i].md5, fake.updateArgsForCall[i].description
 }
 
 func (fake *FakeProductFileClient) UpdateReturns(result1 error) {
@@ -257,8 +337,21 @@ func (fake *FakeProductFileClient) UpdateReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *FakeProductFileClient) UpdateReturnsOnCall(i int, result1 error) {
+	fake.UpdateStub = nil
+	if fake.updateReturnsOnCall == nil {
+		fake.updateReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.updateReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeProductFileClient) AddToRelease(productSlug string, releaseVersion string, productFileID int) error {
 	fake.addToReleaseMutex.Lock()
+	ret, specificReturn := fake.addToReleaseReturnsOnCall[len(fake.addToReleaseArgsForCall)]
 	fake.addToReleaseArgsForCall = append(fake.addToReleaseArgsForCall, struct {
 		productSlug    string
 		releaseVersion string
@@ -268,9 +361,11 @@ func (fake *FakeProductFileClient) AddToRelease(productSlug string, releaseVersi
 	fake.addToReleaseMutex.Unlock()
 	if fake.AddToReleaseStub != nil {
 		return fake.AddToReleaseStub(productSlug, releaseVersion, productFileID)
-	} else {
-		return fake.addToReleaseReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.addToReleaseReturns.result1
 }
 
 func (fake *FakeProductFileClient) AddToReleaseCallCount() int {
@@ -292,8 +387,21 @@ func (fake *FakeProductFileClient) AddToReleaseReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *FakeProductFileClient) AddToReleaseReturnsOnCall(i int, result1 error) {
+	fake.AddToReleaseStub = nil
+	if fake.addToReleaseReturnsOnCall == nil {
+		fake.addToReleaseReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.addToReleaseReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeProductFileClient) RemoveFromRelease(productSlug string, releaseVersion string, productFileID int) error {
 	fake.removeFromReleaseMutex.Lock()
+	ret, specificReturn := fake.removeFromReleaseReturnsOnCall[len(fake.removeFromReleaseArgsForCall)]
 	fake.removeFromReleaseArgsForCall = append(fake.removeFromReleaseArgsForCall, struct {
 		productSlug    string
 		releaseVersion string
@@ -303,9 +411,11 @@ func (fake *FakeProductFileClient) RemoveFromRelease(productSlug string, release
 	fake.removeFromReleaseMutex.Unlock()
 	if fake.RemoveFromReleaseStub != nil {
 		return fake.RemoveFromReleaseStub(productSlug, releaseVersion, productFileID)
-	} else {
-		return fake.removeFromReleaseReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.removeFromReleaseReturns.result1
 }
 
 func (fake *FakeProductFileClient) RemoveFromReleaseCallCount() int {
@@ -327,8 +437,21 @@ func (fake *FakeProductFileClient) RemoveFromReleaseReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *FakeProductFileClient) RemoveFromReleaseReturnsOnCall(i int, result1 error) {
+	fake.RemoveFromReleaseStub = nil
+	if fake.removeFromReleaseReturnsOnCall == nil {
+		fake.removeFromReleaseReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.removeFromReleaseReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeProductFileClient) AddToFileGroup(productSlug string, fileGroupID int, productFileID int) error {
 	fake.addToFileGroupMutex.Lock()
+	ret, specificReturn := fake.addToFileGroupReturnsOnCall[len(fake.addToFileGroupArgsForCall)]
 	fake.addToFileGroupArgsForCall = append(fake.addToFileGroupArgsForCall, struct {
 		productSlug   string
 		fileGroupID   int
@@ -338,9 +461,11 @@ func (fake *FakeProductFileClient) AddToFileGroup(productSlug string, fileGroupI
 	fake.addToFileGroupMutex.Unlock()
 	if fake.AddToFileGroupStub != nil {
 		return fake.AddToFileGroupStub(productSlug, fileGroupID, productFileID)
-	} else {
-		return fake.addToFileGroupReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.addToFileGroupReturns.result1
 }
 
 func (fake *FakeProductFileClient) AddToFileGroupCallCount() int {
@@ -362,8 +487,21 @@ func (fake *FakeProductFileClient) AddToFileGroupReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *FakeProductFileClient) AddToFileGroupReturnsOnCall(i int, result1 error) {
+	fake.AddToFileGroupStub = nil
+	if fake.addToFileGroupReturnsOnCall == nil {
+		fake.addToFileGroupReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.addToFileGroupReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeProductFileClient) RemoveFromFileGroup(productSlug string, fileGroupID int, productFileID int) error {
 	fake.removeFromFileGroupMutex.Lock()
+	ret, specificReturn := fake.removeFromFileGroupReturnsOnCall[len(fake.removeFromFileGroupArgsForCall)]
 	fake.removeFromFileGroupArgsForCall = append(fake.removeFromFileGroupArgsForCall, struct {
 		productSlug   string
 		fileGroupID   int
@@ -373,9 +511,11 @@ func (fake *FakeProductFileClient) RemoveFromFileGroup(productSlug string, fileG
 	fake.removeFromFileGroupMutex.Unlock()
 	if fake.RemoveFromFileGroupStub != nil {
 		return fake.RemoveFromFileGroupStub(productSlug, fileGroupID, productFileID)
-	} else {
-		return fake.removeFromFileGroupReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.removeFromFileGroupReturns.result1
 }
 
 func (fake *FakeProductFileClient) RemoveFromFileGroupCallCount() int {
@@ -397,8 +537,21 @@ func (fake *FakeProductFileClient) RemoveFromFileGroupReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *FakeProductFileClient) RemoveFromFileGroupReturnsOnCall(i int, result1 error) {
+	fake.RemoveFromFileGroupStub = nil
+	if fake.removeFromFileGroupReturnsOnCall == nil {
+		fake.removeFromFileGroupReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.removeFromFileGroupReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeProductFileClient) Delete(productSlug string, productFileID int) error {
 	fake.deleteMutex.Lock()
+	ret, specificReturn := fake.deleteReturnsOnCall[len(fake.deleteArgsForCall)]
 	fake.deleteArgsForCall = append(fake.deleteArgsForCall, struct {
 		productSlug   string
 		productFileID int
@@ -407,9 +560,11 @@ func (fake *FakeProductFileClient) Delete(productSlug string, productFileID int)
 	fake.deleteMutex.Unlock()
 	if fake.DeleteStub != nil {
 		return fake.DeleteStub(productSlug, productFileID)
-	} else {
-		return fake.deleteReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.deleteReturns.result1
 }
 
 func (fake *FakeProductFileClient) DeleteCallCount() int {
@@ -431,6 +586,18 @@ func (fake *FakeProductFileClient) DeleteReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *FakeProductFileClient) DeleteReturnsOnCall(i int, result1 error) {
+	fake.DeleteStub = nil
+	if fake.deleteReturnsOnCall == nil {
+		fake.deleteReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.deleteReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeProductFileClient) Download(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool, progressWriter io.Writer) error {
 	var globsCopy []string
 	if globs != nil {
@@ -443,6 +610,7 @@ func (fake *FakeProductFileClient) Download(productSlug string, releaseVersion s
 		copy(productFileIDsCopy, productFileIDs)
 	}
 	fake.downloadMutex.Lock()
+	ret, specificReturn := fake.downloadReturnsOnCall[len(fake.downloadArgsForCall)]
 	fake.downloadArgsForCall = append(fake.downloadArgsForCall, struct {
 		productSlug    string
 		releaseVersion string
@@ -456,9 +624,11 @@ func (fake *FakeProductFileClient) Download(productSlug string, releaseVersion s
 	fake.downloadMutex.Unlock()
 	if fake.DownloadStub != nil {
 		return fake.DownloadStub(productSlug, releaseVersion, globs, productFileIDs, downloadDir, acceptEULA, progressWriter)
-	} else {
-		return fake.downloadReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.downloadReturns.result1
 }
 
 func (fake *FakeProductFileClient) DownloadCallCount() int {
@@ -476,6 +646,18 @@ func (fake *FakeProductFileClient) DownloadArgsForCall(i int) (string, string, [
 func (fake *FakeProductFileClient) DownloadReturns(result1 error) {
 	fake.DownloadStub = nil
 	fake.downloadReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) DownloadReturnsOnCall(i int, result1 error) {
+	fake.DownloadStub = nil
+	if fake.downloadReturnsOnCall == nil {
+		fake.downloadReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.downloadReturnsOnCall[i] = struct {
 		result1 error
 	}{result1}
 }

@@ -243,6 +243,7 @@ var _ = Describe("product file commands", func() {
 			awsObjectKey string
 			fileType     string
 			fileVersion  string
+			sha256       string
 			md5          string
 
 			description        string
@@ -261,6 +262,7 @@ var _ = Describe("product file commands", func() {
 			awsObjectKey = "some aws object key"
 			fileType = "some file type"
 			fileVersion = "some file version"
+			sha256 = "some sha256"
 			md5 = "some md5"
 
 			description = "some description"
@@ -276,6 +278,7 @@ var _ = Describe("product file commands", func() {
 				AWSObjectKey:       awsObjectKey,
 				FileType:           fileType,
 				FileVersion:        fileVersion,
+				SHA256:             sha256,
 				MD5:                md5,
 				Description:        description,
 				DocsURL:            docsURL,
@@ -297,6 +300,7 @@ var _ = Describe("product file commands", func() {
 				AWSObjectKey:       awsObjectKey,
 				FileType:           fileType,
 				FileVersion:        fileVersion,
+				SHA256:             sha256,
 				MD5:                md5,
 				Description:        description,
 				DocsURL:            docsURL,
@@ -425,6 +429,20 @@ var _ = Describe("product file commands", func() {
 			})
 		})
 
+		Describe("SHA256 flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "SHA256")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("sha256"))
+			})
+		})
+
 		Describe("MD5 flag", func() {
 			BeforeEach(func() {
 				field = fieldFor(cmd, "MD5")
@@ -532,6 +550,7 @@ var _ = Describe("product file commands", func() {
 
 			description string
 			fileVersion string
+			sha256      string
 			md5         string
 			name        string
 
@@ -544,6 +563,7 @@ var _ = Describe("product file commands", func() {
 
 			description = "some description"
 			fileVersion = "some file version"
+			sha256 = "some sha256"
 			md5 = "some md5"
 			name = "some product file"
 
@@ -553,6 +573,7 @@ var _ = Describe("product file commands", func() {
 				Name:          &name,
 				Description:   &description,
 				FileVersion:   &fileVersion,
+				SHA256:        &sha256,
 				MD5:           &md5,
 			}
 		})
@@ -568,6 +589,7 @@ var _ = Describe("product file commands", func() {
 				invokedProductSlug,
 				invokedName,
 				invokedFileVersion,
+				invokedSHA256,
 				invokedMD5,
 				invokedDescription := fakeProductFileClient.UpdateArgsForCall(0)
 
@@ -575,6 +597,7 @@ var _ = Describe("product file commands", func() {
 			Expect(invokedProductSlug).To(Equal(productSlug))
 			Expect(*invokedName).To(Equal(name))
 			Expect(*invokedFileVersion).To(Equal(fileVersion))
+			Expect(*invokedSHA256).To(Equal(sha256))
 			Expect(*invokedMD5).To(Equal(md5))
 			Expect(*invokedDescription).To(Equal(description))
 		})
@@ -695,6 +718,20 @@ var _ = Describe("product file commands", func() {
 
 			It("contains long name", func() {
 				Expect(longTag(field)).To(Equal("file-version"))
+			})
+		})
+
+		Describe("SHA256 flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(cmd, "SHA256")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("sha256"))
 			})
 		})
 

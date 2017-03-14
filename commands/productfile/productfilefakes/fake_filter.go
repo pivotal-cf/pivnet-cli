@@ -4,29 +4,33 @@ package productfilefakes
 import (
 	"sync"
 
-	go_pivnet "github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
 )
 
 type FakeFilter struct {
-	ProductFileKeysByGlobsStub        func(productFiles []go_pivnet.ProductFile, glob []string) ([]go_pivnet.ProductFile, error)
+	ProductFileKeysByGlobsStub        func(productFiles []pivnet.ProductFile, glob []string) ([]pivnet.ProductFile, error)
 	productFileKeysByGlobsMutex       sync.RWMutex
 	productFileKeysByGlobsArgsForCall []struct {
-		productFiles []go_pivnet.ProductFile
+		productFiles []pivnet.ProductFile
 		glob         []string
 	}
 	productFileKeysByGlobsReturns struct {
-		result1 []go_pivnet.ProductFile
+		result1 []pivnet.ProductFile
+		result2 error
+	}
+	productFileKeysByGlobsReturnsOnCall map[int]struct {
+		result1 []pivnet.ProductFile
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeFilter) ProductFileKeysByGlobs(productFiles []go_pivnet.ProductFile, glob []string) ([]go_pivnet.ProductFile, error) {
-	var productFilesCopy []go_pivnet.ProductFile
+func (fake *FakeFilter) ProductFileKeysByGlobs(productFiles []pivnet.ProductFile, glob []string) ([]pivnet.ProductFile, error) {
+	var productFilesCopy []pivnet.ProductFile
 	if productFiles != nil {
-		productFilesCopy = make([]go_pivnet.ProductFile, len(productFiles))
+		productFilesCopy = make([]pivnet.ProductFile, len(productFiles))
 		copy(productFilesCopy, productFiles)
 	}
 	var globCopy []string
@@ -35,17 +39,20 @@ func (fake *FakeFilter) ProductFileKeysByGlobs(productFiles []go_pivnet.ProductF
 		copy(globCopy, glob)
 	}
 	fake.productFileKeysByGlobsMutex.Lock()
+	ret, specificReturn := fake.productFileKeysByGlobsReturnsOnCall[len(fake.productFileKeysByGlobsArgsForCall)]
 	fake.productFileKeysByGlobsArgsForCall = append(fake.productFileKeysByGlobsArgsForCall, struct {
-		productFiles []go_pivnet.ProductFile
+		productFiles []pivnet.ProductFile
 		glob         []string
 	}{productFilesCopy, globCopy})
 	fake.recordInvocation("ProductFileKeysByGlobs", []interface{}{productFilesCopy, globCopy})
 	fake.productFileKeysByGlobsMutex.Unlock()
 	if fake.ProductFileKeysByGlobsStub != nil {
 		return fake.ProductFileKeysByGlobsStub(productFiles, glob)
-	} else {
-		return fake.productFileKeysByGlobsReturns.result1, fake.productFileKeysByGlobsReturns.result2
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.productFileKeysByGlobsReturns.result1, fake.productFileKeysByGlobsReturns.result2
 }
 
 func (fake *FakeFilter) ProductFileKeysByGlobsCallCount() int {
@@ -54,16 +61,30 @@ func (fake *FakeFilter) ProductFileKeysByGlobsCallCount() int {
 	return len(fake.productFileKeysByGlobsArgsForCall)
 }
 
-func (fake *FakeFilter) ProductFileKeysByGlobsArgsForCall(i int) ([]go_pivnet.ProductFile, []string) {
+func (fake *FakeFilter) ProductFileKeysByGlobsArgsForCall(i int) ([]pivnet.ProductFile, []string) {
 	fake.productFileKeysByGlobsMutex.RLock()
 	defer fake.productFileKeysByGlobsMutex.RUnlock()
 	return fake.productFileKeysByGlobsArgsForCall[i].productFiles, fake.productFileKeysByGlobsArgsForCall[i].glob
 }
 
-func (fake *FakeFilter) ProductFileKeysByGlobsReturns(result1 []go_pivnet.ProductFile, result2 error) {
+func (fake *FakeFilter) ProductFileKeysByGlobsReturns(result1 []pivnet.ProductFile, result2 error) {
 	fake.ProductFileKeysByGlobsStub = nil
 	fake.productFileKeysByGlobsReturns = struct {
-		result1 []go_pivnet.ProductFile
+		result1 []pivnet.ProductFile
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeFilter) ProductFileKeysByGlobsReturnsOnCall(i int, result1 []pivnet.ProductFile, result2 error) {
+	fake.ProductFileKeysByGlobsStub = nil
+	if fake.productFileKeysByGlobsReturnsOnCall == nil {
+		fake.productFileKeysByGlobsReturnsOnCall = make(map[int]struct {
+			result1 []pivnet.ProductFile
+			result2 error
+		})
+	}
+	fake.productFileKeysByGlobsReturnsOnCall[i] = struct {
+		result1 []pivnet.ProductFile
 		result2 error
 	}{result1, result2}
 }
