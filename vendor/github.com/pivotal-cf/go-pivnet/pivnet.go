@@ -70,7 +70,7 @@ func NewClient(
 
 	ranger := download.NewRanger(concurrentDownloads)
 	downloader := download.Client{
-		HTTPClient: http.DefaultClient,
+		HTTPClient: httpClient,
 		Ranger:     ranger,
 		Logger:     logger,
 	}

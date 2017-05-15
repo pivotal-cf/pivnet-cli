@@ -53,6 +53,8 @@ var (
 type PivnetCommand struct {
 	VersionFunc func() `short:"v" long:"version" description:"Print the version of this CLI and exit"`
 
+	SkipSSLValidation bool `short:"k" long:"skip-ssl-validation" description:"Skip TLS/SSL Validation"`
+
 	Format  string `long:"format" description:"Format to print as" default:"table" choice:"table" choice:"json" choice:"yaml"`
 	Verbose bool   `long:"verbose" description:"Display verbose output"`
 
@@ -164,6 +166,7 @@ func NewPivnetClientWithToken(apiToken string, host string) *gp.Client {
 			Token:     apiToken,
 			Host:      host,
 			UserAgent: Pivnet.userAgent,
+			SkipSSLValidation: Pivnet.SkipSSLValidation,
 		},
 		Pivnet.Logger,
 	)
