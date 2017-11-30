@@ -13,9 +13,19 @@ Install for OSX via [homebrew](http://brew.sh/) as follows:
 brew install pivotal/tap/pivnet-cli
 ```
 
-To install on linux, download the latest binary
+To install on linux, either:
+
+* download the latest binary
 (see [latest release](https://github.com/pivotal-cf/pivnet-cli/releases/latest))
-and ensure the file is executable and on the path.
+and ensure the file is executable and on the path
+* use Debian installer from https://apt.starkandwayne.com
+
+    ```
+    wget -q -O - https://raw.githubusercontent.com/starkandwayne/homebrew-cf/master/public.key | apt-key add -
+    echo "deb http://apt.starkandwayne.com stable main" | tee /etc/apt/sources.list.d/starkandwayne.list
+    apt-get update
+    apt-get install pivnet-cli
+    ```
 
 ## Usage
 
