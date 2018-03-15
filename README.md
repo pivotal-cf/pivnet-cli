@@ -19,7 +19,7 @@ and ensure the file is executable and on the path.
 
 ## Usage
 
-Using the Pivnet CLI requires a valid Pivotal Network API token.
+Using the Pivnet CLI requires a valid `Pivotal Network API token` or `UAA Refresh Token`.
 
 Refer to the
 [official docs](https://network.pivotal.io/docs/api#how-to-authenticate)
