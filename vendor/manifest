@@ -109,6 +109,15 @@
 			"notests": true
 		},
 		{
+			"importpath": "golang.org/x/sys/windows",
+			"repository": "https://go.googlesource.com/sys",
+			"vcs": "git",
+			"revision": "cc7307a45468e49eaf2997c890f14aa03a26917b",
+			"branch": "master",
+			"path": "/windows",
+			"notests": true
+		},
+		{
 			"importpath": "gopkg.in/cheggaaa/pb.v1",
 			"repository": "https://gopkg.in/cheggaaa/pb.v1",
 			"vcs": "git",
