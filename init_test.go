@@ -1,4 +1,4 @@
-package acceptance
+package main_test
 
 import (
 	"time"
