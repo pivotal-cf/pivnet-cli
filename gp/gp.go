@@ -236,7 +236,7 @@ func (c Client) FileGroup(productSlug string, fileGroupID int) (pivnet.FileGroup
 }
 
 func (c Client) CreateFileGroup(productSlug string, name string) (pivnet.FileGroup, error) {
-	return c.client.FileGroups.Create(productSlug, name)
+	return c.client.FileGroups.Create(pivnet.CreateFileGroupConfig{ProductSlug: productSlug, Name: name})
 }
 
 func (c Client) UpdateFileGroup(productSlug string, fileGroup pivnet.FileGroup) (pivnet.FileGroup, error) {

@@ -16,7 +16,8 @@ type ReleasesService struct {
 }
 
 type createReleaseBody struct {
-	Release Release `json:"release"`
+	Release      Release `json:"release"`
+	CopyMetadata bool    `json:"copy_metadata"`
 }
 
 type ReleasesResponse struct {
@@ -28,23 +29,24 @@ type CreateReleaseResponse struct {
 }
 
 type Release struct {
-	ID                    int         `json:"id,omitempty" yaml:"id,omitempty"`
-	Availability          string      `json:"availability,omitempty" yaml:"availability,omitempty"`
-	EULA                  *EULA       `json:"eula,omitempty" yaml:"eula,omitempty"`
-	OSSCompliant          string      `json:"oss_compliant,omitempty" yaml:"oss_compliant,omitempty"`
-	ReleaseDate           string      `json:"release_date,omitempty" yaml:"release_date,omitempty"`
-	ReleaseType           ReleaseType `json:"release_type,omitempty" yaml:"release_type,omitempty"`
-	Version               string      `json:"version,omitempty" yaml:"version,omitempty"`
-	Links                 *Links      `json:"_links,omitempty" yaml:"_links,omitempty"`
-	Description           string      `json:"description,omitempty" yaml:"description,omitempty"`
-	ReleaseNotesURL       string      `json:"release_notes_url,omitempty" yaml:"release_notes_url,omitempty"`
-	Controlled            bool        `json:"controlled,omitempty" yaml:"controlled,omitempty"`
-	ECCN                  string      `json:"eccn,omitempty" yaml:"eccn,omitempty"`
-	LicenseException      string      `json:"license_exception,omitempty" yaml:"license_exception,omitempty"`
-	EndOfSupportDate      string      `json:"end_of_support_date,omitempty" yaml:"end_of_support_date,omitempty"`
-	EndOfGuidanceDate     string      `json:"end_of_guidance_date,omitempty" yaml:"end_of_guidance_date,omitempty"`
-	EndOfAvailabilityDate string      `json:"end_of_availability_date,omitempty" yaml:"end_of_availability_date,omitempty"`
-	UpdatedAt             string      `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	ID                     int         `json:"id,omitempty" yaml:"id,omitempty"`
+	Availability           string      `json:"availability,omitempty" yaml:"availability,omitempty"`
+	EULA                   *EULA       `json:"eula,omitempty" yaml:"eula,omitempty"`
+	OSSCompliant           string      `json:"oss_compliant,omitempty" yaml:"oss_compliant,omitempty"`
+	ReleaseDate            string      `json:"release_date,omitempty" yaml:"release_date,omitempty"`
+	ReleaseType            ReleaseType `json:"release_type,omitempty" yaml:"release_type,omitempty"`
+	Version                string      `json:"version,omitempty" yaml:"version,omitempty"`
+	Links                  *Links      `json:"_links,omitempty" yaml:"_links,omitempty"`
+	Description            string      `json:"description,omitempty" yaml:"description,omitempty"`
+	ReleaseNotesURL        string      `json:"release_notes_url,omitempty" yaml:"release_notes_url,omitempty"`
+	Controlled             bool        `json:"controlled,omitempty" yaml:"controlled,omitempty"`
+	ECCN                   string      `json:"eccn,omitempty" yaml:"eccn,omitempty"`
+	LicenseException       string      `json:"license_exception,omitempty" yaml:"license_exception,omitempty"`
+	EndOfSupportDate       string      `json:"end_of_support_date,omitempty" yaml:"end_of_support_date,omitempty"`
+	EndOfGuidanceDate      string      `json:"end_of_guidance_date,omitempty" yaml:"end_of_guidance_date,omitempty"`
+	EndOfAvailabilityDate  string      `json:"end_of_availability_date,omitempty" yaml:"end_of_availability_date,omitempty"`
+	UpdatedAt              string      `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	SoftwareFilesUpdatedAt string      `json:"software_files_updated_at,omitempty" yaml:"software_files_updated_at,omitempty"`
 }
 
 type CreateReleaseConfig struct {
@@ -61,6 +63,7 @@ type CreateReleaseConfig struct {
 	EndOfSupportDate      string
 	EndOfGuidanceDate     string
 	EndOfAvailabilityDate string
+	CopyMetadata          bool
 }
 
 func (r ReleasesService) List(productSlug string) ([]Release, error) {
@@ -121,6 +124,7 @@ func (r ReleasesService) Create(config CreateReleaseConfig) (Release, error) {
 			EndOfGuidanceDate:     config.EndOfGuidanceDate,
 			EndOfAvailabilityDate: config.EndOfAvailabilityDate,
 		},
+		CopyMetadata: config.CopyMetadata,
 	}
 
 	if config.ReleaseDate == "" {

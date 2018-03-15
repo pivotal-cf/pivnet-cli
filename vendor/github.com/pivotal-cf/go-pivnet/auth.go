@@ -1,9 +1,18 @@
 package pivnet
 
-import "net/http"
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
 
 type AuthService struct {
 	client Client
+}
+
+type UAATokenResponse struct {
+	Token string `json:"token"`
 }
 
 // Check returns:
@@ -35,4 +44,40 @@ func (e AuthService) Check() (bool, error) {
 	default:
 		return false, e.client.handleUnexpectedResponse(resp)
 	}
+}
+
+func (e AuthService) FetchUAAToken(refresh_token string) (UAATokenResponse, error) {
+	url := "/authentication"
+
+	body := AuthBody{RefreshToken: refresh_token}
+	b, err := json.Marshal(body)
+	if err != nil {
+		return UAATokenResponse{}, err
+	}
+
+	resp, err := e.client.MakeRequest(
+		"POST",
+		url,
+		0,
+		bytes.NewReader(b),
+	)
+	if err != nil {
+		return UAATokenResponse{}, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return UAATokenResponse{}, fmt.Errorf("failed to fetch UAA token")
+	}
+
+	var response UAATokenResponse
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return UAATokenResponse{}, err
+	}
+
+	return response, err
+}
+
+type AuthBody struct {
+	RefreshToken string `json:"refresh_token"`
 }

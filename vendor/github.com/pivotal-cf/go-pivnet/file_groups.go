@@ -27,6 +27,11 @@ type updateFileGroup struct {
 	Name string `json:"name,omitempty"`
 }
 
+type CreateFileGroupConfig struct {
+ ProductSlug        string
+ Name               string
+}
+
 type FileGroup struct {
 	ID           int              `json:"id,omitempty" yaml:"id,omitempty"`
 	Name         string           `json:"name,omitempty" yaml:"name,omitempty"`
@@ -92,15 +97,15 @@ func (p FileGroupsService) Get(productSlug string, fileGroupID int) (FileGroup, 
 	return response, nil
 }
 
-func (p FileGroupsService) Create(productSlug string, name string) (FileGroup, error) {
+func (p FileGroupsService) Create(config CreateFileGroupConfig) (FileGroup, error) {
 	url := fmt.Sprintf(
 		"/products/%s/file_groups",
-		productSlug,
+		config.ProductSlug,
 	)
 
 	createBody := createFileGroupBody{
 		createFileGroup{
-			Name: name,
+			Name: config.Name,
 		},
 	}
 

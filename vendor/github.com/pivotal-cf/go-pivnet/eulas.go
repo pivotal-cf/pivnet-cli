@@ -77,7 +77,7 @@ func (e EULAsService) Get(eulaSlug string) (EULA, error) {
 
 func (e EULAsService) Accept(productSlug string, releaseID int) error {
 	url := fmt.Sprintf(
-		"/products/%s/releases/%d/eula_acceptance",
+		"/products/%s/releases/%d/pivnet_resource_eula_acceptance",
 		productSlug,
 		releaseID,
 	)

@@ -2,13 +2,15 @@ package download
 
 import (
 	"fmt"
+	"github.com/pivotal-cf/go-pivnet/logger"
+	"golang.org/x/sync/errgroup"
 	"io"
 	"net"
 	"net/http"
 	"os"
-	"golang.org/x/sync/errgroup"
-	"github.com/pivotal-cf/go-pivnet/logger"
+	"strings"
 	"syscall"
+	"github.com/shirou/gopsutil/disk"
 )
 
 //go:generate counterfeiter -o ./fakes/ranger.go --fake-name Ranger . ranger
@@ -69,6 +71,15 @@ func (c Client) Get(
 		return fmt.Errorf("failed to construct range: %s", err)
 	}
 
+	diskStats, err := disk.Usage(location.Name())
+	if err != nil {
+		return fmt.Errorf("failed to get disk free space: %s", err)
+	}
+
+	if diskStats.Free < uint64(resp.ContentLength) {
+		return fmt.Errorf("file is too big to fit on this drive")
+	}
+
 	c.Bar.SetOutput(progressWriter)
 	c.Bar.SetTotal(resp.ContentLength)
 	c.Bar.Kickoff()
@@ -105,7 +116,7 @@ func (c Client) Get(
 	return nil
 }
 
-func (c Client) retryableRequest(contentURL string, rangeHeader http.Header, fileWriter *os.File, startingByte int64, downloadLinkFetcher downloadLinkFetcher) (error) {
+func (c Client) retryableRequest(contentURL string, rangeHeader http.Header, fileWriter *os.File, startingByte int64, downloadLinkFetcher downloadLinkFetcher) error {
 	currentURL := contentURL
 	defer fileWriter.Close()
 
@@ -160,8 +171,8 @@ Retry:
 			c.Bar.Add(int(-1 * bytesWritten))
 			goto Retry
 		}
-		operr, _ := err.(*net.OpError)
-		if operr.Err.Error() == syscall.ECONNRESET.Error() {
+		oe, _ := err.(*net.OpError)
+		if strings.Contains(oe.Err.Error(), syscall.ECONNRESET.Error()) {
 			c.Bar.Add(int(-1 * bytesWritten))
 			goto Retry
 		}

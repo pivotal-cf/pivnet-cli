@@ -219,7 +219,12 @@ func (p ProductFilesService) Create(config CreateProductFileConfig) (ProductFile
 		bytes.NewReader(b),
 	)
 	if err != nil {
-		return ProductFile{}, err
+		_, ok := err.(ErrTooManyRequests)
+		if ok {
+			return ProductFile{}, fmt.Errorf("You have hit the file creation limit. Please wait before creating more files. Contact pivnet-eng@pivotal.io with additional questions.")
+		} else {
+			return ProductFile{}, err
+		}
 	}
 	defer resp.Body.Close()
 

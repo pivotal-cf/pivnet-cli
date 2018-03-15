@@ -71,9 +71,25 @@ func (e ErrUnavailableForLegalReasons) Error() string {
 	return e.Message
 }
 
-func newErrUnavailableForLegalReasons() ErrUnavailableForLegalReasons {
+func newErrUnavailableForLegalReasons(message string) ErrUnavailableForLegalReasons {
 	return ErrUnavailableForLegalReasons{
 		ResponseCode: http.StatusUnavailableForLegalReasons,
-		Message:      "The EULA has not been accepted.",
+		Message:      message,
+	}
+}
+
+type ErrTooManyRequests struct {
+	ResponseCode int    `json:"response_code" yaml:"response_code"`
+	Message      string `json:"message" yaml:"message"`
+}
+
+func (e ErrTooManyRequests) Error() string {
+	return e.Message
+}
+
+func newErrTooManyRequests() ErrTooManyRequests {
+	return ErrTooManyRequests{
+		ResponseCode: http.StatusTooManyRequests,
+		Message: "You have hit a rate limit for this request",
 	}
 }
