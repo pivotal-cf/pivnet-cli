@@ -51,6 +51,13 @@ func (c *LoginClient) Login(
 	apiToken string,
 	host string,
 ) error {
+	const legacyAPITokenLength = 20
+	if len(apiToken) <= legacyAPITokenLength {
+		message := "The use of static Pivnet API tokens is deprecated and will be removed. Please see https://network.pivotal.io/docs/api#how-to-authenticate for details."
+		coloredMessage := ui.ErrorColor.SprintFunc()(message)
+		fmt.Fprintln(c.outputWriter, coloredMessage)
+	}
+
 	ok, err := c.pivnetClient.Auth()
 	if err != nil {
 		return c.eh.HandleError(err)
