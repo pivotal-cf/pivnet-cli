@@ -1,0 +1,82 @@
+site_name: Pivnet CLI Docs
+site_url: "https://pivotal-cf.github.io/pivnet-cli"
+docs_dir: content
+
+repo_name: 'pivotal-cf/pivnet-cli'
+repo_url: https://github.com/pivotal-cf/pivnet-cli
+edit_uri: edit/develop/content/
+
+pages:
+- About:
+  - Pivnet CLI: index.md
+  - License: about/license.md
+  - Project Management: about/project-management.md
+- Installation:
+  - Installing the CLI: installation/installing-the-cli.md
+- Examples:
+  - Usage: examples/usage.md
+- Development:
+  - Prerequisites: development/prerequisites.md
+  - Dependencies: development/dependencies.md
+  - Testing: development/testing.md
+  - Contributing: development/contributing.md
+- Reference:
+  - Accept EULA: reference/accept-eula.md
+  - Add file group to release: reference/add-file-group.md
+  - Add product file to release: reference/add-product-file.md
+  - Add release dependency: reference/add-release-dependency.md
+  - Add release upgrade path: reference/add-release-upgrade-path.md
+  - Add user group to release: reference/add-user-group.md
+  - Add user group member to group: reference/add-user-group-member.md
+  - Create dependency specifier: reference/create-dependency-specifier.md
+  - Create file group: reference/create-file-group.md
+  - Create product file: reference/create-product-file.md
+  - Create release: reference/create-release.md
+  - Create user group: reference/create-user-group.md
+  - Curl an endpoint: reference/curl.md
+  - Delete dependency specifier: reference/delete-dependency-specifier.md
+  - Delete file group: reference/delete-file-group.md
+  - Delete product file: reference/delete-product-file.md
+  - Delete release: reference/delete-release.md
+  - Delete user group: reference/delete-user-group.md
+  - Get dependency specifier: reference/dependency-specifier.md
+  - List dependency specifiers: reference/dependency-specifiers.md
+  - Download product files: reference/download-product-files.md
+  - Show EULA: reference/eula.md
+  - List EULAs: reference/eulas.md
+  - Show file group: reference/file-group.md
+  - List file groups: reference/file-groups.md
+  - Print the help message: reference/help.md
+  - Log in to Pivotal Network: reference/login.md
+  - Log out from Pivotal Network: reference/logout.md
+  - Show product: reference/product.md
+  - Show product file: reference/product-file.md
+  - List product files: reference/product-files.md
+  - List products: reference/products.md
+  - Show release: reference/release.md
+  - List release dependencies: reference/release-dependencies.md
+  - List release types: reference/release-types.md
+  - List release upgrade paths: reference/release-upgrade-paths.md
+  - List releases: reference/releases.md
+  - Remove file group from release: reference/remove-file-group.md
+  - Remove product file from release: reference/remove-product-file.md
+  - Remove release dependency: reference/remove-release-dependency.md
+  - Remove release upgrade path: reference/remove-release-upgrade-path.md
+  - Remove user group from release: reference/remove-user-group.md
+  - Remove user group member from group: reference/remove-user-group-member.md
+  - Update file group: reference/update-file-group.md
+  - Update product file: reference/update-product-file.md
+  - Update release: reference/update-release.md
+  - Update user group: reference/update-user-group.md
+  - Show user group: reference/user-group.md
+  - List user groups: reference/user-groups.md
+  - Print the version of this CLI and exit: reference/version.md
+
+theme:
+  name: material
+  custom_dir: theme/material
+  feature:
+    tabs: true
+  palette:
+    primary: teal
+    accent: blue-grey
