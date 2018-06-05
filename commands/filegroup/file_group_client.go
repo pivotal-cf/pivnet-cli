@@ -84,14 +84,14 @@ func (c *FileGroupClient) printFileGroups(fileGroups []pivnet.FileGroup) error {
 		table.SetHeader([]string{
 			"ID",
 			"Name",
-			"Product File Names",
+			"Product Files",
 		})
 
 		for _, fileGroup := range fileGroups {
 			var productFileNames []string
 
 			for _, productFile := range fileGroup.ProductFiles {
-				productFileNames = append(productFileNames, productFile.Name)
+				productFileNames = append(productFileNames, fmt.Sprintf("%d: %s", productFile.ID, productFile.Name))
 			}
 
 			fileGroupAsString := []string{
@@ -129,13 +129,13 @@ func (c *FileGroupClient) printFileGroup(fileGroup pivnet.FileGroup) error {
 		table.SetHeader([]string{
 			"ID",
 			"Name",
-			"Product File Names",
+			"Product Files",
 		})
 
 		var productFileNames []string
 
 		for _, productFile := range fileGroup.ProductFiles {
-			productFileNames = append(productFileNames, productFile.Name)
+			productFileNames = append(productFileNames, fmt.Sprintf("%d: %s", productFile.ID, productFile.Name))
 		}
 
 		fileGroupAsString := []string{

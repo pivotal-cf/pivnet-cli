@@ -128,7 +128,21 @@ func (c Client) EULAs() ([]pivnet.EULA, error) {
 }
 
 func (c Client) ProductFilesForRelease(productSlug string, releaseID int) ([]pivnet.ProductFile, error) {
-	return c.client.ProductFiles.ListForRelease(productSlug, releaseID)
+	productFiles, err := c.client.ProductFiles.ListForRelease(productSlug, releaseID)
+	if err != nil {
+		return nil, err
+	}
+
+	fileGroups, err := c.client.FileGroups.ListForRelease(productSlug, releaseID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, fileGroup := range fileGroups {
+		productFiles = append(productFiles, fileGroup.ProductFiles...)
+	}
+
+	return productFiles, nil
 }
 
 func (c Client) ProductFiles(productSlug string) ([]pivnet.ProductFile, error) {

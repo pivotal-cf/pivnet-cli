@@ -142,4 +142,86 @@ var _ = Describe("Client", func() {
 			})
 		})
 	})
+
+	Describe("ProductFilesForRelease", func() {
+		var (
+			productSlug string
+			releaseID   int
+
+			productFile pivnet.ProductFile
+
+			productFilesResponseStatusCode int
+			productFilesResponse           pivnet.ProductFilesResponse
+
+			fileGroupProductFile pivnet.ProductFile
+			fileGroup            pivnet.FileGroup
+
+			fileGroupsResponseStatusCode int
+			fileGroupsResponse           pivnet.FileGroupsResponse
+		)
+
+		BeforeEach(func() {
+			productSlug = "product-slug"
+			releaseID = 1234
+
+			productFile = pivnet.ProductFile{
+				ID: 5678,
+			}
+
+			productFilesResponseStatusCode = http.StatusOK
+			productFilesResponse = pivnet.ProductFilesResponse{[]pivnet.ProductFile{productFile}}
+
+			fileGroupProductFile = pivnet.ProductFile{
+				ID: 80,
+			}
+
+			fileGroup = pivnet.FileGroup{
+				ID:           8,
+				ProductFiles: []pivnet.ProductFile{fileGroupProductFile},
+			}
+
+			fileGroupsResponseStatusCode = http.StatusOK
+			fileGroupsResponse = pivnet.FileGroupsResponse{[]pivnet.FileGroup{fileGroup}}
+		})
+
+		JustBeforeEach(func() {
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest(
+						"GET",
+						fmt.Sprintf(
+							"%s/products/%s/releases/%d/product_files",
+							apiPrefix,
+							productSlug,
+							releaseID,
+						),
+					),
+					ghttp.RespondWithJSONEncoded(productFilesResponseStatusCode, productFilesResponse),
+				),
+			)
+
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest(
+						"GET",
+						fmt.Sprintf(
+							"%s/products/%s/releases/%d/file_groups",
+							apiPrefix,
+							productSlug,
+							releaseID,
+						),
+					),
+					ghttp.RespondWithJSONEncoded(fileGroupsResponseStatusCode, fileGroupsResponse),
+				),
+			)
+		})
+
+		It("return a list of product files from release and file groups of that release", func() {
+			returnedProductFiles, err := client.ProductFilesForRelease(productSlug, releaseID)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(returnedProductFiles)).To(Equal(2))
+			Expect(returnedProductFiles[0].ID).To(Equal(productFile.ID))
+			Expect(returnedProductFiles[1].ID).To(Equal(fileGroupProductFile.ID))
+		})
+	})
 })
