@@ -4,6 +4,9 @@
 Usage:
   pivnet [OPTIONS] accept-eula [accept-eula-OPTIONS]
 
+Note:
+  Available to select users only. Some users may be required to accept the EULA through the provided link
+
 Application Options:
   -v, --version                  Print the version of this CLI and exit
       --format=[table|json|yaml] Format to print as (default: table)

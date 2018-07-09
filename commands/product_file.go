@@ -70,7 +70,7 @@ type DownloadProductFilesCommand struct {
 	ProductFileIDs []int    `long:"product-file-id" short:"i" description:"Product file ID e.g. 1234"`
 	Globs          []string `long:"glob" short:"g" description:"Glob to match product name e.g. *aws*"`
 	DownloadDir    string   `long:"download-dir" short:"d" default:"." description:"Local directory to download files to e.g. /tmp/my-file/"`
-	AcceptEULA     bool     `long:"accept-eula" description:"Automatically accept EULA if necessary"`
+	AcceptEULA     bool     `long:"accept-eula" description:"Automatically accept EULA if necessary (Available to select users only)"`
 }
 
 //go:generate counterfeiter . ProductFileClient
