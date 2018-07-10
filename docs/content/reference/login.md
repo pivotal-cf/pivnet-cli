@@ -15,7 +15,7 @@ Help Options:
   -h, --help                     Show this help message
 
 [login command options]
-          --api-token=           Pivnet API Token
+          --api-token=           Pivnet API Token (Pivnet legacy token or UAA refresh token)
           --host=                Pivnet API Host (default: https://network.pivotal.io)
 
 ```

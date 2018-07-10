@@ -3,7 +3,7 @@ package commands
 import "github.com/pivotal-cf/pivnet-cli/commands/login"
 
 type LoginCommand struct {
-	APIToken string `long:"api-token" description:"Pivnet API Token" required:"true"`
+	APIToken string `long:"api-token" description:"Pivnet API Token (Pivnet legacy token or UAA refresh token)" required:"true"`
 	Host     string `long:"host" description:"Pivnet API Host" default:"https://network.pivotal.io"`
 }
 
