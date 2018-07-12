@@ -11,8 +11,6 @@ import (
 	"strings"
 	"syscall"
 	"github.com/shirou/gopsutil/disk"
-	"github.com/onsi/gomega/gbytes"
-	"time"
 )
 
 //go:generate counterfeiter -o ./fakes/ranger.go --fake-name Ranger . ranger
@@ -44,7 +42,6 @@ type Client struct {
 	Ranger     ranger
 	Bar        bar
 	Logger     logger.Logger
-	Timeout    time.Duration
 }
 
 func (c Client) Get(
@@ -61,8 +58,6 @@ func (c Client) Get(
 	if err != nil {
 		return fmt.Errorf("failed to construct HEAD request: %s", err)
 	}
-
-	req.Header.Add("Referer","https://go-pivnet.network.pivotal.io")
 
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
@@ -105,7 +100,7 @@ func (c Client) Get(
 		}
 
 		g.Go(func() error {
-			err := c.retryableRequest(contentURL, byteRange.HTTPHeader, fileWriter, byteRange.Lower, downloadLinkFetcher, c.Timeout)
+			err := c.retryableRequest(contentURL, byteRange.HTTPHeader, fileWriter, byteRange.Lower, downloadLinkFetcher)
 			if err != nil {
 				return fmt.Errorf("failed during retryable request: %s", err)
 			}
@@ -121,7 +116,7 @@ func (c Client) Get(
 	return nil
 }
 
-func (c Client) retryableRequest(contentURL string, rangeHeader http.Header, fileWriter *os.File, startingByte int64, downloadLinkFetcher downloadLinkFetcher, timeout time.Duration) error {
+func (c Client) retryableRequest(contentURL string, rangeHeader http.Header, fileWriter *os.File, startingByte int64, downloadLinkFetcher downloadLinkFetcher) error {
 	currentURL := contentURL
 	defer fileWriter.Close()
 
@@ -137,7 +132,6 @@ Retry:
 		return err
 	}
 
-	rangeHeader.Add("Referer", "https://go-pivnet.network.pivotal.io")
 	req.Header = rangeHeader
 
 	resp, err := c.HTTPClient.Do(req)
@@ -171,14 +165,9 @@ Retry:
 	var proxyReader io.Reader
 	proxyReader = c.Bar.NewProxyReader(resp.Body)
 
-
-	var timeoutReader io.Reader
-	timeoutReader = gbytes.TimeoutReader(proxyReader, timeout)
-
-	bytesWritten, err := io.Copy(fileWriter, timeoutReader)
+	bytesWritten, err := io.Copy(fileWriter, proxyReader)
 	if err != nil {
-		if err == io.ErrUnexpectedEOF || err == gbytes.ErrTimeout{
-			c.Logger.Debug(fmt.Sprintf("retrying %v", err))
+		if err == io.ErrUnexpectedEOF {
 			c.Bar.Add(int(-1 * bytesWritten))
 			goto Retry
 		}

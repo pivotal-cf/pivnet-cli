@@ -86,7 +86,6 @@ func NewClient(
 		HTTPClient: downloadClient,
 		Ranger:     ranger,
 		Logger:     logger,
-		Timeout: 5*time.Second,
 	}
 
 	client := Client{
