@@ -2,12 +2,6 @@
 
 set -eu
 
-set +x
-API_TOKEN="${API_TOKEN:?"API_TOKEN must be provided"}"
-set -x
-
-HOST="${HOST:?"HOST must be provided"}"
-
 # In seconds
 SLOW_SPEC_THRESHOLD="${SLOW_SPEC_THRESHOLD:-60}"
 
