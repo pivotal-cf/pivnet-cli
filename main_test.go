@@ -21,8 +21,9 @@ import (
 )
 
 const (
-	apiPrefix = "/api/v2"
-	apiToken  = "some-api-token"
+	apiPrefix      = "/api/v2"
+	legacyApiToken = "some-api-token"
+	refreshToken   = "some-refresh-token-longer-than-20-chars"
 )
 
 var _ = Describe("pivnet cli", func() {
@@ -34,7 +35,7 @@ var _ = Describe("pivnet cli", func() {
 		tempDir string
 
 		runMainWithArgs func(args ...string) *gexec.Session
-		login           func()
+		login           func(string)
 	)
 
 	BeforeEach(func() {
@@ -72,7 +73,7 @@ var _ = Describe("pivnet cli", func() {
 			return session
 		}
 
-		login = func() {
+		login = func(apiToken string) {
 			session := runMainWithArgs(
 				"login",
 				fmt.Sprintf("--api-token=%s", apiToken),
@@ -152,31 +153,7 @@ var _ = Describe("pivnet cli", func() {
 		Eventually(session).Should(gbytes.Say("login"))
 	})
 
-	Context("when logged in", func() {
-		BeforeEach(func() {
-			// we hit the authentication endpoint twice:
-			// once for the login command and once for the actual command
-			server.AppendHandlers(
-				ghttp.CombineHandlers(
-					ghttp.VerifyRequest(
-						"GET",
-						fmt.Sprintf("%s/authentication", apiPrefix),
-					),
-					ghttp.RespondWith(http.StatusOK, ""),
-				),
-			)
-
-			server.AppendHandlers(
-				ghttp.CombineHandlers(
-					ghttp.VerifyRequest(
-						"GET",
-						fmt.Sprintf("%s/authentication", apiPrefix),
-					),
-					ghttp.RespondWith(http.StatusOK, ""),
-				),
-			)
-		})
-
+	var sharedAssertions = func(apiToken string) {
 		Describe("printing as json", func() {
 			BeforeEach(func() {
 				server.AppendHandlers(
@@ -191,7 +168,7 @@ var _ = Describe("pivnet cli", func() {
 			})
 
 			It("prints as json", func() {
-				login()
+				login(apiToken)
 
 				session := runMainWithArgs(
 					"--format=json",
@@ -223,7 +200,7 @@ var _ = Describe("pivnet cli", func() {
 			})
 
 			It("prints as yaml", func() {
-				login()
+				login(apiToken)
 
 				session := runMainWithArgs(
 					"--format=yaml",
@@ -238,6 +215,87 @@ var _ = Describe("pivnet cli", func() {
 
 				Expect(receivedProduct.Slug).To(Equal(product.Slug))
 			})
+		})
+	}
+
+	Context("when using a legacy token", func() {
+		sharedAssertions(legacyApiToken)
+		BeforeEach(func() {
+			// we hit the authentication endpoint twice:
+			// once for the login command and once for the actual command
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest(
+						"GET",
+						fmt.Sprintf("%s/authentication", apiPrefix),
+					),
+					ghttp.RespondWith(http.StatusOK, ""),
+				),
+			)
+
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest(
+						"GET",
+						fmt.Sprintf("%s/authentication", apiPrefix),
+					),
+					ghttp.RespondWith(http.StatusOK, ""),
+				),
+			)
+		})
+	})
+
+	Context("when using a refresh token", func() {
+		sharedAssertions(refreshToken)
+		BeforeEach(func() {
+			// we hit the authentication endpoint twice:
+			// once for the login command and once for the actual command
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest(
+						"POST",
+						fmt.Sprintf("%s/authentication/access_tokens", apiPrefix),
+					),
+					ghttp.RespondWith(http.StatusOK, "{\"access_token\": \"token123\"}"),
+				),
+			)
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest(
+						"GET",
+						fmt.Sprintf("%s/authentication", apiPrefix),
+					),
+					ghttp.RespondWith(http.StatusOK, ""),
+				),
+			)
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest(
+						"POST",
+						fmt.Sprintf("%s/authentication/access_tokens", apiPrefix),
+					),
+					ghttp.RespondWith(http.StatusOK, "{\"access_token\": \"token123\"}"),
+				),
+			)
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest(
+						"GET",
+						fmt.Sprintf("%s/authentication", apiPrefix),
+					),
+					ghttp.RespondWith(http.StatusOK, ""),
+				),
+			)
+			server.AppendHandlers(
+				ghttp.CombineHandlers(
+					ghttp.VerifyRequest(
+						"POST",
+						fmt.Sprintf("%s/authentication/access_tokens", apiPrefix),
+					),
+					ghttp.RespondWith(http.StatusOK, "{\"access_token\": \"token123\"}"),
+				),
+			)
+
 		})
 	})
 })
