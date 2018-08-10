@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
-	pivnet "github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
@@ -39,19 +39,26 @@ type Filter interface {
 	ProductFileKeysByGlobs(productFiles []pivnet.ProductFile, glob []string) ([]pivnet.ProductFile, error)
 }
 
+//go:generate counterfeiter --fake-name FakeFileSummer . FileSummer
+type FileSummer interface {
+	SumFile(filepath string) (string, error)
+}
+
 type ProductFileClient struct {
-	pivnetClient PivnetClient
-	eh           errorhandler.ErrorHandler
-	format       string
-	outputWriter io.Writer
-	logWriter    io.Writer
-	printer      printer.Printer
-	l            logger.Logger
-	filter       Filter
+	pivnetClient     PivnetClient
+	sha256FileSummer FileSummer
+	eh               errorhandler.ErrorHandler
+	format           string
+	outputWriter     io.Writer
+	logWriter        io.Writer
+	printer          printer.Printer
+	l                logger.Logger
+	filter           Filter
 }
 
 func NewProductFileClient(
 	pivnetClient PivnetClient,
+	sha256FileSummer FileSummer,
 	eh errorhandler.ErrorHandler,
 	format string,
 	outputWriter io.Writer,
@@ -61,14 +68,15 @@ func NewProductFileClient(
 	filter Filter,
 ) *ProductFileClient {
 	return &ProductFileClient{
-		pivnetClient: pivnetClient,
-		eh:           eh,
-		format:       format,
-		outputWriter: outputWriter,
-		logWriter:    logWriter,
-		printer:      printer,
-		l:            l,
-		filter:       filter,
+		pivnetClient:     pivnetClient,
+		sha256FileSummer: sha256FileSummer,
+		eh:               eh,
+		format:           format,
+		outputWriter:     outputWriter,
+		logWriter:        logWriter,
+		printer:          printer,
+		l:                l,
+		filter:           filter,
 	}
 }
 
@@ -500,6 +508,26 @@ func (c *ProductFileClient) Download(
 		err = c.pivnetClient.DownloadProductFile(file, productSlug, release.ID, pf.ID, progressWriter)
 		if err != nil {
 			return c.eh.HandleError(err)
+		}
+
+		if pf.SHA256 != "" {
+			c.l.Info("Verifying SHA256")
+
+			actualSHA256, err := c.sha256FileSummer.SumFile(file.Name())
+			if err != nil {
+				return err
+			}
+
+			if actualSHA256 != pf.SHA256 {
+				return fmt.Errorf(
+					"SHA256 comparison failed for downloaded file: '%s'. Expected (from pivnet): '%s' - actual (from file): '%s'",
+					file.Name(),
+					pf.SHA256,
+					actualSHA256,
+				)
+			}
+
+			c.l.Info("Success")
 		}
 	}
 

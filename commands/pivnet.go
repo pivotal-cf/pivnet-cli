@@ -20,6 +20,7 @@ import (
 	"github.com/pivotal-cf/pivnet-cli/rc/filesystem"
 	"github.com/pivotal-cf/pivnet-cli/version"
 	"github.com/robdimsdale/sanitizer"
+	"github.com/pivotal-cf/go-pivnet/sha256sum"
 )
 
 //go:generate counterfeiter . Authenticator
@@ -48,6 +49,7 @@ var (
 	Printer      printer.Printer
 	RC           RCHandler
 	Auth         Authenticator
+	Sha256FileSummer sha256sum.FileSummer
 )
 
 type PivnetCommand struct {

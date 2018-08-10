@@ -6,6 +6,7 @@ import (
 
 	pivnet "github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
+	"github.com/pivotal-cf/go-pivnet/sha256sum"
 )
 
 type ProductFilesCommand struct {
@@ -98,6 +99,7 @@ type ProductFileClient interface {
 var NewProductFileClient = func(client productfile.PivnetClient) ProductFileClient {
 	return productfile.NewProductFileClient(
 		client,
+		sha256sum.NewFileSummer(),
 		ErrorHandler,
 		Pivnet.Format,
 		OutputWriter,

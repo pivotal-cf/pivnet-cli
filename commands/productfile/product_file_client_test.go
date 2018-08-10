@@ -21,9 +21,10 @@ import (
 
 var _ = Describe("productfile commands", func() {
 	var (
-		l                logger.Logger
-		fakeFilter       *productfilefakes.FakeFilter
-		fakePivnetClient *productfilefakes.FakePivnetClient
+		l                    logger.Logger
+		fakeFilter           *productfilefakes.FakeFilter
+		fakePivnetClient     *productfilefakes.FakePivnetClient
+		fakeSHA256FileSummer *productfilefakes.FakeFileSummer
 
 		fakeErrorHandler *errorhandlerfakes.FakeErrorHandler
 
@@ -42,6 +43,10 @@ var _ = Describe("productfile commands", func() {
 
 		fakeFilter = &productfilefakes.FakeFilter{}
 		fakePivnetClient = &productfilefakes.FakePivnetClient{}
+		fakeSHA256FileSummer = &productfilefakes.FakeFileSummer{}
+		fakeSHA256FileSummer.SumFileStub = func(path string) (string, error) {
+			return "mysha256", nil
+		}
 
 		outBuffer = bytes.Buffer{}
 		logBuffer = bytes.Buffer{}
@@ -52,6 +57,8 @@ var _ = Describe("productfile commands", func() {
 			{
 				ID:           1234,
 				Name:         "Some File",
+				FileType:     "Software",
+				SHA256:       "mysha256",
 				AWSObjectKey: "/remote/path/some-file",
 				Links: &pivnet.Links{
 					Download: map[string]string{"href": "download-link-0"},
@@ -60,6 +67,16 @@ var _ = Describe("productfile commands", func() {
 			{
 				ID:           2345,
 				Name:         "Some Other File",
+				FileType:     "Software",
+				AWSObjectKey: "/remote/path/some-other-file",
+				Links: &pivnet.Links{
+					Download: map[string]string{"href": "download-link-1"},
+				},
+			},
+			{
+				ID:           3456,
+				Name:         "My Documentation",
+				FileType:     "Documentation",
 				AWSObjectKey: "/remote/path/some-other-file",
 				Links: &pivnet.Links{
 					Download: map[string]string{"href": "download-link-1"},
@@ -69,6 +86,7 @@ var _ = Describe("productfile commands", func() {
 
 		client = productfile.NewProductFileClient(
 			fakePivnetClient,
+			fakeSHA256FileSummer,
 			fakeErrorHandler,
 			printer.PrintAsJSON,
 			&outBuffer,
@@ -692,7 +710,7 @@ var _ = Describe("productfile commands", func() {
 			productSlug = "some-product-slug"
 			releaseVersion = "some-release-version"
 			globs = []string{}
-			productFileIDs = []int{productFiles[0].ID, productFiles[1].ID}
+			productFileIDs = []int{productFiles[0].ID, productFiles[1].ID, productFiles[2].ID}
 			downloadDir = tempDir
 			acceptEULA = false
 
@@ -732,7 +750,7 @@ var _ = Describe("productfile commands", func() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakePivnetClient.DownloadProductFileCallCount()).To(Equal(2))
+			Expect(fakePivnetClient.DownloadProductFileCallCount()).To(Equal(3))
 
 			for i, pf := range productFiles {
 				_, invokedProductSlug, invokedReleaseID, invokedProductFileID, w :=
@@ -743,6 +761,59 @@ var _ = Describe("productfile commands", func() {
 				Expect(invokedProductFileID).To(Equal(pf.ID))
 				Expect(w).To(Equal(GinkgoWriter))
 			}
+		})
+
+		Describe("checks the checksum", func() {
+			Context("when file has sha256", func() {
+				It("succeeds when sha256 matches", func() {
+					err := client.Download(
+						productSlug,
+						releaseVersion,
+						globs,
+						[]int{productFiles[0].ID},
+						downloadDir,
+						acceptEULA,
+						GinkgoWriter,
+					)
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(fakeSHA256FileSummer.SumFileCallCount()).To(Equal(1))
+				})
+
+				It("errors when sha256 does not match", func() {
+					fakeSHA256FileSummer.SumFileStub = func(path string) (string, error) {
+						return "incorrectsha256", nil
+					}
+
+					err := client.Download(
+						productSlug,
+						releaseVersion,
+						globs,
+						[]int{productFiles[0].ID},
+						downloadDir,
+						acceptEULA,
+						GinkgoWriter,
+					)
+					Expect(err).To(HaveOccurred())
+				})
+			})
+
+			Context("when file does not have sha256", func() {
+				It("does not check sha256", func() {
+					err := client.Download(
+						productSlug,
+						releaseVersion,
+						globs,
+						[]int{productFiles[2].ID},
+						downloadDir,
+						acceptEULA,
+						GinkgoWriter,
+					)
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(fakeSHA256FileSummer.SumFileCallCount()).To(Equal(0))
+				})
+			})
 		})
 
 		Context("when globs are provided", func() {
@@ -763,7 +834,7 @@ var _ = Describe("productfile commands", func() {
 				)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(fakePivnetClient.DownloadProductFileCallCount()).To(Equal(2))
+				Expect(fakePivnetClient.DownloadProductFileCallCount()).To(Equal(3))
 
 				for i, pf := range productFiles {
 					_, invokedProductSlug, invokedReleaseID, invokedProductFileID, w :=
