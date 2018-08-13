@@ -115,6 +115,8 @@ func (c *ProductFileClient) printProductFiles(productFiles []pivnet.ProductFile)
 			"ID",
 			"Name",
 			"File Version",
+			"File Type",
+			"SHA256",
 			"AWS Object Key",
 		})
 
@@ -123,6 +125,8 @@ func (c *ProductFileClient) printProductFiles(productFiles []pivnet.ProductFile)
 				strconv.Itoa(productFile.ID),
 				productFile.Name,
 				productFile.FileVersion,
+				productFile.FileType,
+				productFile.SHA256,
 				productFile.AWSObjectKey,
 			}
 			table.Append(productFileAsString)
