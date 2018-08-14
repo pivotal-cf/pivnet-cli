@@ -47,6 +47,7 @@ type FileSummer interface {
 type ProductFileClient struct {
 	pivnetClient     PivnetClient
 	sha256FileSummer FileSummer
+	md5FileSummer    FileSummer
 	eh               errorhandler.ErrorHandler
 	format           string
 	outputWriter     io.Writer
@@ -59,6 +60,7 @@ type ProductFileClient struct {
 func NewProductFileClient(
 	pivnetClient PivnetClient,
 	sha256FileSummer FileSummer,
+	md5FileSummer FileSummer,
 	eh errorhandler.ErrorHandler,
 	format string,
 	outputWriter io.Writer,
@@ -70,6 +72,7 @@ func NewProductFileClient(
 	return &ProductFileClient{
 		pivnetClient:     pivnetClient,
 		sha256FileSummer: sha256FileSummer,
+		md5FileSummer:    md5FileSummer,
 		eh:               eh,
 		format:           format,
 		outputWriter:     outputWriter,
@@ -514,6 +517,10 @@ func (c *ProductFileClient) Download(
 			return c.eh.HandleError(err)
 		}
 
+		if pf.FileType == pivnet.FileTypeSoftware && pf.SHA256 == "" && pf.MD5 == "" {
+			return fmt.Errorf("cannot check file integrity of file %s: missing sha256 and md5 fields", file.Name())
+		}
+
 		if pf.SHA256 != "" {
 			c.l.Info("Verifying SHA256")
 
@@ -531,7 +538,27 @@ func (c *ProductFileClient) Download(
 				)
 			}
 
-			c.l.Info("Success")
+			c.l.Info("Successfully verified SHA256")
+		}
+
+		if pf.MD5 != "" {
+			c.l.Info("Verifying MD5")
+
+			actualMD5, err := c.md5FileSummer.SumFile(file.Name())
+			if err != nil {
+				return err
+			}
+
+			if actualMD5 != pf.MD5 {
+				return fmt.Errorf(
+					"MD5 comparison failed for downloaded file: '%s'. Expected (from pivnet): '%s' - actual (from file): '%s'",
+					file.Name(),
+					pf.MD5,
+					actualMD5,
+				)
+			}
+
+			c.l.Info("Successfully verified MD5")
 		}
 	}
 
