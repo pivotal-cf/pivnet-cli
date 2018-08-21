@@ -13,6 +13,7 @@ import (
 	"github.com/shirou/gopsutil/disk"
 	"github.com/onsi/gomega/gbytes"
 	"time"
+	"path"
 )
 
 //go:generate counterfeiter -o ./fakes/ranger.go --fake-name Ranger . ranger
@@ -76,7 +77,7 @@ func (c Client) Get(
 		return fmt.Errorf("failed to construct range: %s", err)
 	}
 
-	diskStats, err := disk.Usage(location.Name())
+	diskStats, err := disk.Usage(path.Dir(location.Name()))
 	if err != nil {
 		return fmt.Errorf("failed to get disk free space: %s", err)
 	}
