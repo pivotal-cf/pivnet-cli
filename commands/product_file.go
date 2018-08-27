@@ -71,8 +71,8 @@ type DownloadProductFilesCommand struct {
 	ReleaseVersion string   `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1" required:"true"`
 	ProductFileIDs []int    `long:"product-file-id" short:"i" description:"Product file ID e.g. 1234"`
 	Globs          []string `long:"glob" short:"g" description:"Glob to match product name e.g. *aws*"`
-	DownloadDir    string   `long:"download-dir" short:"d" default:"." description:"Local directory to download files to e.g. /tmp/my-file/"`
-	AcceptEULA     bool     `long:"accept-eula" description:"Automatically accept EULA if necessary (Available to select users only)"`
+	DownloadDir    string   `long:"download-dir" short:"d" default:"." description:"Local existing directory to download files to e.g. /tmp/my-file/"`
+	AcceptEULA     bool     `long:"accept-eula" description:"Automatically accept EULA if necessary (Available for pivots only)"`
 }
 
 //go:generate counterfeiter . ProductFileClient

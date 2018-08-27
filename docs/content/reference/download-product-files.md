@@ -19,7 +19,7 @@ Help Options:
       -r, --release-version=     Release version e.g. 0.1.2-rc1
       -i, --product-file-id=     Product file ID e.g. 1234
       -g, --glob=                Glob to match product name e.g. *aws*
-      -d, --download-dir=        Local directory to download files to e.g. /tmp/my-file/ (default: .)
-          --accept-eula          Automatically accept EULA if necessary
+      -d, --download-dir=        Local existing directory to download files to e.g. /tmp/my-file/ (default: .)
+          --accept-eula          Automatically accept EULA if necessary (available to pivots only)
 
 ```

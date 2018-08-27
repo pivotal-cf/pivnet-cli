@@ -73,7 +73,7 @@ type PivnetCommand struct {
 
 	EULAs      EULAsCommand      `command:"eulas" alias:"es" description:"List EULAs"`
 	EULA       EULACommand       `command:"eula" alias:"e" description:"Show EULA"`
-	AcceptEULA AcceptEULACommand `command:"accept-eula" alias:"ae" description:"Accept EULA (Available to select users only)"`
+	AcceptEULA AcceptEULACommand `command:"accept-eula" alias:"ae" description:"Accept EULA (Available for pivots only)"`
 
 	Products ProductsCommand `command:"products" alias:"ps" description:"List products"`
 	Product  ProductCommand  `command:"product" alias:"p" description:"Show product"`
