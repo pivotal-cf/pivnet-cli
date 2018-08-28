@@ -55,12 +55,10 @@ var _ = Describe("release commands", func() {
 	Describe("List", func() {
 		var (
 			productSlug    string
-			releaseVersion string
 		)
 
 		BeforeEach(func() {
 			productSlug = "some-product-slug"
-			releaseVersion = ""
 
 			fakePivnetClient.ReleasesForProductSlugReturns(releases, nil)
 		})
@@ -100,13 +98,11 @@ var _ = Describe("release commands", func() {
 		var (
 			productSlug    string
 			releaseVersion string
-			releaseID      int
 		)
 
 		BeforeEach(func() {
 			productSlug = "some-product-slug"
 			releaseVersion = "some-release-version"
-			releaseID = releases[0].ID
 
 			fakePivnetClient.ReleaseForVersionReturns(releases[0], nil)
 		})

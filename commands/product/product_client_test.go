@@ -53,15 +53,7 @@ var _ = Describe("product commands", func() {
 	})
 
 	Describe("List", func() {
-		var (
-			productSlug    string
-			releaseVersion string
-		)
-
 		BeforeEach(func() {
-			productSlug = "some-product-slug"
-			releaseVersion = ""
-
 			fakePivnetClient.ProductsReturns(products, nil)
 		})
 

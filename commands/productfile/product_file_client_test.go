@@ -370,12 +370,10 @@ var _ = Describe("productfile commands", func() {
 			existingName        string
 			existingFileType    string
 			existingFileVersion string
-			existingSHA256      string
 			existingMD5         string
 			existingDescription string
 
 			name        string
-			fileType    string
 			fileVersion string
 			sha256      string
 			md5         string
@@ -391,12 +389,10 @@ var _ = Describe("productfile commands", func() {
 			existingName = "some-name"
 			existingFileType = "some-file-type"
 			existingFileVersion = "some-file-type"
-			existingSHA256 = "some-sha256"
 			existingMD5 = "some-md5"
 			existingDescription = "some-description"
 
 			name = "some-new-name"
-			fileType = "some-new-file-type"
 			fileVersion = "some-new-file-type"
 			sha256 = "some-new-sha256"
 			md5 = "some-new-md5"
@@ -710,7 +706,6 @@ var _ = Describe("productfile commands", func() {
 			acceptEULA     bool
 
 			tempDir   string
-			filename  string
 			releaseID int
 
 			productFilesForReleaseErr error
@@ -722,8 +717,6 @@ var _ = Describe("productfile commands", func() {
 			var err error
 			tempDir, err = ioutil.TempDir("", "")
 			Expect(err).NotTo(HaveOccurred())
-
-			filename = "temp-file"
 
 			productSlug = "some-product-slug"
 			releaseVersion = "some-release-version"
