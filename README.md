@@ -88,7 +88,7 @@ HOST='https://pivnet-integration.cfapps.io' \
 
 ### Contributing
 
-Please make all pull requests to the `develop` branch, and
+Please make all pull requests to the `master` branch, and
 [ensure the tests pass locally](https://github.com/pivotal-cf/pivnet-cli#running-the-tests).
 
 ### Project management
