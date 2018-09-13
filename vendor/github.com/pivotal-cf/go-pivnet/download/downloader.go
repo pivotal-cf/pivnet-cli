@@ -83,10 +83,7 @@ func (c Client) Get(
 	}
 
 	if diskStats.Free < uint64(resp.ContentLength) {
-		c.Logger.Debug("Free space on disk: %d", logger.Data{"diskFreeSpace": diskStats.Free})
-		c.Logger.Debug("Size of file: %d", logger.Data{"downloadedFileSize": uint64(resp.ContentLength)})
-
-		return fmt.Errorf("file is too big to fit on this drive")
+		return fmt.Errorf("file is too big to fit on this drive: %d bytes required, %d bytes free", uint64(resp.ContentLength), diskStats.Free)
 	}
 
 	c.Bar.SetOutput(progressWriter)
