@@ -38,12 +38,12 @@ $ pivnet products
 |     |                                                      | Runtime                        |
 +-----+------------------------------------------------------+--------------------------------+
 
-$ pivnet r -p elastic-runtime -r 1.8.8 --format json \
+$ pivnet r -p elastic-runtime -r 2.3.1 --format json \
   | jq '{"id": .id, "release_date": .release_date, "release_type": .release_type}'
 
 {
-  "id": 2555,
-  "release_date": "2016-10-13",
+  "id": 196729,
+  "release_date": "2018-10-05",
   "release_type": "Security Release"
 }
 ```
