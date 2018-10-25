@@ -231,7 +231,7 @@ var Init = func(profileRequired bool) error {
 	debugLogger := log.New(LogWriter, "", log.LstdFlags)
 
 	Pivnet.userAgent = fmt.Sprintf(
-		"go-pivnet/%s",
+		"pivnet-cli/%s",
 		version.Version,
 	)
 
