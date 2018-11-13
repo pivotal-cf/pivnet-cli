@@ -443,7 +443,7 @@ func (c *ProductFileClient) Download(
 	}
 
 	if len(globs) == 0 && len(productFileIDs) == 0 {
-		err := fmt.Errorf("Must provide either globs or product file IDs")
+		err := fmt.Errorf("Must provide either globs (-g) or product file IDs (-i)")
 		return c.eh.HandleError(err)
 	}
 
