@@ -83,7 +83,7 @@ Run the tests with the following command:
 ```
 API_TOKEN=my-token \
 HOST='https://pivnet-integration.cfapps.io' \
-./bin/test_all
+./bin/test
 ```
 
 ### Contributing
