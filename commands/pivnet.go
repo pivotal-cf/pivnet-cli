@@ -11,6 +11,7 @@ import (
 	"github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/go-pivnet/logger"
 	"github.com/pivotal-cf/go-pivnet/logshim"
+	"github.com/pivotal-cf/go-pivnet/sha256sum"
 	"github.com/pivotal-cf/pivnet-cli/auth"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/filter"
@@ -20,7 +21,6 @@ import (
 	"github.com/pivotal-cf/pivnet-cli/rc/filesystem"
 	"github.com/pivotal-cf/pivnet-cli/version"
 	"github.com/robdimsdale/sanitizer"
-	"github.com/pivotal-cf/go-pivnet/sha256sum"
 )
 
 //go:generate counterfeiter . Authenticator
@@ -44,11 +44,11 @@ var (
 	OutputWriter io.Writer
 	LogWriter    io.Writer
 
-	Filter       Filterer
-	ErrorHandler errorhandler.ErrorHandler
-	Printer      printer.Printer
-	RC           RCHandler
-	Auth         Authenticator
+	Filter           Filterer
+	ErrorHandler     errorhandler.ErrorHandler
+	Printer          printer.Printer
+	RC               RCHandler
+	Auth             Authenticator
 	Sha256FileSummer sha256sum.FileSummer
 )
 
@@ -60,6 +60,8 @@ type PivnetCommand struct {
 
 	ProfileName string `long:"profile" description:"Name of profile" default:"default"`
 	ConfigFile  string `long:"config" description:"Path to config file"`
+
+	RootCAPath string `long:"root-ca" description:"Path to a root CA certificate file. Useful for SSL reencryption on corporate networks."`
 
 	Login  LoginCommand  `command:"login" alias:"l" description:"Log in to Pivotal Network."`
 	Logout LogoutCommand `command:"logout" description:"Log out from Pivotal Network."`
@@ -161,14 +163,18 @@ func NewPivnetClient() *gp.Client {
 }
 
 func NewPivnetClientWithToken(apiToken string, host string) *gp.Client {
-	return gp.NewClient(
-		pivnet.ClientConfig{
-			Token:     apiToken,
-			Host:      host,
-			UserAgent: Pivnet.userAgent,
-		},
-		Pivnet.Logger,
-	)
+	var pivnetClientConfig pivnet.ClientConfig
+	if Pivnet.RootCAPath != "" {
+		pivnetClientConfig.Token = apiToken
+		pivnetClientConfig.Host = host
+		pivnetClientConfig.UserAgent = Pivnet.userAgent
+		pivnetClientConfig.RootCAPath = Pivnet.RootCAPath
+	} else {
+		pivnetClientConfig.Token = apiToken
+		pivnetClientConfig.Host = host
+		pivnetClientConfig.UserAgent = Pivnet.userAgent
+	}
+	return gp.NewClient(pivnetClientConfig, Pivnet.Logger)
 }
 
 var Init = func(profileRequired bool) error {
