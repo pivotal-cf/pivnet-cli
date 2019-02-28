@@ -3,6 +3,8 @@ package productfilefakes
 
 import (
 	"sync"
+
+	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
 )
 
 type FakeFileSummer struct {
@@ -97,3 +99,5 @@ func (fake *FakeFileSummer) recordInvocation(key string, args []interface{}) {
 	}
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
+
+var _ productfile.FileSummer = new(FakeFileSummer)

@@ -14,6 +14,7 @@ import (
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
 	"github.com/pivotal-cf/pivnet-cli/ui"
+	"github.com/pivotal-cf/go-pivnet/download"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -31,7 +32,7 @@ type PivnetClient interface {
 	RemoveProductFileFromFileGroup(productSlug string, fileGroupID int, productFileID int) error
 	DeleteProductFile(productSlug string, releaseID int) (pivnet.ProductFile, error)
 	AcceptEULA(productSlug string, releaseID int) error
-	DownloadProductFile(location *os.File, productSlug string, releaseID int, productFileID int, progressWriter io.Writer) error
+	DownloadProductFile(location *download.FileInfo, productSlug string, releaseID int, productFileID int, progressWriter io.Writer) error
 }
 
 //go:generate counterfeiter . Filter
@@ -506,6 +507,11 @@ func (c *ProductFileClient) Download(
 			return c.eh.HandleError(err)
 		}
 
+		fileInfo, err := download.NewFileInfo(file)
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
+
 		err = file.Close()
 		if err != nil {
 			return c.eh.HandleError(err)
@@ -517,7 +523,7 @@ func (c *ProductFileClient) Download(
 			localFilepath,
 		))
 
-		err = c.pivnetClient.DownloadProductFile(file, productSlug, release.ID, pf.ID, progressWriter)
+		err = c.pivnetClient.DownloadProductFile(fileInfo, productSlug, release.ID, pf.ID, progressWriter)
 		if err != nil {
 			return c.eh.HandleError(err)
 		}

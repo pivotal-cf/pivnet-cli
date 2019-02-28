@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
 	"github.com/pivotal-cf/go-pivnet"
+	"github.com/pivotal-cf/go-pivnet/download"
 	"github.com/pivotal-cf/go-pivnet/logger"
 )
 
@@ -161,7 +161,7 @@ func (c Client) DeleteProductFile(productSlug string, releaseID int) (pivnet.Pro
 	return c.client.ProductFiles.Delete(productSlug, releaseID)
 }
 
-func (c Client) DownloadProductFile(location *os.File, productSlug string, releaseID int, productFileID int, progressWriter io.Writer) error {
+func (c Client) DownloadProductFile(location *download.FileInfo, productSlug string, releaseID int, productFileID int, progressWriter io.Writer) error {
 	return c.client.ProductFiles.DownloadForRelease(location, productSlug, releaseID, productFileID, progressWriter)
 }
 

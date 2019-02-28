@@ -101,7 +101,7 @@ var _ = Describe("ErrorHandler", func() {
 				inputErr = pivnet.ErrUnauthorized{}
 			})
 
-			It("retuns custom message", func() {
+			It("returns custom message", func() {
 				_ = errorHandler.HandleError(inputErr)
 
 				Expect(outWriter.String()).To(Equal(fmt.Sprintln("Failed to authenticate - please provide valid API token")))
@@ -116,7 +116,7 @@ var _ = Describe("ErrorHandler", func() {
 				}
 			})
 
-			It("retuns custom message", func() {
+			It("returns custom message", func() {
 				_ = errorHandler.HandleError(inputErr)
 
 				Expect(outWriter.String()).To(Equal(fmt.Sprintln("Pivnet error: something not found")))
@@ -132,7 +132,7 @@ var _ = Describe("ErrorHandler", func() {
 				}
 			})
 
-			It("retuns custom message", func() {
+			It("returns custom message", func() {
 				_ = errorHandler.HandleError(inputErr)
 
 				Expect(outWriter.String()).To(ContainSubstring("418 - something is wrong"))
