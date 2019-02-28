@@ -1,3 +1,5 @@
+// +build !windows
+
 package filesystem_test
 
 import (
@@ -46,22 +48,16 @@ var _ = Describe("PivnetRCReadWriter", func() {
 		})
 
 		Describe("ReadFromFile", func() {
-			It("reads from file", func() {
-				b, err := rcReadWriter.ReadFromFile()
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(b).To(Equal(contents))
-			})
-
-			Context("when profile file does not exist", func() {
-				It("returns empty profile without error", func() {
-					otherFilepath := filepath.Join(tempDir, "other-file")
-					rcReadWriter = filesystem.NewPivnetRCReadWriter(otherFilepath)
-
-					b, err := rcReadWriter.ReadFromFile()
-
+			Context("when profile file cannot be read", func() {
+				JustBeforeEach(func() {
+					err := os.Chmod(configFilepath, 0)
 					Expect(err).NotTo(HaveOccurred())
-					Expect(b).To(BeNil())
+				})
+
+				It("returns an error", func() {
+					_, err := rcReadWriter.ReadFromFile()
+
+					Expect(err).To(HaveOccurred())
 				})
 			})
 		})
@@ -86,28 +82,16 @@ var _ = Describe("PivnetRCReadWriter", func() {
 		})
 
 		Describe("WriteToFile", func() {
-			It("creates new file", func() {
-				otherFilepath := filepath.Join(tempDir, "other-file")
-				rcReadWriter = filesystem.NewPivnetRCReadWriter(otherFilepath)
-
+			It("writes file with user-only read/write (i.e. 0600) permissions", func() {
 				err := rcReadWriter.WriteToFile(contents)
 				Expect(err).NotTo(HaveOccurred())
 
-				b, err := ioutil.ReadFile(otherFilepath)
+				info, err := os.Stat(configFilepath)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(b).To(Equal(contents))
-			})
-
-			It("overwrites existing file", func() {
-				err := rcReadWriter.WriteToFile(contents)
-				Expect(err).NotTo(HaveOccurred())
-
-				b, err := ioutil.ReadFile(configFilepath)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(b).To(Equal(contents))
+				Expect(info.Mode()).To(Equal(os.FileMode(0600)))
 			})
 		})
 	})
 })
+

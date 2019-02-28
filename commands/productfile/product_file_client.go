@@ -506,6 +506,11 @@ func (c *ProductFileClient) Download(
 			return c.eh.HandleError(err)
 		}
 
+		err = file.Close()
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
+
 		c.l.Info(fmt.Sprintf(
 			"Downloading '%s' to '%s'",
 			fileName,
