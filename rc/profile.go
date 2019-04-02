@@ -1,11 +1,15 @@
 package rc
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type PivnetProfile struct {
-	Name     string `yaml:"name"`
-	APIToken string `yaml:"api_token"`
-	Host     string `yaml:"host"`
+	Name              string `yaml:"name"`
+	APIToken          string `yaml:"api_token"`
+	Host              string `yaml:"host"`
+	AccessToken       string `yaml:"access_token"`
+	AccessTokenExpiry int64  `yaml:"access_token_expiry"`
 }
 
 func (p *PivnetProfile) Validate() error {

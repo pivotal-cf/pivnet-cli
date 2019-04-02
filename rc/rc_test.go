@@ -2,8 +2,7 @@ package rc_test
 
 import (
 	"fmt"
-
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -30,9 +29,11 @@ var _ = Describe("RCHandler", func() {
 		readErr = nil
 
 		profile = rc.PivnetProfile{
-			Name:     "some-profile",
-			APIToken: "some-api-token",
-			Host:     "some-host",
+			Name:              "some-profile",
+			APIToken:          "some-api-token",
+			Host:              "some-host",
+			AccessToken:       "some-access-token",
+			AccessTokenExpiry: 12345,
 		}
 
 		configContents = []byte(fmt.Sprintf(
@@ -42,10 +43,14 @@ profiles:
 - name: %s
   api_token: %s
   host: %s
+  access_token: %s
+  access_token_expiry: %d
 `,
 			profile.Name,
 			profile.APIToken,
 			profile.Host,
+			profile.AccessToken,
+			profile.AccessTokenExpiry,
 		),
 		)
 	})
@@ -89,13 +94,15 @@ profiles:
 	})
 
 	Describe("SaveProfile", func() {
-		It("saves profile", func() {
+		It("successfully saves profile", func() {
 			updatedAPIToken := "updatedAPIToken"
 
 			err := rcHandler.SaveProfile(
 				profile.Name,
 				updatedAPIToken,
 				profile.Host,
+				profile.AccessToken,
+				profile.AccessTokenExpiry,
 			)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -106,29 +113,35 @@ profiles:
 			expectedPivnetRC := rc.PivnetRC{
 				Profiles: []rc.PivnetProfile{
 					{
-						Name:     profile.Name,
-						APIToken: updatedAPIToken,
-						Host:     profile.Host,
+						Name:              profile.Name,
+						APIToken:          updatedAPIToken,
+						Host:              profile.Host,
+						AccessToken:       profile.AccessToken,
+						AccessTokenExpiry: profile.AccessTokenExpiry,
 					},
 				},
 			}
 
 			expectedBytes, err := yaml.Marshal(expectedPivnetRC)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(invokedContents).To(Equal(expectedBytes))
+			Expect(string(invokedContents)).To(Equal(string(expectedBytes)))
 		})
 
 		Context("when profile does not yet exist", func() {
 			var (
-				newName     string
-				newAPIToken string
-				newHost     string
+				newName              string
+				newAPIToken          string
+				newHost              string
+				newAccessToken       string
+				newAccessTokenExpiry int64
 			)
 
 			BeforeEach(func() {
 				newName = "some-other-profile"
 				newAPIToken = "some-other-api-token"
 				newHost = "some-other-host"
+				newAccessToken = "new_access_token"
+				newAccessTokenExpiry = 1554219433
 			})
 
 			It("creates new profile without error", func() {
@@ -136,6 +149,8 @@ profiles:
 					newName,
 					newAPIToken,
 					newHost,
+					newAccessToken,
+					newAccessTokenExpiry,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -147,9 +162,11 @@ profiles:
 					Profiles: []rc.PivnetProfile{
 						profile,
 						{
-							Name:     newName,
-							APIToken: newAPIToken,
-							Host:     newHost,
+							Name:              newName,
+							APIToken:          newAPIToken,
+							Host:              newHost,
+							AccessToken:       newAccessToken,
+							AccessTokenExpiry: newAccessTokenExpiry,
 						},
 					},
 				}
@@ -170,6 +187,8 @@ profiles:
 					profile.Name,
 					profile.APIToken,
 					profile.Host,
+					profile.AccessToken,
+					profile.AccessTokenExpiry,
 				)
 				Expect(err).NotTo(HaveOccurred())
 
@@ -199,6 +218,8 @@ profiles:
 					profile.Name,
 					profile.APIToken,
 					profile.Host,
+					profile.AccessToken,
+					profile.AccessTokenExpiry,
 				)
 
 				Expect(err).To(HaveOccurred())
@@ -215,6 +236,8 @@ profiles:
 					profile.Name,
 					profile.APIToken,
 					profile.Host,
+					profile.AccessToken,
+					profile.AccessTokenExpiry,
 				)
 
 				Expect(err).To(HaveOccurred())

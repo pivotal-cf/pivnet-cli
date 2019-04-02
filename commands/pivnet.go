@@ -2,6 +2,9 @@ package commands
 
 import (
 	"fmt"
+	"github.com/pivotal-cf/go-pivnet/logshim"
+	"github.com/pivotal-cf/pivnet-cli/filter"
+	"github.com/pivotal-cf/pivnet-cli/rc/filesystem"
 	"io"
 	"log"
 	"os"
@@ -10,17 +13,14 @@ import (
 
 	"github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/go-pivnet/logger"
-	"github.com/pivotal-cf/go-pivnet/logshim"
+	"github.com/pivotal-cf/go-pivnet/sha256sum"
 	"github.com/pivotal-cf/pivnet-cli/auth"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
-	"github.com/pivotal-cf/pivnet-cli/filter"
 	"github.com/pivotal-cf/pivnet-cli/gp"
 	"github.com/pivotal-cf/pivnet-cli/printer"
 	"github.com/pivotal-cf/pivnet-cli/rc"
-	"github.com/pivotal-cf/pivnet-cli/rc/filesystem"
 	"github.com/pivotal-cf/pivnet-cli/version"
 	"github.com/robdimsdale/sanitizer"
-	"github.com/pivotal-cf/go-pivnet/sha256sum"
 )
 
 //go:generate counterfeiter . Authenticator
@@ -35,7 +35,7 @@ type Filterer interface {
 
 //go:generate counterfeiter . RCHandler
 type RCHandler interface {
-	SaveProfile(profileName string, apiToken string, host string) error
+	SaveProfile(profileName string, apiToken string, host string, accessToken string, accessTokenExpiry int64) error
 	ProfileForName(profileName string) (*rc.PivnetProfile, error)
 	RemoveProfileWithName(profileName string) error
 }
@@ -149,24 +149,26 @@ func init() {
 }
 
 func NewPivnetClient() *gp.Client {
-	var apiToken string
+	var refreshToken string
 	var host string
 
 	if Pivnet.profile != nil {
-		apiToken = Pivnet.profile.APIToken
+		refreshToken = Pivnet.profile.APIToken
 		host = Pivnet.profile.Host
 	}
 
-	return NewPivnetClientWithToken(apiToken, host)
+	accessTokenService := CreateAccessTokenService(RC, Pivnet.ProfileName, refreshToken, host)
+	return NewPivnetClientWithToken(accessTokenService, host)
 }
 
-func NewPivnetClientWithToken(apiToken string, host string) *gp.Client {
+func NewPivnetClientWithToken(tokenService gp.AccessTokenService, host string) *gp.Client {
+	config := pivnet.ClientConfig{
+		Host:      host,
+		UserAgent: Pivnet.userAgent,
+	}
 	return gp.NewClient(
-		pivnet.ClientConfig{
-			Token:     apiToken,
-			Host:      host,
-			UserAgent: Pivnet.userAgent,
-		},
+		tokenService,
+		config,
 		Pivnet.Logger,
 	)
 }

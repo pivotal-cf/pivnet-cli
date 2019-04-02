@@ -3,7 +3,6 @@ package login_test
 import (
 	"bytes"
 	"fmt"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/pivnet-cli/commands/login"
@@ -69,7 +68,7 @@ var _ = Describe("login commands", func() {
 			fakeRCHandler.SaveProfileReturns(saveProfileErr)
 		})
 
-		It("authenticates and saves profile", func() {
+		It("authenticates", func() {
 			err := client.Login(
 				profileName,
 				apiToken,
@@ -78,13 +77,6 @@ var _ = Describe("login commands", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(fakePivnetClient.AuthCallCount()).To(Equal(1))
-
-			Expect(fakeRCHandler.SaveProfileCallCount()).To(Equal(1))
-			invokedProfileName, invokedAPIToken, invokedHost := fakeRCHandler.SaveProfileArgsForCall(0)
-
-			Expect(invokedProfileName).To(Equal(profileName))
-			Expect(invokedAPIToken).To(Equal(apiToken))
-			Expect(invokedHost).To(Equal(host))
 		})
 
 		Context("when there is an error authenticating", func() {
@@ -120,24 +112,6 @@ var _ = Describe("login commands", func() {
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
 				Expect(fakeErrorHandler.HandleErrorArgsForCall(0).Error()).To(ContainSubstring("login"))
-			})
-		})
-
-		Context("when saving profile returns an error", func() {
-			BeforeEach(func() {
-				saveProfileErr = fmt.Errorf("save profile error")
-			})
-
-			It("invokes the error handler", func() {
-				err := client.Login(
-					profileName,
-					apiToken,
-					host,
-				)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
-				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(saveProfileErr))
 			})
 		})
 	})

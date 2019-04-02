@@ -1,6 +1,8 @@
 package commands_test
 
 import (
+	"github.com/pivotal-cf/pivnet-cli/gp"
+	"github.com/pivotal-cf/pivnet-cli/gp/gpfakes"
 	"reflect"
 	"testing"
 
@@ -23,6 +25,7 @@ func TestCommands(t *testing.T) {
 
 var (
 	fakeAuthenticator *commandsfakes.FakeAuthenticator
+	fakeAccessTokenService *gpfakes.FakeAccessTokenService
 	authErr           error
 
 	initInvocationArg bool
@@ -41,10 +44,19 @@ var _ = BeforeSuite(func() {
 
 var _ = BeforeEach(func() {
 	fakeAuthenticator = &commandsfakes.FakeAuthenticator{}
+	fakeAccessTokenService = &gpfakes.FakeAccessTokenService{}
 	commands.Auth = fakeAuthenticator
 	authErr = nil
 
 	initErr = nil
+
+	commands.CreateAccessTokenService = func(rc commands.RCHandler,
+		profileName string,
+		refreshToken string,
+		host string,
+) gp.AccessTokenService {
+		return fakeAccessTokenService
+	}
 })
 
 var _ = JustBeforeEach(func() {

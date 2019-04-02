@@ -1,6 +1,8 @@
 package commands
 
-import "github.com/pivotal-cf/pivnet-cli/commands/login"
+import (
+	"github.com/pivotal-cf/pivnet-cli/commands/login"
+)
 
 type LoginCommand struct {
 	APIToken string `long:"api-token" description:"Pivnet API Token (Pivnet legacy token or UAA refresh token)" required:"true"`
@@ -31,7 +33,9 @@ func (command *LoginCommand) Execute([]string) error {
 
 	sanitizeWriters(command.APIToken)
 
-	client := NewPivnetClientWithToken(command.APIToken, command.Host)
+	accessTokenService := CreateAccessTokenService(RC, Pivnet.ProfileName, command.APIToken, command.Host)
+
+	client := NewPivnetClientWithToken(accessTokenService, command.Host)
 
 	return NewLoginClient(client).Login(
 		Pivnet.ProfileName,

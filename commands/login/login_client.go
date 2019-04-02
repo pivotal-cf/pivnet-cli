@@ -16,7 +16,7 @@ type PivnetClient interface {
 
 //go:generate counterfeiter . RCHandler
 type RCHandler interface {
-	SaveProfile(profileName string, apiToken string, host string) error
+	SaveProfile(profileName string, apiToken string, host string, accessToken string, accessTokenExpiry int64) error
 }
 
 type LoginClient struct {
@@ -65,11 +65,6 @@ func (c *LoginClient) Login(
 
 	if !ok {
 		err := fmt.Errorf("Failed to login")
-		return c.eh.HandleError(err)
-	}
-
-	err = c.rcHandler.SaveProfile(profileName, apiToken, host)
-	if err != nil {
 		return c.eh.HandleError(err)
 	}
 

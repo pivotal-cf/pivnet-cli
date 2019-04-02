@@ -271,31 +271,12 @@ var _ = Describe("pivnet cli", func() {
 			server.AppendHandlers(
 				ghttp.CombineHandlers(
 					ghttp.VerifyRequest(
-						"POST",
-						fmt.Sprintf("%s/authentication/access_tokens", apiPrefix),
-					),
-					ghttp.RespondWith(http.StatusOK, "{\"access_token\": \"token123\"}"),
-				),
-			)
-			server.AppendHandlers(
-				ghttp.CombineHandlers(
-					ghttp.VerifyRequest(
 						"GET",
 						fmt.Sprintf("%s/authentication", apiPrefix),
 					),
 					ghttp.RespondWith(http.StatusOK, ""),
 				),
 			)
-			server.AppendHandlers(
-				ghttp.CombineHandlers(
-					ghttp.VerifyRequest(
-						"POST",
-						fmt.Sprintf("%s/authentication/access_tokens", apiPrefix),
-					),
-					ghttp.RespondWith(http.StatusOK, "{\"access_token\": \"token123\"}"),
-				),
-			)
-
 		})
 	})
 })

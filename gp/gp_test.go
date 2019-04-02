@@ -2,6 +2,7 @@ package gp_test
 
 import (
 	"fmt"
+	"github.com/pivotal-cf/pivnet-cli/gp/gpfakes"
 	"net/http"
 
 	. "github.com/onsi/ginkgo"
@@ -20,21 +21,22 @@ var _ = Describe("Client", func() {
 	var (
 		server *ghttp.Server
 
-		client     *gp.Client
-		fakeLogger *loggerfakes.FakeLogger
+		client                 *gp.Client
+		fakeLogger             *loggerfakes.FakeLogger
+		fakeAccessTokenService *gpfakes.FakeAccessTokenService
 	)
 
 	BeforeEach(func() {
 		server = ghttp.NewServer()
 
 		fakeLogger = &loggerfakes.FakeLogger{}
+		fakeAccessTokenService = &gpfakes.FakeAccessTokenService{}
 
 		config := pivnet.ClientConfig{
 			Host:      server.URL(),
-			Token:     "some-token",
 			UserAgent: "some-user-agent",
 		}
-		client = gp.NewClient(config, fakeLogger)
+		client = gp.NewClient(fakeAccessTokenService, config, fakeLogger)
 	})
 
 	Describe("ReleaseForVersion", func() {

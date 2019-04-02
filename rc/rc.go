@@ -1,6 +1,9 @@
 package rc
 
-import yaml "gopkg.in/yaml.v2"
+import (
+	"fmt"
+	"gopkg.in/yaml.v2"
+)
 
 //go:generate counterfeiter . PivnetRCReadWriter
 type PivnetRCReadWriter interface {
@@ -26,6 +29,8 @@ func (h *RCHandler) SaveProfile(
 	profileName string,
 	apiToken string,
 	host string,
+	accessToken string,
+	accessTokenExpiry int64,
 ) error {
 	pivnetRC, err := h.loadPivnetRC()
 	if err != nil {
@@ -58,6 +63,11 @@ func (h *RCHandler) SaveProfile(
 
 	newInfo.APIToken = apiToken
 	newInfo.Host = host
+	newInfo.AccessToken = accessToken
+	newInfo.AccessTokenExpiry = accessTokenExpiry
+	if err != nil {
+		return fmt.Errorf("could not retreive access token: %s", err)
+	}
 
 	pivnetRC.Profiles[index] = *newInfo
 
