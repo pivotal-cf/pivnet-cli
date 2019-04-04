@@ -1,6 +1,8 @@
 package pivnetversions
 
 import (
+	"fmt"
+	"github.com/pivotal-cf/pivnet-cli/version"
 	"io"
 
 	"github.com/olekukonko/tablewriter"
@@ -59,4 +61,13 @@ func (c *PivnetVersionsClient) List() error {
 	}
 
 	return nil
+}
+
+func (c *PivnetVersionsClient) Warn(currentVersion string) string {
+	pivnetVersions, err := c.pivnetClient.PivnetVersions()
+	if err == nil && currentVersion != pivnetVersions.PivnetCliVersion {
+		return fmt.Sprintf("Warning: Your version of Pivnet CLI (%s) does not match the currently released version (%s).", version.Version, pivnetVersions.PivnetCliVersion)
+	} else {
+		return ""
+	}
 }

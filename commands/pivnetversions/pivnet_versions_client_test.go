@@ -47,7 +47,7 @@ var _ = Describe("pivnetversions commands", func() {
 		)
 	})
 
-	Describe("PivnetVersions", func() {
+	Describe("PivnetVersions.List", func() {
 		It("lists all PivnetVersions", func() {
 			err := client.List()
 			Expect(err).NotTo(HaveOccurred())
@@ -65,7 +65,7 @@ var _ = Describe("pivnetversions commands", func() {
 			)
 
 			BeforeEach(func() {
-				expectedErr = errors.New("pivnetversionss error")
+				expectedErr = errors.New("pivnetversions error")
 				fakePivnetClient.PivnetVersionsReturns(pivnet.PivnetVersions{}, expectedErr)
 			})
 
@@ -76,6 +76,26 @@ var _ = Describe("pivnetversions commands", func() {
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
 				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
 			})
+		})
+	})
+
+	Describe("PivnetVersions.Warn", func() {
+		It("returns a warning if the current Pivnet CLI version is out of date", func() {
+			result := client.Warn("old_version")
+			Expect(result).NotTo(BeEmpty())
+		})
+
+		It("returns empty if the current Pivnet CLI version is up to date", func() {
+			result := client.Warn("1.2.3")
+			Expect(result).To(BeEmpty())
+		})
+
+		It("returns empty if there is an error getting the latest Pivnet CLI version", func() {
+			expectedErr := errors.New("pivnetversions error")
+			fakePivnetClient.PivnetVersionsReturns(pivnet.PivnetVersions{}, expectedErr)
+
+			result := client.Warn("1.2.3")
+			Expect(result).To(BeEmpty())
 		})
 	})
 })

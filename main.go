@@ -54,5 +54,12 @@ func main() {
 		coloredMessage := fmt.Sprintf(errorhandler.RedFunc(err.Error()))
 		fmt.Fprintln(os.Stderr, coloredMessage)
 		os.Exit(1)
+	} else {
+		pivnetClient := commands.NewPivnetClient()
+		client := commands.NewPivnetVersionsClient(pivnetClient)
+		result := client.Warn(version.Version)
+		if result != "" {
+			fmt.Fprintf(os.Stderr, "\n%s\n", result)
+		}
 	}
 }

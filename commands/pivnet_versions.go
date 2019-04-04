@@ -8,6 +8,7 @@ type PivnetVersionsCommand struct {
 //go:generate counterfeiter . PivnetVersionsClient
 type PivnetVersionsClient interface {
 	List() error
+	Warn(currentVersion string) string
 }
 
 var NewPivnetVersionsClient = func(client pivnetversions.PivnetClient) PivnetVersionsClient {

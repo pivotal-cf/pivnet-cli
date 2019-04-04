@@ -32,6 +32,8 @@ var _ = Describe("pivnet cli", func() {
 
 		product pivnet.Product
 
+		pivnetVersions pivnet.PivnetVersions
+
 		tempDir string
 
 		runMainWithArgs func(args ...string) *gexec.Session
@@ -46,6 +48,8 @@ var _ = Describe("pivnet cli", func() {
 			Slug: "some-product-slug",
 			Name: "some-product-name",
 		}
+
+		pivnetVersions = pivnet.PivnetVersions{"dev", "dev"}
 
 		var err error
 		tempDir, err = ioutil.TempDir("", "pivnet-cli-integration-tests")
@@ -81,6 +85,16 @@ var _ = Describe("pivnet cli", func() {
 			)
 			Eventually(session, executableTimeout).Should(gexec.Exit(0))
 		}
+
+		server.AppendHandlers(
+			ghttp.CombineHandlers(
+				ghttp.VerifyRequest(
+					"GET",
+					fmt.Sprintf("%s/versions", apiPrefix),
+				),
+				ghttp.RespondWithJSONEncoded(http.StatusOK, pivnetVersions),
+			),
+		)
 	})
 
 	AfterEach(func() {
