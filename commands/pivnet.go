@@ -71,6 +71,8 @@ type PivnetCommand struct {
 
 	ReleaseTypes ReleaseTypesCommand `command:"release-types" alias:"rts" description:"List release types"`
 
+	PivnetVersions PivnetVersionsCommand `command:"pivnet-versions" alias:"pv" description:"List Pivnet product versions"`
+
 	EULAs      EULAsCommand      `command:"eulas" alias:"es" description:"List EULAs"`
 	EULA       EULACommand       `command:"eula" alias:"e" description:"Show EULA"`
 	AcceptEULA AcceptEULACommand `command:"accept-eula" alias:"ae" description:"Accept EULA (Available for pivots only)"`

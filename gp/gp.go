@@ -33,6 +33,10 @@ func (c Client) ReleaseTypes() ([]pivnet.ReleaseType, error) {
 	return c.client.ReleaseTypes.Get()
 }
 
+func (c Client) PivnetVersions() (pivnet.PivnetVersions, error) {
+	return c.client.PivnetVersions.List()
+}
+
 func (c Client) ReleasesForProductSlug(productSlug string) ([]pivnet.Release, error) {
 	return c.client.Releases.List(productSlug)
 }
@@ -281,3 +285,4 @@ func (c Client) MakeRequest(method string, url string, expectedResponseCode int,
 func (c Client) CreateRequest(method string, url string, body io.Reader) (*http.Request, error) {
 	return c.client.CreateRequest(method, url, body)
 }
+
