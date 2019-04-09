@@ -18,6 +18,17 @@ type FakePivnetVersionsClient struct {
 	listReturnsOnCall map[int]struct {
 		result1 error
 	}
+	WarnStub        func(string) string
+	warnMutex       sync.RWMutex
+	warnArgsForCall []struct {
+		arg1 string
+	}
+	warnReturns struct {
+		result1 string
+	}
+	warnReturnsOnCall map[int]struct {
+		result1 string
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -74,11 +85,73 @@ func (fake *FakePivnetVersionsClient) ListReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakePivnetVersionsClient) Warn(arg1 string) string {
+	fake.warnMutex.Lock()
+	ret, specificReturn := fake.warnReturnsOnCall[len(fake.warnArgsForCall)]
+	fake.warnArgsForCall = append(fake.warnArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("Warn", []interface{}{arg1})
+	fake.warnMutex.Unlock()
+	if fake.WarnStub != nil {
+		return fake.WarnStub(arg1)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.warnReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakePivnetVersionsClient) WarnCallCount() int {
+	fake.warnMutex.RLock()
+	defer fake.warnMutex.RUnlock()
+	return len(fake.warnArgsForCall)
+}
+
+func (fake *FakePivnetVersionsClient) WarnCalls(stub func(string) string) {
+	fake.warnMutex.Lock()
+	defer fake.warnMutex.Unlock()
+	fake.WarnStub = stub
+}
+
+func (fake *FakePivnetVersionsClient) WarnArgsForCall(i int) string {
+	fake.warnMutex.RLock()
+	defer fake.warnMutex.RUnlock()
+	argsForCall := fake.warnArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakePivnetVersionsClient) WarnReturns(result1 string) {
+	fake.warnMutex.Lock()
+	defer fake.warnMutex.Unlock()
+	fake.WarnStub = nil
+	fake.warnReturns = struct {
+		result1 string
+	}{result1}
+}
+
+func (fake *FakePivnetVersionsClient) WarnReturnsOnCall(i int, result1 string) {
+	fake.warnMutex.Lock()
+	defer fake.warnMutex.Unlock()
+	fake.WarnStub = nil
+	if fake.warnReturnsOnCall == nil {
+		fake.warnReturnsOnCall = make(map[int]struct {
+			result1 string
+		})
+	}
+	fake.warnReturnsOnCall[i] = struct {
+		result1 string
+	}{result1}
+}
+
 func (fake *FakePivnetVersionsClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
+	fake.warnMutex.RLock()
+	defer fake.warnMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

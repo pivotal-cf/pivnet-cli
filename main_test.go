@@ -49,7 +49,7 @@ var _ = Describe("pivnet cli", func() {
 			Name: "some-product-name",
 		}
 
-		pivnetVersions = pivnet.PivnetVersions{"dev", "dev"}
+		pivnetVersions = pivnet.PivnetVersions{"cli-version", "resource-version"}
 
 		var err error
 		tempDir, err = ioutil.TempDir("", "pivnet-cli-integration-tests")
@@ -85,16 +85,6 @@ var _ = Describe("pivnet cli", func() {
 			)
 			Eventually(session, executableTimeout).Should(gexec.Exit(0))
 		}
-
-		server.AppendHandlers(
-			ghttp.CombineHandlers(
-				ghttp.VerifyRequest(
-					"GET",
-					fmt.Sprintf("%s/versions", apiPrefix),
-				),
-				ghttp.RespondWithJSONEncoded(http.StatusOK, pivnetVersions),
-			),
-		)
 	})
 
 	AfterEach(func() {
@@ -179,6 +169,15 @@ var _ = Describe("pivnet cli", func() {
 						ghttp.RespondWithJSONEncoded(http.StatusOK, product),
 					),
 				)
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.VerifyRequest(
+							"GET",
+							fmt.Sprintf("%s/versions", apiPrefix),
+						),
+						ghttp.RespondWithJSONEncoded(http.StatusOK, pivnetVersions),
+					),
+				)
 			})
 
 			It("prints as json", func() {
@@ -198,6 +197,20 @@ var _ = Describe("pivnet cli", func() {
 
 				Expect(receivedProduct.Slug).To(Equal(product.Slug))
 			})
+
+			It("prints the warning that their CLI version is out of date", func() {
+				login(apiToken)
+
+				session := runMainWithArgs(
+					"--format=json",
+					"product",
+					"--product-slug", product.Slug,
+				)
+
+				Eventually(session, executableTimeout).Should(gexec.Exit(0))
+
+				Expect(session.Err).Should(gbytes.Say("Warning: Your version of Pivnet CLI"))
+			})
 		})
 
 		Describe("printing as yaml", func() {
@@ -209,6 +222,15 @@ var _ = Describe("pivnet cli", func() {
 							fmt.Sprintf("%s/products/%s", apiPrefix, product.Slug),
 						),
 						ghttp.RespondWithJSONEncoded(http.StatusOK, product),
+					),
+				)
+				server.AppendHandlers(
+					ghttp.CombineHandlers(
+						ghttp.VerifyRequest(
+							"GET",
+							fmt.Sprintf("%s/versions", apiPrefix),
+						),
+						ghttp.RespondWithJSONEncoded(http.StatusOK, pivnetVersions),
 					),
 				)
 			})
@@ -228,6 +250,20 @@ var _ = Describe("pivnet cli", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(receivedProduct.Slug).To(Equal(product.Slug))
+			})
+
+			It("prints the warning that their CLI version is out of date", func() {
+				login(apiToken)
+
+				session := runMainWithArgs(
+					"--format=yaml",
+					"product",
+					"--product-slug", product.Slug,
+				)
+
+				Eventually(session, executableTimeout).Should(gexec.Exit(0))
+
+				Expect(session.Err).Should(gbytes.Say("Warning: Your version of Pivnet CLI"))
 			})
 		})
 	}

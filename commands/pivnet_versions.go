@@ -1,6 +1,8 @@
 package commands
 
-import "github.com/pivotal-cf/pivnet-cli/commands/pivnetversions"
+import (
+	"github.com/pivotal-cf/pivnet-cli/commands/pivnetversions"
+)
 
 type PivnetVersionsCommand struct {
 }
