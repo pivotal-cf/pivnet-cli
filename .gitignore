@@ -1,4 +1,6 @@
 pivnet-cli
 docs/site/
 vendor
+.idea
+.gobincache
 
