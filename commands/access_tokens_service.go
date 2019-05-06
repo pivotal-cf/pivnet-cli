@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/pivotal-cf/go-pivnet"
 	"github.com/pivotal-cf/pivnet-cli/gp"
+	"github.com/pivotal-cf/pivnet-cli/rc"
 	"time"
 )
 
@@ -28,7 +29,8 @@ type SaveTokenDecorator struct {
 
 func (o SaveTokenDecorator) AccessToken() (string, error) {
 	pivnetProfile, err := o.Rc.ProfileForName(o.ProfileName)
-	if err == nil && pivnetProfile != nil && pivnetProfile.AccessToken != "" && pivnetProfile.AccessTokenExpiry > time.Now().Unix() {
+
+	if err == nil && pivnetProfile != nil && validAccessToken(pivnetProfile) && o.notDuringLogin(pivnetProfile) {
 		return pivnetProfile.AccessToken, nil
 	}
 
@@ -49,6 +51,10 @@ func (o SaveTokenDecorator) accessTokenExpiry() int64 {
 	return time.Now().Add(time.Hour).Unix()
 }
 
+func (o SaveTokenDecorator) notDuringLogin(pivnetProfile *rc.PivnetProfile) bool {
+	return pivnetProfile.Host == o.Host && pivnetProfile.APIToken == o.RefreshToken
+}
+
 func CreateSaveTokenDecorator(rc RCHandler, accessTokenService gp.AccessTokenService, profileName string, refreshToken string, host string) gp.AccessTokenService {
 	return SaveTokenDecorator {
 		WrappedService: accessTokenService,
@@ -57,4 +63,8 @@ func CreateSaveTokenDecorator(rc RCHandler, accessTokenService gp.AccessTokenSer
 		Host: host,
 		Rc: rc,
 	}
+}
+
+func validAccessToken(pivnetProfile *rc.PivnetProfile) bool {
+	return pivnetProfile.AccessToken != "" && pivnetProfile.AccessTokenExpiry > time.Now().Unix()
 }

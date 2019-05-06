@@ -19,10 +19,10 @@ var _ = Describe("Access Token Service", func() {
 
 		subject = commands.SaveTokenDecorator{
 			WrappedService: fakeAccessTokenService,
-			ProfileName: "",
-			RefreshToken: "",
-			Host: "",
-			Rc: fakeRCHandler,
+			ProfileName:    "",
+			RefreshToken:   "oldApiToken",
+			Host:           "oldHost",
+			Rc:             fakeRCHandler,
 		}
 	})
 
@@ -66,7 +66,11 @@ var _ = Describe("Access Token Service", func() {
 	Context("When Profile has access token", func() {
 		var profile *rc.PivnetProfile
 		BeforeEach(func() {
-			profile = &rc.PivnetProfile{AccessToken: "newToken"}
+			profile = &rc.PivnetProfile{
+				AccessToken: "oldToken",
+				APIToken:    "oldApiToken",
+				Host:        "oldHost",
+			}
 			fakeRCHandler.ProfileForNameReturns(profile, nil)
 		})
 
@@ -74,7 +78,7 @@ var _ = Describe("Access Token Service", func() {
 			JustBeforeEach(func() {
 				fakeRCHandler.ProfileForNameReturns(nil, nil)
 
-				fakeAccessTokenService.AccessTokenReturns("token", nil)
+				fakeAccessTokenService.AccessTokenReturns("newToken", nil)
 				fakeRCHandler.SaveProfileReturns(nil)
 
 				profile.AccessTokenExpiry = time.Now().Add(-time.Hour).Unix()
@@ -84,16 +88,40 @@ var _ = Describe("Access Token Service", func() {
 				accessToken, err := subject.AccessToken()
 
 				Expect(err).NotTo(HaveOccurred())
-				Expect(accessToken).To(Equal("token"))
+				Expect(accessToken).To(Equal("newToken"))
 			})
 		})
 
-		Context("when access is not expired", func() {
+		Context("when access is not expired not during login", func() {
 			JustBeforeEach(func() {
 				profile.AccessTokenExpiry = time.Now().Add(time.Hour).Unix()
 			})
 
 			It("returns existing access token", func() {
+				accessToken, err := subject.AccessToken()
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(accessToken).To(Equal("oldToken"))
+			})
+		})
+
+		Context("when access is not expired during login", func() {
+			JustBeforeEach(func() {
+				subject = commands.SaveTokenDecorator{
+					WrappedService: fakeAccessTokenService,
+					ProfileName:    "",
+					RefreshToken:   "NewRefreshToken",
+					Host:           "newHost",
+					Rc:             fakeRCHandler,
+				}
+
+				fakeAccessTokenService.AccessTokenReturns("newToken", nil)
+				fakeRCHandler.SaveProfileReturns(nil)
+
+				profile.AccessTokenExpiry = time.Now().Add(time.Hour).Unix()
+			})
+
+			It("saves profile with new access token", func() {
 				accessToken, err := subject.AccessToken()
 
 				Expect(err).NotTo(HaveOccurred())
