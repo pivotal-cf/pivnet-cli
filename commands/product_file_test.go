@@ -1247,7 +1247,7 @@ var _ = Describe("product file commands", func() {
 		})
 	})
 
-	Describe("DownloadProductFileCommand", func() {
+	Describe("DownloadProductFilesCommand", func() {
 		var (
 			cmd commands.DownloadProductFilesCommand
 		)
@@ -1406,6 +1406,76 @@ var _ = Describe("product file commands", func() {
 
 			It("contains long name", func() {
 				Expect(longTag(field)).To(Equal("accept-eula"))
+			})
+		})
+	})
+
+	Describe("UploadProductFileCommand", func() {
+		var (
+			cmd commands.UploadProductFileCommand
+		)
+
+		BeforeEach(func() {
+			cmd = commands.UploadProductFileCommand{}
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
+		Describe("ProductSlug flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.UploadProductFileCommand{}, "ProductSlug")
+			})
+
+			It("is required", func() {
+				Expect(isRequired(field)).To(BeTrue())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("p"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("product-slug"))
+			})
+		})
+
+		Describe("DownloadDir flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.UploadProductFileCommand{}, "LocalFilePath")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeTrue())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("l"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("local-file-path"))
 			})
 		})
 	})

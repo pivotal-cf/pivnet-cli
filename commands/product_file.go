@@ -75,6 +75,11 @@ type DownloadProductFilesCommand struct {
 	AcceptEULA     bool     `long:"accept-eula" description:"Automatically accept EULA if necessary (Available for pivots only)"`
 }
 
+type UploadProductFileCommand struct {
+	ProductSlug   string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
+	LocalFilePath string `long:"local-file-path" short:"l" description:"Local path of file to be uploaded to e.g. /tmp/product-file" required:"true"`
+}
+
 //go:generate counterfeiter . ProductFileClient
 type ProductFileClient interface {
 	List(productSlug string, releaseVersion string) error
@@ -284,4 +289,20 @@ func (command *DownloadProductFilesCommand) Execute([]string) error {
 		command.AcceptEULA,
 		LogWriter,
 	)
+}
+
+func (command *UploadProductFileCommand) Execute([]string) error {
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	//TODO #165642807
+	return nil
 }

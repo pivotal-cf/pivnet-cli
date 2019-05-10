@@ -89,6 +89,7 @@ type PivnetCommand struct {
 	DeleteProductFile DeleteProductFileCommand `command:"delete-product-file" alias:"dpf" description:"Delete product file"`
 
 	DownloadProductFiles DownloadProductFilesCommand `command:"download-product-files" alias:"dlpf" description:"Download product files"`
+	UploadProductFiles UploadProductFileCommand `command:"upload-product-file" alias:"ulpf" description:"Upload product file"`
 
 	FileGroups                 FileGroupsCommand                 `command:"file-groups" alias:"fgs" description:"List file groups"`
 	FileGroup                  FileGroupCommand                  `command:"file-group" alias:"fg" description:"Show file group"`
