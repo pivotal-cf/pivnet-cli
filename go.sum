@@ -39,6 +39,8 @@ github.com/pivotal-cf/go-pivnet v1.0.0 h1:HSYvXNsTKC1tOzKOtVP1YGwLSbCFe0Li0Gx2fG
 github.com/pivotal-cf/go-pivnet v1.0.0/go.mod h1:rvEzWli4NJQhX7Z3z0DiEQXsPwC+uE//eIKcpl7S1as=
 github.com/pivotal-cf/go-pivnet v1.0.1 h1:0nmomaSubgnS0w8zBoLOCyX6iKgnb4MHY0tEIzXBl+Q=
 github.com/pivotal-cf/go-pivnet v1.0.1/go.mod h1:rvEzWli4NJQhX7Z3z0DiEQXsPwC+uE//eIKcpl7S1as=
+github.com/pivotal-cf/go-pivnet v1.0.2 h1:q789t5syP3Xtfu6LNJVrlLup4UB0PUBOsnHTh8nUiN8=
+github.com/pivotal-cf/go-pivnet v1.0.2/go.mod h1:rvEzWli4NJQhX7Z3z0DiEQXsPwC+uE//eIKcpl7S1as=
 github.com/robdimsdale/sanitizer v0.0.0-20160522134901-ab2334cb7539 h1:h3AVw1v3JIE9Y1HyjYyiPTG73ywlF4754oiIjkxPjNk=
 github.com/robdimsdale/sanitizer v0.0.0-20160522134901-ab2334cb7539/go.mod h1:tqCODtkKV+9Tfvt9JURvKCTxJ69bA/OU/QhsaQLK/rc=
 github.com/shirou/gopsutil v0.0.0-20180927124308-a11c78ba2c13 h1:hzFIj+Ky1KX599VGAVY//20nam1rYKwQwNVix1sYhXo=

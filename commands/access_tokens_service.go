@@ -14,7 +14,7 @@ var CreateAccessTokenService = func(
 	refreshToken string,
 	host string,
 ) gp.AccessTokenService {
-	tokenService := pivnet.NewAccessTokenOrLegacyToken(refreshToken, host)
+	tokenService := pivnet.NewAccessTokenOrLegacyToken(refreshToken, host, "Pivnet CLI")
 	serviceThatSavesRc := CreateSaveTokenDecorator(rc, tokenService, profileName, refreshToken, host)
 	return serviceThatSavesRc
 }
