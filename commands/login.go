@@ -33,7 +33,7 @@ func (command *LoginCommand) Execute([]string) error {
 
 	sanitizeWriters(command.APIToken)
 
-	accessTokenService := CreateAccessTokenService(RC, Pivnet.ProfileName, command.APIToken, command.Host)
+	accessTokenService := CreateAccessTokenService(RC, Pivnet.ProfileName, command.APIToken, command.Host, Pivnet.SkipSSLValidation)
 
 	client := NewPivnetClientWithToken(accessTokenService, command.Host)
 

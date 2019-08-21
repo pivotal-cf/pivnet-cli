@@ -13,8 +13,9 @@ var CreateAccessTokenService = func(
 	profileName string,
 	refreshToken string,
 	host string,
+	skipSSLValidation bool,
 ) gp.AccessTokenService {
-	tokenService := pivnet.NewAccessTokenOrLegacyToken(refreshToken, host, "Pivnet CLI")
+	tokenService := pivnet.NewAccessTokenOrLegacyToken(refreshToken, host, skipSSLValidation, "Pivnet CLI")
 	serviceThatSavesRc := CreateSaveTokenDecorator(rc, tokenService, profileName, refreshToken, host)
 	return serviceThatSavesRc
 }

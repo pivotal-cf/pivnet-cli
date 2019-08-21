@@ -44,11 +44,11 @@ var (
 	OutputWriter io.Writer
 	LogWriter    io.Writer
 
-	Filter       Filterer
-	ErrorHandler errorhandler.ErrorHandler
-	Printer      printer.Printer
-	RC           RCHandler
-	Auth         Authenticator
+	Filter           Filterer
+	ErrorHandler     errorhandler.ErrorHandler
+	Printer          printer.Printer
+	RC               RCHandler
+	Auth             Authenticator
 	Sha256FileSummer sha256sum.FileSummer
 )
 
@@ -58,8 +58,9 @@ type PivnetCommand struct {
 	Format  string `long:"format" description:"Format to print as" default:"table" choice:"table" choice:"json" choice:"yaml"`
 	Verbose bool   `long:"verbose" description:"Display verbose output"`
 
-	ProfileName string `long:"profile" description:"Name of profile" default:"default"`
-	ConfigFile  string `long:"config" description:"Path to config file"`
+	ProfileName       string `long:"profile" description:"Name of profile" default:"default"`
+	ConfigFile        string `long:"config" description:"Path to config file"`
+	SkipSSLValidation bool   `long:"skip-ssl-validation" description:"Skip verification of the API endpoint. Not recommended!"`
 
 	Login  LoginCommand  `command:"login" alias:"l" description:"Log in to Pivotal Network."`
 	Logout LogoutCommand `command:"logout" description:"Log out from Pivotal Network."`
@@ -159,14 +160,15 @@ func NewPivnetClient() *gp.Client {
 		host = Pivnet.profile.Host
 	}
 
-	accessTokenService := CreateAccessTokenService(RC, Pivnet.ProfileName, refreshToken, host)
+	accessTokenService := CreateAccessTokenService(RC, Pivnet.ProfileName, refreshToken, host, Pivnet.SkipSSLValidation)
 	return NewPivnetClientWithToken(accessTokenService, host)
 }
 
 func NewPivnetClientWithToken(tokenService gp.AccessTokenService, host string) *gp.Client {
 	config := pivnet.ClientConfig{
-		Host:      host,
-		UserAgent: Pivnet.userAgent,
+		Host:              host,
+		UserAgent:         Pivnet.userAgent,
+		SkipSSLValidation: Pivnet.SkipSSLValidation,
 	}
 	return gp.NewClient(
 		tokenService,

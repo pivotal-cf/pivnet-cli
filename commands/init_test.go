@@ -54,6 +54,7 @@ var _ = BeforeEach(func() {
 		profileName string,
 		refreshToken string,
 		host string,
+		skipSSLValidation bool,
 ) gp.AccessTokenService {
 		return fakeAccessTokenService
 	}
