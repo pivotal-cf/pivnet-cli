@@ -206,6 +206,10 @@ func (c Client) RemoveProductFileFromFileGroup(productSlug string, fileGroupID i
 	return c.client.ProductFiles.RemoveFromFileGroup(productSlug, fileGroupID, productFileID)
 }
 
+func (c Client) CreateImageReference(config pivnet.CreateImageReferenceConfig) (pivnet.ImageReference, error) {
+	return c.client.ImageReferences.Create(config)
+}
+
 func (c Client) ReleaseDependencies(productSlug string, releaseID int) ([]pivnet.ReleaseDependency, error) {
 	return c.client.ReleaseDependencies.List(productSlug, releaseID)
 }

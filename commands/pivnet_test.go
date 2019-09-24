@@ -547,6 +547,20 @@ var _ = Describe("Pivnet commands", func() {
 		})
 	})
 
+	Describe("CreateImageReference command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "CreateImageReference")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("create-image-reference"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("cir"))
+		})
+	})
+
 	Describe("Releases command", func() {
 		BeforeEach(func() {
 			field = fieldFor(commands.Pivnet, "Releases")
