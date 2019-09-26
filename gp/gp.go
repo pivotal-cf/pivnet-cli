@@ -210,6 +210,19 @@ func (c Client) CreateImageReference(config pivnet.CreateImageReferenceConfig) (
 	return c.client.ImageReferences.Create(config)
 }
 
+func (c Client) ImageReferences(productSlug string) ([]pivnet.ImageReference, error) {
+	return c.client.ImageReferences.List(productSlug)
+}
+
+func (c Client) ImageReferencesForRelease(productSlug string, releaseID int) ([]pivnet.ImageReference, error) {
+	imageReferences, err := c.client.ImageReferences.ListForRelease(productSlug, releaseID)
+	if err != nil {
+		return nil, err
+	}
+
+	return imageReferences, nil
+}
+
 func (c Client) ReleaseDependencies(productSlug string, releaseID int) ([]pivnet.ReleaseDependency, error) {
 	return c.client.ReleaseDependencies.List(productSlug, releaseID)
 }

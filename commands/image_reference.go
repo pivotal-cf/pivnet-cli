@@ -5,6 +5,11 @@ import (
 	"github.com/pivotal-cf/pivnet-cli/commands/imagereference"
 )
 
+type ImageReferencesCommand struct {
+	ProductSlug    string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
+	ReleaseVersion string `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1 (Required for non-admins)"`
+}
+
 type CreateImageReferenceCommand struct {
 	ProductSlug        string   `long:"product-slug" short:"p" description:"Product slug e.g. 'p-mysql'" required:"true"`
 	Name               string   `long:"name" description:"Name e.g. 'p-mysql 1.7.13'" required:"true"`
@@ -17,6 +22,7 @@ type CreateImageReferenceCommand struct {
 
 //go:generate counterfeiter . ImageReferenceClient
 type ImageReferenceClient interface {
+	List(productSlug string, releaseVersion string) error
 	Create(config pivnet.CreateImageReferenceConfig) error
 }
 
@@ -31,6 +37,22 @@ var NewImageReferenceClient = func(client imagereference.PivnetClient) ImageRefe
 		Pivnet.Logger,
 	)
 }
+
+func (command *ImageReferencesCommand) Execute([]string) error {
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewImageReferenceClient(client).List(command.ProductSlug, command.ReleaseVersion)
+}
+
 
 func (command *CreateImageReferenceCommand) Execute([]string) error {
 	err := Init(true)
