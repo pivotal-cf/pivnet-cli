@@ -148,4 +148,146 @@ var _ = Describe("imagereference commands", func() {
 			})
 		})
 	})
+
+	Describe("AddToRelease", func() {
+		var (
+			productSlug    string
+			releaseVersion string
+			imageReferenceID    int
+		)
+
+		BeforeEach(func() {
+			productSlug = "some-product-slug"
+			releaseVersion = "release-version"
+			imageReferenceID = imageReferences[0].ID
+
+			fakePivnetClient.AddImageReferenceToReleaseReturns(nil)
+		})
+
+		It("adds ImageReference to release", func() {
+			err := client.AddToRelease(
+				productSlug,
+				imageReferenceID,
+				releaseVersion,
+			)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		Context("when there is an error getting release", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("releases error")
+				fakePivnetClient.ReleaseForVersionReturns(pivnet.Release{}, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.AddToRelease(
+					productSlug,
+					imageReferenceID,
+					releaseVersion,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when there is an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("image reference error")
+				fakePivnetClient.AddImageReferenceToReleaseReturns(expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.AddToRelease(
+					productSlug,
+					imageReferenceID,
+					releaseVersion,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+	})
+
+	Describe("RemoveFromRelease", func() {
+		var (
+			productSlug    string
+			releaseVersion string
+			imageReferenceID    int
+		)
+
+		BeforeEach(func() {
+			productSlug = "some-product-slug"
+			releaseVersion = "release-version"
+			imageReferenceID = imageReferences[0].ID
+
+			fakePivnetClient.RemoveImageReferenceFromReleaseReturns(nil)
+		})
+
+		It("removes ImageReference from release", func() {
+			err := client.RemoveFromRelease(
+				productSlug,
+				imageReferenceID,
+				releaseVersion,
+			)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		Context("when there is an error getting release", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("releases error")
+				fakePivnetClient.ReleaseForVersionReturns(pivnet.Release{}, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.RemoveFromRelease(
+					productSlug,
+					imageReferenceID,
+					releaseVersion,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when there is an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("image reference error")
+				fakePivnetClient.RemoveImageReferenceFromReleaseReturns(expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.RemoveFromRelease(
+					productSlug,
+					imageReferenceID,
+					releaseVersion,
+				)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+	})
 })

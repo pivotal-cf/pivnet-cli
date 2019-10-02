@@ -575,6 +575,34 @@ var _ = Describe("Pivnet commands", func() {
 		})
 	})
 
+	Describe("AddImageReferenceToRelease command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "AddImageReferenceToRelease")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("add-image-reference"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("air"))
+		})
+	})
+
+	Describe("RemoveImageReferenceFromRelease command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "RemoveImageReferenceFromRelease")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("remove-image-reference"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("rir"))
+		})
+	})
+
 	Describe("Releases command", func() {
 		BeforeEach(func() {
 			field = fieldFor(commands.Pivnet, "Releases")

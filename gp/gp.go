@@ -214,6 +214,14 @@ func (c Client) DeleteImageReference(productSlug string, imageReferenceID int) (
 	return c.client.ImageReferences.Delete(productSlug, imageReferenceID)
 }
 
+func (c Client) AddImageReferenceToRelease(productSlug string, imageReferenceID int, releaseID int) error {
+	return c.client.ImageReferences.AddToRelease(productSlug, imageReferenceID, releaseID)
+}
+
+func (c Client) RemoveImageReferenceFromRelease(productSlug string, imageReferenceID int, releaseID int) error {
+	return c.client.ImageReferences.RemoveFromRelease(productSlug, imageReferenceID, releaseID)
+}
+
 func (c Client) ReleaseDependencies(productSlug string, releaseID int) ([]pivnet.ReleaseDependency, error) {
 	return c.client.ReleaseDependencies.List(productSlug, releaseID)
 }

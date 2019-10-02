@@ -1,7 +1,7 @@
 package commands
 
 import (
-	pivnet "github.com/pivotal-cf/go-pivnet/v2"
+	"github.com/pivotal-cf/go-pivnet/v2"
 	"github.com/pivotal-cf/pivnet-cli/commands/imagereference"
 )
 
@@ -20,10 +20,24 @@ type DeleteImageReferenceCommand struct {
 	ImageReferenceID int `long:"image-reference-id" short:"i" description:"Image reference ID e.g. 1234" required:"true"`
 }
 
+type AddImageReferenceToReleaseCommand struct {
+	ProductSlug      string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
+	ImageReferenceID int    `long:"image-reference-id" short:"i" description:"Image reference ID e.g. 1234" required:"true"`
+	ReleaseVersion   string `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1" required:"true"`
+}
+
+type RemoveImageReferenceFromReleaseCommand struct {
+	ProductSlug      string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
+	ImageReferenceID int    `long:"image-reference-id" short:"i" description:"Image reference ID e.g. 1234" required:"true"`
+	ReleaseVersion   string `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1" required:"true"`
+}
+
 //go:generate counterfeiter . ImageReferenceClient
 type ImageReferenceClient interface {
 	Create(config pivnet.CreateImageReferenceConfig) error
 	Delete(productSlug string, imageReferenceID int) error
+	AddToRelease(productSlug string, imageReferenceID int, releaseVersion string) error
+	RemoveFromRelease(productSlug string, imageReferenceID int, releaseVersion string) error
 }
 
 var NewImageReferenceClient = func(client imagereference.PivnetClient) ImageReferenceClient {
@@ -76,4 +90,42 @@ func (command *DeleteImageReferenceCommand) Execute([]string) error {
 	}
 
 	return NewImageReferenceClient(client).Delete(command.ProductSlug, command.ImageReferenceID)
+}
+
+func (command *AddImageReferenceToReleaseCommand) Execute([]string) error {
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewImageReferenceClient(client).AddToRelease(
+		command.ProductSlug,
+		command.ImageReferenceID,
+		command.ReleaseVersion,
+	)
+}
+
+func (command *RemoveImageReferenceFromReleaseCommand) Execute([]string) error {
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewImageReferenceClient(client).RemoveFromRelease(
+		command.ProductSlug,
+		command.ImageReferenceID,
+		command.ReleaseVersion,
+	)
 }

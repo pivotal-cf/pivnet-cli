@@ -4,7 +4,7 @@ package commandsfakes
 import (
 	"sync"
 
-	pivnet "github.com/pivotal-cf/go-pivnet/v2"
+	"github.com/pivotal-cf/go-pivnet/v2"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 )
 
@@ -30,6 +30,32 @@ type FakeImageReferenceClient struct {
 		result1 error
 	}
 	deleteReturnsOnCall map[int]struct {
+		result1 error
+	}
+	AddToReleaseStub        func(productSlug string, imageReferenceID int, releaseVersion string) error
+	addToReleaseMutex       sync.RWMutex
+	addToReleaseArgsForCall []struct {
+		productSlug      string
+		imageReferenceID int
+		releaseVersion   string
+	}
+	addToReleaseReturns struct {
+		result1 error
+	}
+	addToReleaseReturnsOnCall map[int]struct {
+		result1 error
+	}
+	RemoveFromReleaseStub        func(productSlug string, imageReferenceID int, releaseVersion string) error
+	removeFromReleaseMutex       sync.RWMutex
+	removeFromReleaseArgsForCall []struct {
+		productSlug      string
+		imageReferenceID int
+		releaseVersion   string
+	}
+	removeFromReleaseReturns struct {
+		result1 error
+	}
+	removeFromReleaseReturnsOnCall map[int]struct {
 		result1 error
 	}
 	invocations      map[string][][]interface{}
@@ -133,6 +159,106 @@ func (fake *FakeImageReferenceClient) DeleteReturnsOnCall(i int, result1 error) 
 	}{result1}
 }
 
+func (fake *FakeImageReferenceClient) AddToRelease(productSlug string, imageReferenceID int, releaseVersion string) error {
+	fake.addToReleaseMutex.Lock()
+	ret, specificReturn := fake.addToReleaseReturnsOnCall[len(fake.addToReleaseArgsForCall)]
+	fake.addToReleaseArgsForCall = append(fake.addToReleaseArgsForCall, struct {
+		productSlug      string
+		imageReferenceID int
+		releaseVersion   string
+	}{productSlug, imageReferenceID, releaseVersion})
+	fake.recordInvocation("AddToRelease", []interface{}{productSlug, imageReferenceID, releaseVersion})
+	fake.addToReleaseMutex.Unlock()
+	if fake.AddToReleaseStub != nil {
+		return fake.AddToReleaseStub(productSlug, imageReferenceID, releaseVersion)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.addToReleaseReturns.result1
+}
+
+func (fake *FakeImageReferenceClient) AddToReleaseCallCount() int {
+	fake.addToReleaseMutex.RLock()
+	defer fake.addToReleaseMutex.RUnlock()
+	return len(fake.addToReleaseArgsForCall)
+}
+
+func (fake *FakeImageReferenceClient) AddToReleaseArgsForCall(i int) (string, int, string) {
+	fake.addToReleaseMutex.RLock()
+	defer fake.addToReleaseMutex.RUnlock()
+	return fake.addToReleaseArgsForCall[i].productSlug, fake.addToReleaseArgsForCall[i].imageReferenceID, fake.addToReleaseArgsForCall[i].releaseVersion
+}
+
+func (fake *FakeImageReferenceClient) AddToReleaseReturns(result1 error) {
+	fake.AddToReleaseStub = nil
+	fake.addToReleaseReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeImageReferenceClient) AddToReleaseReturnsOnCall(i int, result1 error) {
+	fake.AddToReleaseStub = nil
+	if fake.addToReleaseReturnsOnCall == nil {
+		fake.addToReleaseReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.addToReleaseReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeImageReferenceClient) RemoveFromRelease(productSlug string, imageReferenceID int, releaseVersion string) error {
+	fake.removeFromReleaseMutex.Lock()
+	ret, specificReturn := fake.removeFromReleaseReturnsOnCall[len(fake.removeFromReleaseArgsForCall)]
+	fake.removeFromReleaseArgsForCall = append(fake.removeFromReleaseArgsForCall, struct {
+		productSlug      string
+		imageReferenceID int
+		releaseVersion   string
+	}{productSlug, imageReferenceID, releaseVersion})
+	fake.recordInvocation("RemoveFromRelease", []interface{}{productSlug, imageReferenceID, releaseVersion})
+	fake.removeFromReleaseMutex.Unlock()
+	if fake.RemoveFromReleaseStub != nil {
+		return fake.RemoveFromReleaseStub(productSlug, imageReferenceID, releaseVersion)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.removeFromReleaseReturns.result1
+}
+
+func (fake *FakeImageReferenceClient) RemoveFromReleaseCallCount() int {
+	fake.removeFromReleaseMutex.RLock()
+	defer fake.removeFromReleaseMutex.RUnlock()
+	return len(fake.removeFromReleaseArgsForCall)
+}
+
+func (fake *FakeImageReferenceClient) RemoveFromReleaseArgsForCall(i int) (string, int, string) {
+	fake.removeFromReleaseMutex.RLock()
+	defer fake.removeFromReleaseMutex.RUnlock()
+	return fake.removeFromReleaseArgsForCall[i].productSlug, fake.removeFromReleaseArgsForCall[i].imageReferenceID, fake.removeFromReleaseArgsForCall[i].releaseVersion
+}
+
+func (fake *FakeImageReferenceClient) RemoveFromReleaseReturns(result1 error) {
+	fake.RemoveFromReleaseStub = nil
+	fake.removeFromReleaseReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeImageReferenceClient) RemoveFromReleaseReturnsOnCall(i int, result1 error) {
+	fake.RemoveFromReleaseStub = nil
+	if fake.removeFromReleaseReturnsOnCall == nil {
+		fake.removeFromReleaseReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.removeFromReleaseReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeImageReferenceClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -140,6 +266,10 @@ func (fake *FakeImageReferenceClient) Invocations() map[string][][]interface{} {
 	defer fake.createMutex.RUnlock()
 	fake.deleteMutex.RLock()
 	defer fake.deleteMutex.RUnlock()
+	fake.addToReleaseMutex.RLock()
+	defer fake.addToReleaseMutex.RUnlock()
+	fake.removeFromReleaseMutex.RLock()
+	defer fake.removeFromReleaseMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

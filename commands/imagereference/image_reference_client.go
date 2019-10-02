@@ -15,8 +15,11 @@ import (
 
 //go:generate counterfeiter . PivnetClient
 type PivnetClient interface {
+	ReleaseForVersion(productSlug string, releaseVersion string) (pivnet.Release, error)
 	CreateImageReference(config pivnet.CreateImageReferenceConfig) (pivnet.ImageReference, error)
 	DeleteImageReference(productSlug string, releaseID int) (pivnet.ImageReference, error)
+	AddImageReferenceToRelease(productSlug string, imageReferenceID int, releaseID int) error
+	RemoveImageReferenceFromRelease(productSlug string, imageReferenceID int, releaseID int) error
 }
 
 type ImageReferenceClient struct {
@@ -110,4 +113,72 @@ func (c *ImageReferenceClient) Delete(productSlug string, imageReferenceID int) 
 	}
 
 	return c.printImageReference(imageReference)
+}
+
+func (c *ImageReferenceClient) AddToRelease(
+	productSlug string,
+	imageReferenceID int,
+	releaseVersion string,
+) error {
+	release, err := c.pivnetClient.ReleaseForVersion(productSlug, releaseVersion)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	err = c.pivnetClient.AddImageReferenceToRelease(
+		productSlug,
+		release.ID,
+		imageReferenceID,
+	)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	if c.format == printer.PrintAsTable {
+		message := fmt.Sprintf(
+			"Image reference %d added to %s/%s",
+			imageReferenceID,
+			productSlug,
+			releaseVersion,
+		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err = fmt.Fprintln(c.outputWriter, coloredMessage)
+	}
+
+	return nil
+}
+
+func (c *ImageReferenceClient) RemoveFromRelease(
+	productSlug string,
+	imageReferenceID int,
+	releaseVersion string,
+) error {
+	release, err := c.pivnetClient.ReleaseForVersion(productSlug, releaseVersion)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	err = c.pivnetClient.RemoveImageReferenceFromRelease(
+		productSlug,
+		release.ID,
+		imageReferenceID,
+	)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	if c.format == printer.PrintAsTable {
+		message := fmt.Sprintf(
+			"Image reference %d removed from %s/%s",
+			imageReferenceID,
+			productSlug,
+			releaseVersion,
+		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err = fmt.Fprintln(c.outputWriter, coloredMessage)
+	}
+
+	return nil
 }
