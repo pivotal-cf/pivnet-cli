@@ -99,6 +99,8 @@ type PivnetCommand struct {
 	AddFileGroupToRelease      AddFileGroupToReleaseCommand      `command:"add-file-group" alias:"afg" description:"Add file group to release"`
 	RemoveFileGroupFromRelease RemoveFileGroupFromReleaseCommand `command:"remove-file-group" alias:"rfg" description:"Remove file group from release"`
 
+	ImageReferences                 ImageReferencesCommand                 `command:"image-references" alias:"irs" description:"List image references"`
+	ImageReference                  ImageReferenceCommand                  `command:"image-reference" alias:"ir" description:"Show image reference"`
 	CreateImageReference            CreateImageReferenceCommand            `command:"create-image-reference" alias:"cir" description:"Create a container image reference"`
 	DeleteImageReference            DeleteImageReferenceCommand            `command:"delete-image-reference" alias:"dir" description:"Delete a container image reference"`
 	AddImageReferenceToRelease      AddImageReferenceToReleaseCommand      `command:"add-image-reference" alias:"air" description:"Add image reference to release"`

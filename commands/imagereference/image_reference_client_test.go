@@ -66,6 +66,208 @@ var _ = Describe("imagereference commands", func() {
 		)
 	})
 
+	Describe("List", func() {
+		var (
+			productSlug    string
+			releaseVersion string
+		)
+
+		BeforeEach(func() {
+			productSlug = "some-product-slug"
+			releaseVersion = ""
+
+			fakePivnetClient.ImageReferencesReturns(imageReferences, nil)
+		})
+
+		It("lists all ImageReferences", func() {
+			err := client.List(productSlug, releaseVersion)
+			Expect(err).NotTo(HaveOccurred())
+
+			var returnedImageReferences []pivnet.ImageReference
+			err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReferences)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(returnedImageReferences).To(Equal(imageReferences))
+		})
+
+		Context("when there is an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("imageReferences error")
+				fakePivnetClient.ImageReferencesReturns(nil, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.List(productSlug, releaseVersion)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when release version is not empty", func() {
+			BeforeEach(func() {
+				releaseVersion = "some-release-version"
+				fakePivnetClient.ImageReferencesForReleaseReturns(imageReferences, nil)
+			})
+
+			It("lists all ImageReferences", func() {
+				err := client.List(productSlug, releaseVersion)
+				Expect(err).NotTo(HaveOccurred())
+
+				var returnedImageReferences []pivnet.ImageReference
+				err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReferences)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(returnedImageReferences).To(Equal(imageReferences))
+			})
+
+			Context("when there is an error getting release", func() {
+				var (
+					expectedErr error
+				)
+
+				BeforeEach(func() {
+					expectedErr = errors.New("releases error")
+					fakePivnetClient.ReleaseForVersionReturns(pivnet.Release{}, expectedErr)
+				})
+
+				It("invokes the error handler", func() {
+					err := client.List(productSlug, releaseVersion)
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+					Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				})
+			})
+
+			Context("when there is an error", func() {
+				var (
+					expectedErr error
+				)
+
+				BeforeEach(func() {
+					expectedErr = errors.New("imageReferences error")
+					fakePivnetClient.ImageReferencesForReleaseReturns(nil, expectedErr)
+				})
+
+				It("invokes the error handler", func() {
+					err := client.List(productSlug, releaseVersion)
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+					Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				})
+			})
+		})
+	})
+
+	Describe("Get", func() {
+		var (
+			productSlug    string
+			releaseVersion string
+			imageReferenceID  int
+		)
+
+		BeforeEach(func() {
+			productSlug = "some-product-slug"
+			releaseVersion = ""
+			imageReferenceID = imageReferences[0].ID
+
+			fakePivnetClient.ImageReferenceReturns(imageReferences[0], nil)
+		})
+
+		It("gets ImageReference", func() {
+			err := client.Get(productSlug, releaseVersion, imageReferenceID)
+			Expect(err).NotTo(HaveOccurred())
+
+			var returnedImageReference pivnet.ImageReference
+			err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReference)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(returnedImageReference).To(Equal(imageReferences[0]))
+		})
+
+		Context("when there is an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("imagereference error")
+				fakePivnetClient.ImageReferenceReturns(pivnet.ImageReference{}, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.Get(productSlug, releaseVersion, imageReferenceID)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when release version is not empty", func() {
+			BeforeEach(func() {
+				releaseVersion = "some-release-version"
+				fakePivnetClient.ImageReferenceForReleaseReturns(imageReferences[0], nil)
+			})
+
+			It("gets ImageReference", func() {
+				err := client.Get(productSlug, releaseVersion, imageReferenceID)
+				Expect(err).NotTo(HaveOccurred())
+
+				var returnedImageReference pivnet.ImageReference
+				err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReference)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(returnedImageReference).To(Equal(imageReferences[0]))
+			})
+
+			Context("when there is an error getting release", func() {
+				var (
+					expectedErr error
+				)
+
+				BeforeEach(func() {
+					expectedErr = errors.New("releases error")
+					fakePivnetClient.ReleaseForVersionReturns(pivnet.Release{}, expectedErr)
+				})
+
+				It("invokes the error handler", func() {
+					err := client.Get(productSlug, releaseVersion, imageReferenceID)
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+					Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				})
+			})
+
+			Context("when there is an error", func() {
+				var (
+					expectedErr error
+				)
+
+				BeforeEach(func() {
+					expectedErr = errors.New("imageReferences error")
+					fakePivnetClient.ImageReferenceForReleaseReturns(pivnet.ImageReference{}, expectedErr)
+				})
+
+				It("invokes the error handler", func() {
+					err := client.Get(productSlug, releaseVersion, imageReferenceID)
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+					Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				})
+			})
+		})
+	})
+
 	Describe("Create", func() {
 		var (
 			config pivnet.CreateImageReferenceConfig

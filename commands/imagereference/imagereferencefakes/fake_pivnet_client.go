@@ -9,6 +9,62 @@ import (
 )
 
 type FakePivnetClient struct {
+	ImageReferencesStub        func(productSlug string) ([]pivnet.ImageReference, error)
+	imageReferencesMutex       sync.RWMutex
+	imageReferencesArgsForCall []struct {
+		productSlug string
+	}
+	imageReferencesReturns struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}
+	imageReferencesReturnsOnCall map[int]struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}
+	ImageReferencesForReleaseStub        func(productSlug string, releaseID int) ([]pivnet.ImageReference, error)
+	imageReferencesForReleaseMutex       sync.RWMutex
+	imageReferencesForReleaseArgsForCall []struct {
+		productSlug string
+		releaseID   int
+	}
+	imageReferencesForReleaseReturns struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}
+	imageReferencesForReleaseReturnsOnCall map[int]struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}
+	ImageReferenceStub        func(productSlug string, imageReferenceID int) (pivnet.ImageReference, error)
+	imageReferenceMutex       sync.RWMutex
+	imageReferenceArgsForCall []struct {
+		productSlug      string
+		imageReferenceID int
+	}
+	imageReferenceReturns struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}
+	imageReferenceReturnsOnCall map[int]struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}
+	ImageReferenceForReleaseStub        func(productSlug string, releaseID int, imageReferenceID int) (pivnet.ImageReference, error)
+	imageReferenceForReleaseMutex       sync.RWMutex
+	imageReferenceForReleaseArgsForCall []struct {
+		productSlug      string
+		releaseID        int
+		imageReferenceID int
+	}
+	imageReferenceForReleaseReturns struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}
+	imageReferenceForReleaseReturnsOnCall map[int]struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}
 	ReleaseForVersionStub        func(productSlug string, releaseVersion string) (pivnet.Release, error)
 	releaseForVersionMutex       sync.RWMutex
 	releaseForVersionArgsForCall []struct {
@@ -78,6 +134,214 @@ type FakePivnetClient struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakePivnetClient) ImageReferences(productSlug string) ([]pivnet.ImageReference, error) {
+	fake.imageReferencesMutex.Lock()
+	ret, specificReturn := fake.imageReferencesReturnsOnCall[len(fake.imageReferencesArgsForCall)]
+	fake.imageReferencesArgsForCall = append(fake.imageReferencesArgsForCall, struct {
+		productSlug string
+	}{productSlug})
+	fake.recordInvocation("ImageReferences", []interface{}{productSlug})
+	fake.imageReferencesMutex.Unlock()
+	if fake.ImageReferencesStub != nil {
+		return fake.ImageReferencesStub(productSlug)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.imageReferencesReturns.result1, fake.imageReferencesReturns.result2
+}
+
+func (fake *FakePivnetClient) ImageReferencesCallCount() int {
+	fake.imageReferencesMutex.RLock()
+	defer fake.imageReferencesMutex.RUnlock()
+	return len(fake.imageReferencesArgsForCall)
+}
+
+func (fake *FakePivnetClient) ImageReferencesArgsForCall(i int) string {
+	fake.imageReferencesMutex.RLock()
+	defer fake.imageReferencesMutex.RUnlock()
+	return fake.imageReferencesArgsForCall[i].productSlug
+}
+
+func (fake *FakePivnetClient) ImageReferencesReturns(result1 []pivnet.ImageReference, result2 error) {
+	fake.ImageReferencesStub = nil
+	fake.imageReferencesReturns = struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) ImageReferencesReturnsOnCall(i int, result1 []pivnet.ImageReference, result2 error) {
+	fake.ImageReferencesStub = nil
+	if fake.imageReferencesReturnsOnCall == nil {
+		fake.imageReferencesReturnsOnCall = make(map[int]struct {
+			result1 []pivnet.ImageReference
+			result2 error
+		})
+	}
+	fake.imageReferencesReturnsOnCall[i] = struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) ImageReferencesForRelease(productSlug string, releaseID int) ([]pivnet.ImageReference, error) {
+	fake.imageReferencesForReleaseMutex.Lock()
+	ret, specificReturn := fake.imageReferencesForReleaseReturnsOnCall[len(fake.imageReferencesForReleaseArgsForCall)]
+	fake.imageReferencesForReleaseArgsForCall = append(fake.imageReferencesForReleaseArgsForCall, struct {
+		productSlug string
+		releaseID   int
+	}{productSlug, releaseID})
+	fake.recordInvocation("ImageReferencesForRelease", []interface{}{productSlug, releaseID})
+	fake.imageReferencesForReleaseMutex.Unlock()
+	if fake.ImageReferencesForReleaseStub != nil {
+		return fake.ImageReferencesForReleaseStub(productSlug, releaseID)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.imageReferencesForReleaseReturns.result1, fake.imageReferencesForReleaseReturns.result2
+}
+
+func (fake *FakePivnetClient) ImageReferencesForReleaseCallCount() int {
+	fake.imageReferencesForReleaseMutex.RLock()
+	defer fake.imageReferencesForReleaseMutex.RUnlock()
+	return len(fake.imageReferencesForReleaseArgsForCall)
+}
+
+func (fake *FakePivnetClient) ImageReferencesForReleaseArgsForCall(i int) (string, int) {
+	fake.imageReferencesForReleaseMutex.RLock()
+	defer fake.imageReferencesForReleaseMutex.RUnlock()
+	return fake.imageReferencesForReleaseArgsForCall[i].productSlug, fake.imageReferencesForReleaseArgsForCall[i].releaseID
+}
+
+func (fake *FakePivnetClient) ImageReferencesForReleaseReturns(result1 []pivnet.ImageReference, result2 error) {
+	fake.ImageReferencesForReleaseStub = nil
+	fake.imageReferencesForReleaseReturns = struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) ImageReferencesForReleaseReturnsOnCall(i int, result1 []pivnet.ImageReference, result2 error) {
+	fake.ImageReferencesForReleaseStub = nil
+	if fake.imageReferencesForReleaseReturnsOnCall == nil {
+		fake.imageReferencesForReleaseReturnsOnCall = make(map[int]struct {
+			result1 []pivnet.ImageReference
+			result2 error
+		})
+	}
+	fake.imageReferencesForReleaseReturnsOnCall[i] = struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) ImageReference(productSlug string, imageReferenceID int) (pivnet.ImageReference, error) {
+	fake.imageReferenceMutex.Lock()
+	ret, specificReturn := fake.imageReferenceReturnsOnCall[len(fake.imageReferenceArgsForCall)]
+	fake.imageReferenceArgsForCall = append(fake.imageReferenceArgsForCall, struct {
+		productSlug      string
+		imageReferenceID int
+	}{productSlug, imageReferenceID})
+	fake.recordInvocation("ImageReference", []interface{}{productSlug, imageReferenceID})
+	fake.imageReferenceMutex.Unlock()
+	if fake.ImageReferenceStub != nil {
+		return fake.ImageReferenceStub(productSlug, imageReferenceID)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.imageReferenceReturns.result1, fake.imageReferenceReturns.result2
+}
+
+func (fake *FakePivnetClient) ImageReferenceCallCount() int {
+	fake.imageReferenceMutex.RLock()
+	defer fake.imageReferenceMutex.RUnlock()
+	return len(fake.imageReferenceArgsForCall)
+}
+
+func (fake *FakePivnetClient) ImageReferenceArgsForCall(i int) (string, int) {
+	fake.imageReferenceMutex.RLock()
+	defer fake.imageReferenceMutex.RUnlock()
+	return fake.imageReferenceArgsForCall[i].productSlug, fake.imageReferenceArgsForCall[i].imageReferenceID
+}
+
+func (fake *FakePivnetClient) ImageReferenceReturns(result1 pivnet.ImageReference, result2 error) {
+	fake.ImageReferenceStub = nil
+	fake.imageReferenceReturns = struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) ImageReferenceReturnsOnCall(i int, result1 pivnet.ImageReference, result2 error) {
+	fake.ImageReferenceStub = nil
+	if fake.imageReferenceReturnsOnCall == nil {
+		fake.imageReferenceReturnsOnCall = make(map[int]struct {
+			result1 pivnet.ImageReference
+			result2 error
+		})
+	}
+	fake.imageReferenceReturnsOnCall[i] = struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) ImageReferenceForRelease(productSlug string, releaseID int, imageReferenceID int) (pivnet.ImageReference, error) {
+	fake.imageReferenceForReleaseMutex.Lock()
+	ret, specificReturn := fake.imageReferenceForReleaseReturnsOnCall[len(fake.imageReferenceForReleaseArgsForCall)]
+	fake.imageReferenceForReleaseArgsForCall = append(fake.imageReferenceForReleaseArgsForCall, struct {
+		productSlug      string
+		releaseID        int
+		imageReferenceID int
+	}{productSlug, releaseID, imageReferenceID})
+	fake.recordInvocation("ImageReferenceForRelease", []interface{}{productSlug, releaseID, imageReferenceID})
+	fake.imageReferenceForReleaseMutex.Unlock()
+	if fake.ImageReferenceForReleaseStub != nil {
+		return fake.ImageReferenceForReleaseStub(productSlug, releaseID, imageReferenceID)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.imageReferenceForReleaseReturns.result1, fake.imageReferenceForReleaseReturns.result2
+}
+
+func (fake *FakePivnetClient) ImageReferenceForReleaseCallCount() int {
+	fake.imageReferenceForReleaseMutex.RLock()
+	defer fake.imageReferenceForReleaseMutex.RUnlock()
+	return len(fake.imageReferenceForReleaseArgsForCall)
+}
+
+func (fake *FakePivnetClient) ImageReferenceForReleaseArgsForCall(i int) (string, int, int) {
+	fake.imageReferenceForReleaseMutex.RLock()
+	defer fake.imageReferenceForReleaseMutex.RUnlock()
+	return fake.imageReferenceForReleaseArgsForCall[i].productSlug, fake.imageReferenceForReleaseArgsForCall[i].releaseID, fake.imageReferenceForReleaseArgsForCall[i].imageReferenceID
+}
+
+func (fake *FakePivnetClient) ImageReferenceForReleaseReturns(result1 pivnet.ImageReference, result2 error) {
+	fake.ImageReferenceForReleaseStub = nil
+	fake.imageReferenceForReleaseReturns = struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) ImageReferenceForReleaseReturnsOnCall(i int, result1 pivnet.ImageReference, result2 error) {
+	fake.ImageReferenceForReleaseStub = nil
+	if fake.imageReferenceForReleaseReturnsOnCall == nil {
+		fake.imageReferenceForReleaseReturnsOnCall = make(map[int]struct {
+			result1 pivnet.ImageReference
+			result2 error
+		})
+	}
+	fake.imageReferenceForReleaseReturnsOnCall[i] = struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakePivnetClient) ReleaseForVersion(productSlug string, releaseVersion string) (pivnet.Release, error) {
@@ -338,6 +602,14 @@ func (fake *FakePivnetClient) RemoveImageReferenceFromReleaseReturnsOnCall(i int
 func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.imageReferencesMutex.RLock()
+	defer fake.imageReferencesMutex.RUnlock()
+	fake.imageReferencesForReleaseMutex.RLock()
+	defer fake.imageReferencesForReleaseMutex.RUnlock()
+	fake.imageReferenceMutex.RLock()
+	defer fake.imageReferenceMutex.RUnlock()
+	fake.imageReferenceForReleaseMutex.RLock()
+	defer fake.imageReferenceForReleaseMutex.RUnlock()
 	fake.releaseForVersionMutex.RLock()
 	defer fake.releaseForVersionMutex.RUnlock()
 	fake.createImageReferenceMutex.RLock()

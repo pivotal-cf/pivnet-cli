@@ -28,6 +28,214 @@ var _ = Describe("image reference commands", func() {
 		}
 	})
 
+	Describe("ImageReferencesCommand", func() {
+		var (
+			cmd commands.ImageReferencesCommand
+		)
+
+		BeforeEach(func() {
+			cmd = commands.ImageReferencesCommand{}
+		})
+
+		It("invokes the ImageReference client", func() {
+			err := cmd.Execute(nil)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(fakeImageReferenceClient.ListCallCount()).To(Equal(1))
+		})
+
+		Context("when the ImageReference client returns an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("expected error")
+				fakeImageReferenceClient.ListReturns(expectedErr)
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
+		Describe("ProductSlug flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.ImageReferencesCommand{}, "ProductSlug")
+			})
+
+			It("is required", func() {
+				Expect(isRequired(field)).To(BeTrue())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("p"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("product-slug"))
+			})
+		})
+
+		Describe("ReleaseVersion flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.ImageReferencesCommand{}, "ReleaseVersion")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("r"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("release-version"))
+			})
+		})
+	})
+
+	Describe("ImageReferenceCommand", func() {
+		var (
+			cmd commands.ImageReferenceCommand
+		)
+
+		BeforeEach(func() {
+			cmd = commands.ImageReferenceCommand{}
+		})
+
+		It("invokes the ImageReference client", func() {
+			err := cmd.Execute(nil)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(fakeImageReferenceClient.GetCallCount()).To(Equal(1))
+		})
+
+		Context("when the ImageReference client returns an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("expected error")
+				fakeImageReferenceClient.GetReturns(expectedErr)
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
+		Describe("ProductSlug flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.ImageReferenceCommand{}, "ProductSlug")
+			})
+
+			It("is required", func() {
+				Expect(isRequired(field)).To(BeTrue())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("p"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("product-slug"))
+			})
+		})
+
+		Describe("ReleaseVersion flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.ImageReferenceCommand{}, "ReleaseVersion")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("r"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("release-version"))
+			})
+		})
+
+		Describe("ImageReferenceID flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.ImageReferenceCommand{}, "ImageReferenceID")
+			})
+
+			It("is required", func() {
+				Expect(isRequired(field)).To(BeTrue())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("i"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("image-reference-id"))
+			})
+		})
+	})
+
 	Describe("CreateImageReferenceCommand", func() {
 		var (
 			productSlug string
