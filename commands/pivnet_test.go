@@ -561,6 +561,20 @@ var _ = Describe("Pivnet commands", func() {
 		})
 	})
 
+	Describe("DeleteImageReference command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "DeleteImageReference")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("delete-image-reference"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("dir"))
+		})
+	})
+
 	Describe("Releases command", func() {
 		BeforeEach(func() {
 			field = fieldFor(commands.Pivnet, "Releases")

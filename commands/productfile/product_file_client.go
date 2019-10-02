@@ -30,7 +30,7 @@ type PivnetClient interface {
 	RemoveProductFileFromRelease(productSlug string, releaseID int, productFileID int) error
 	AddProductFileToFileGroup(productSlug string, fileGroupID int, productFileID int) error
 	RemoveProductFileFromFileGroup(productSlug string, fileGroupID int, productFileID int) error
-	DeleteProductFile(productSlug string, releaseID int) (pivnet.ProductFile, error)
+	DeleteProductFile(productSlug string, productFileID int) (pivnet.ProductFile, error)
 	AcceptEULA(productSlug string, releaseID int) error
 	DownloadProductFile(location *download.FileInfo, productSlug string, releaseID int, productFileID int, progressWriter io.Writer) error
 }

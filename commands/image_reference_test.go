@@ -224,6 +224,100 @@ var _ = Describe("image reference commands", func() {
 				Expect(longTag(field)).To(Equal("system-requirement"))
 			})
 		})
+	})
 
+	Describe("DeleteImageReferenceCommand", func() {
+		var (
+			cmd commands.DeleteImageReferenceCommand
+		)
+
+		BeforeEach(func() {
+			cmd = commands.DeleteImageReferenceCommand{}
+		})
+
+		It("invokes the ImageReference client", func() {
+			err := cmd.Execute(nil)
+
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(fakeImageReferenceClient.DeleteCallCount()).To(Equal(1))
+		})
+
+		Context("when the ImageReference client returns an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("expected error")
+				fakeImageReferenceClient.DeleteReturns(expectedErr)
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(expectedErr))
+			})
+		})
+
+		Context("when Init returns an error", func() {
+			BeforeEach(func() {
+				initErr = fmt.Errorf("init error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(initErr))
+			})
+		})
+
+		Context("when Authentication returns an error", func() {
+			BeforeEach(func() {
+				authErr = fmt.Errorf("auth error")
+			})
+
+			It("forwards the error", func() {
+				err := cmd.Execute(nil)
+
+				Expect(err).To(Equal(authErr))
+			})
+		})
+
+		Describe("ProductSlug flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.DeleteImageReferenceCommand{}, "ProductSlug")
+			})
+
+			It("is required", func() {
+				Expect(isRequired(field)).To(BeTrue())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("p"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("product-slug"))
+			})
+		})
+
+		Describe("ImageReferenceID flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.DeleteImageReferenceCommand{}, "ImageReferenceID")
+			})
+
+			It("is required", func() {
+				Expect(isRequired(field)).To(BeTrue())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("i"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("image-reference-id"))
+			})
+		})
 	})
 })

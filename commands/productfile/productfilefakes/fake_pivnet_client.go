@@ -5,7 +5,7 @@ import (
 	"io"
 	"sync"
 
-	pivnet "github.com/pivotal-cf/go-pivnet/v2"
+	"github.com/pivotal-cf/go-pivnet/v2"
 	"github.com/pivotal-cf/go-pivnet/v2/download"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
 )
@@ -160,11 +160,11 @@ type FakePivnetClient struct {
 	removeProductFileFromFileGroupReturnsOnCall map[int]struct {
 		result1 error
 	}
-	DeleteProductFileStub        func(productSlug string, releaseID int) (pivnet.ProductFile, error)
+	DeleteProductFileStub        func(productSlug string, productFileID int) (pivnet.ProductFile, error)
 	deleteProductFileMutex       sync.RWMutex
 	deleteProductFileArgsForCall []struct {
-		productSlug string
-		releaseID   int
+		productSlug   string
+		productFileID int
 	}
 	deleteProductFileReturns struct {
 		result1 pivnet.ProductFile
@@ -768,17 +768,17 @@ func (fake *FakePivnetClient) RemoveProductFileFromFileGroupReturnsOnCall(i int,
 	}{result1}
 }
 
-func (fake *FakePivnetClient) DeleteProductFile(productSlug string, releaseID int) (pivnet.ProductFile, error) {
+func (fake *FakePivnetClient) DeleteProductFile(productSlug string, productFileID int) (pivnet.ProductFile, error) {
 	fake.deleteProductFileMutex.Lock()
 	ret, specificReturn := fake.deleteProductFileReturnsOnCall[len(fake.deleteProductFileArgsForCall)]
 	fake.deleteProductFileArgsForCall = append(fake.deleteProductFileArgsForCall, struct {
-		productSlug string
-		releaseID   int
-	}{productSlug, releaseID})
-	fake.recordInvocation("DeleteProductFile", []interface{}{productSlug, releaseID})
+		productSlug   string
+		productFileID int
+	}{productSlug, productFileID})
+	fake.recordInvocation("DeleteProductFile", []interface{}{productSlug, productFileID})
 	fake.deleteProductFileMutex.Unlock()
 	if fake.DeleteProductFileStub != nil {
-		return fake.DeleteProductFileStub(productSlug, releaseID)
+		return fake.DeleteProductFileStub(productSlug, productFileID)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -795,7 +795,7 @@ func (fake *FakePivnetClient) DeleteProductFileCallCount() int {
 func (fake *FakePivnetClient) DeleteProductFileArgsForCall(i int) (string, int) {
 	fake.deleteProductFileMutex.RLock()
 	defer fake.deleteProductFileMutex.RUnlock()
-	return fake.deleteProductFileArgsForCall[i].productSlug, fake.deleteProductFileArgsForCall[i].releaseID
+	return fake.deleteProductFileArgsForCall[i].productSlug, fake.deleteProductFileArgsForCall[i].productFileID
 }
 
 func (fake *FakePivnetClient) DeleteProductFileReturns(result1 pivnet.ProductFile, result2 error) {

@@ -1,6 +1,8 @@
 package imagereference
 
 import (
+	"fmt"
+	"github.com/pivotal-cf/pivnet-cli/ui"
 	"io"
 	"strconv"
 
@@ -14,6 +16,7 @@ import (
 //go:generate counterfeiter . PivnetClient
 type PivnetClient interface {
 	CreateImageReference(config pivnet.CreateImageReferenceConfig) (pivnet.ImageReference, error)
+	DeleteImageReference(productSlug string, releaseID int) (pivnet.ImageReference, error)
 }
 
 type ImageReferenceClient struct {
@@ -79,6 +82,31 @@ func (c *ImageReferenceClient) Create(config pivnet.CreateImageReferenceConfig) 
 	imageReference, err := c.pivnetClient.CreateImageReference(config)
 	if err != nil {
 		return c.eh.HandleError(err)
+	}
+
+	return c.printImageReference(imageReference)
+}
+
+func (c *ImageReferenceClient) Delete(productSlug string, imageReferenceID int) error {
+	imageReference, err := c.pivnetClient.DeleteImageReference(
+		productSlug,
+		imageReferenceID,
+	)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	if c.format == printer.PrintAsTable {
+		message := fmt.Sprintf(
+			"Image reference %d deleted for %s",
+			imageReferenceID,
+			productSlug,
+		)
+		coloredMessage := ui.SuccessColor.SprintFunc()(message)
+
+		_, err := fmt.Fprintln(c.outputWriter, coloredMessage)
+
+		return err
 	}
 
 	return c.printImageReference(imageReference)

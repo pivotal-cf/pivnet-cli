@@ -22,6 +22,20 @@ type FakePivnetClient struct {
 		result1 pivnet.ImageReference
 		result2 error
 	}
+	DeleteImageReferenceStub        func(productSlug string, releaseID int) (pivnet.ImageReference, error)
+	deleteImageReferenceMutex       sync.RWMutex
+	deleteImageReferenceArgsForCall []struct {
+		productSlug string
+		releaseID   int
+	}
+	deleteImageReferenceReturns struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}
+	deleteImageReferenceReturnsOnCall map[int]struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -77,11 +91,65 @@ func (fake *FakePivnetClient) CreateImageReferenceReturnsOnCall(i int, result1 p
 	}{result1, result2}
 }
 
+func (fake *FakePivnetClient) DeleteImageReference(productSlug string, releaseID int) (pivnet.ImageReference, error) {
+	fake.deleteImageReferenceMutex.Lock()
+	ret, specificReturn := fake.deleteImageReferenceReturnsOnCall[len(fake.deleteImageReferenceArgsForCall)]
+	fake.deleteImageReferenceArgsForCall = append(fake.deleteImageReferenceArgsForCall, struct {
+		productSlug string
+		releaseID   int
+	}{productSlug, releaseID})
+	fake.recordInvocation("DeleteImageReference", []interface{}{productSlug, releaseID})
+	fake.deleteImageReferenceMutex.Unlock()
+	if fake.DeleteImageReferenceStub != nil {
+		return fake.DeleteImageReferenceStub(productSlug, releaseID)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.deleteImageReferenceReturns.result1, fake.deleteImageReferenceReturns.result2
+}
+
+func (fake *FakePivnetClient) DeleteImageReferenceCallCount() int {
+	fake.deleteImageReferenceMutex.RLock()
+	defer fake.deleteImageReferenceMutex.RUnlock()
+	return len(fake.deleteImageReferenceArgsForCall)
+}
+
+func (fake *FakePivnetClient) DeleteImageReferenceArgsForCall(i int) (string, int) {
+	fake.deleteImageReferenceMutex.RLock()
+	defer fake.deleteImageReferenceMutex.RUnlock()
+	return fake.deleteImageReferenceArgsForCall[i].productSlug, fake.deleteImageReferenceArgsForCall[i].releaseID
+}
+
+func (fake *FakePivnetClient) DeleteImageReferenceReturns(result1 pivnet.ImageReference, result2 error) {
+	fake.DeleteImageReferenceStub = nil
+	fake.deleteImageReferenceReturns = struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) DeleteImageReferenceReturnsOnCall(i int, result1 pivnet.ImageReference, result2 error) {
+	fake.DeleteImageReferenceStub = nil
+	if fake.deleteImageReferenceReturnsOnCall == nil {
+		fake.deleteImageReferenceReturnsOnCall = make(map[int]struct {
+			result1 pivnet.ImageReference
+			result2 error
+		})
+	}
+	fake.deleteImageReferenceReturnsOnCall[i] = struct {
+		result1 pivnet.ImageReference
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.createImageReferenceMutex.RLock()
 	defer fake.createImageReferenceMutex.RUnlock()
+	fake.deleteImageReferenceMutex.RLock()
+	defer fake.deleteImageReferenceMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

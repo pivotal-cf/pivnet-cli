@@ -110,4 +110,42 @@ var _ = Describe("imagereference commands", func() {
 			})
 		})
 	})
+
+	Describe("Delete", func() {
+		var (
+			productSlug   string
+			imageReferenceID int
+		)
+
+		BeforeEach(func() {
+			productSlug = "some-product-slug"
+			imageReferenceID = imageReferences[0].ID
+
+			fakePivnetClient.DeleteImageReferenceReturns(imageReferences[0], nil)
+		})
+
+		It("deletes ImageReference", func() {
+			err := client.Delete(productSlug, imageReferenceID)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		Context("when there is an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("imagereference error")
+				fakePivnetClient.DeleteImageReferenceReturns(pivnet.ImageReference{}, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.Delete(productSlug, imageReferenceID)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+	})
 })

@@ -166,8 +166,8 @@ func (c Client) ProductFile(productSlug string, productFileID int) (pivnet.Produ
 	return c.client.ProductFiles.Get(productSlug, productFileID)
 }
 
-func (c Client) DeleteProductFile(productSlug string, releaseID int) (pivnet.ProductFile, error) {
-	return c.client.ProductFiles.Delete(productSlug, releaseID)
+func (c Client) DeleteProductFile(productSlug string, productFileID int) (pivnet.ProductFile, error) {
+	return c.client.ProductFiles.Delete(productSlug, productFileID)
 }
 
 func (c Client) DownloadProductFile(location *download.FileInfo, productSlug string, releaseID int, productFileID int, progressWriter io.Writer) error {
@@ -208,6 +208,10 @@ func (c Client) RemoveProductFileFromFileGroup(productSlug string, fileGroupID i
 
 func (c Client) CreateImageReference(config pivnet.CreateImageReferenceConfig) (pivnet.ImageReference, error) {
 	return c.client.ImageReferences.Create(config)
+}
+
+func (c Client) DeleteImageReference(productSlug string, imageReferenceID int) (pivnet.ImageReference, error) {
+	return c.client.ImageReferences.Delete(productSlug, imageReferenceID)
 }
 
 func (c Client) ReleaseDependencies(productSlug string, releaseID int) ([]pivnet.ReleaseDependency, error) {

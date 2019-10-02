@@ -20,6 +20,18 @@ type FakeImageReferenceClient struct {
 	createReturnsOnCall map[int]struct {
 		result1 error
 	}
+	DeleteStub        func(productSlug string, imageReferenceID int) error
+	deleteMutex       sync.RWMutex
+	deleteArgsForCall []struct {
+		productSlug      string
+		imageReferenceID int
+	}
+	deleteReturns struct {
+		result1 error
+	}
+	deleteReturnsOnCall map[int]struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -72,11 +84,62 @@ func (fake *FakeImageReferenceClient) CreateReturnsOnCall(i int, result1 error) 
 	}{result1}
 }
 
+func (fake *FakeImageReferenceClient) Delete(productSlug string, imageReferenceID int) error {
+	fake.deleteMutex.Lock()
+	ret, specificReturn := fake.deleteReturnsOnCall[len(fake.deleteArgsForCall)]
+	fake.deleteArgsForCall = append(fake.deleteArgsForCall, struct {
+		productSlug      string
+		imageReferenceID int
+	}{productSlug, imageReferenceID})
+	fake.recordInvocation("Delete", []interface{}{productSlug, imageReferenceID})
+	fake.deleteMutex.Unlock()
+	if fake.DeleteStub != nil {
+		return fake.DeleteStub(productSlug, imageReferenceID)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.deleteReturns.result1
+}
+
+func (fake *FakeImageReferenceClient) DeleteCallCount() int {
+	fake.deleteMutex.RLock()
+	defer fake.deleteMutex.RUnlock()
+	return len(fake.deleteArgsForCall)
+}
+
+func (fake *FakeImageReferenceClient) DeleteArgsForCall(i int) (string, int) {
+	fake.deleteMutex.RLock()
+	defer fake.deleteMutex.RUnlock()
+	return fake.deleteArgsForCall[i].productSlug, fake.deleteArgsForCall[i].imageReferenceID
+}
+
+func (fake *FakeImageReferenceClient) DeleteReturns(result1 error) {
+	fake.DeleteStub = nil
+	fake.deleteReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeImageReferenceClient) DeleteReturnsOnCall(i int, result1 error) {
+	fake.DeleteStub = nil
+	if fake.deleteReturnsOnCall == nil {
+		fake.deleteReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.deleteReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeImageReferenceClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
+	fake.deleteMutex.RLock()
+	defer fake.deleteMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
