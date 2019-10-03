@@ -120,6 +120,8 @@ type PivnetCommand struct {
 	UpdateUserGroup UpdateUserGroupCommand `command:"update-user-group" alias:"uug" description:"Update user group"`
 	DeleteUserGroup DeleteUserGroupCommand `command:"delete-user-group" alias:"dug" description:"Delete user group"`
 
+	CompanyGroups CompanyGroupsCommand `command:"company-groups" alias:"cgs" description:"List managed company groups"`
+
 	AddUserGroupMember    AddUserGroupMemberCommand    `command:"add-user-group-member" alias:"augm" description:"Add user group member to group"`
 	RemoveUserGroupMember RemoveUserGroupMemberCommand `command:"remove-user-group-member" alias:"rugm" description:"Remove user group member from group"`
 

@@ -124,6 +124,10 @@ func (c Client) RemoveMemberFromGroup(userGroupID int, emailAddress string) (piv
 	return c.client.UserGroups.RemoveMemberFromGroup(userGroupID, emailAddress)
 }
 
+func (c Client) CompanyGroups() ([]pivnet.CompanyGroup, error) {
+	return c.client.CompanyGroups.List()
+}
+
 func (c Client) EULA(eulaSlug string) (pivnet.EULA, error) {
 	return c.client.EULA.Get(eulaSlug)
 }
