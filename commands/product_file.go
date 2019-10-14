@@ -5,9 +5,9 @@ import (
 	"io"
 
 	pivnet "github.com/pivotal-cf/go-pivnet/v2"
-	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
-	"github.com/pivotal-cf/go-pivnet/v2/sha256sum"
 	"github.com/pivotal-cf/go-pivnet/v2/md5sum"
+	"github.com/pivotal-cf/go-pivnet/v2/sha256sum"
+	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
 )
 
 type ProductFilesCommand struct {
@@ -34,17 +34,19 @@ type CreateProductFileCommand struct {
 	IncludedFiles      []string `long:"included-file" description:"Name of included file"`
 	Platforms          []string `long:"platform" description:"Platform of file"`
 	ReleasedAt         string   `long:"released-at" description:"When file is marked for release e.g. '2016/01/16'"`
-	SystemRequirements []string `long:"system-requirement" description:"System-requirement of file"`
+	SystemRequirements []string `long:"system-requirement" description:"System requirement of file"`
 }
 
 type UpdateProductFileCommand struct {
-	ProductSlug   string  `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
-	ProductFileID int     `long:"product-file-id" short:"i" description:"Product file ID e.g. 1234" required:"true"`
-	Name          *string `long:"name" description:"Name e.g. p-mysql 1.7.13"`
-	FileVersion   *string `long:"file-version" description:"File Version e.g. '1.7.13'"`
-	SHA256        *string `long:"sha256" description:"SHA256 of file"`
-	MD5           *string `long:"md5" description:"MD5 of file"`
-	Description   *string `long:"description" description:"File description e.g. 'This is a file description.'"`
+	ProductSlug        string    `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
+	ProductFileID      int       `long:"product-file-id" short:"i" description:"Product file ID e.g. 1234" required:"true"`
+	Name               *string   `long:"name" description:"Name e.g. p-mysql 1.7.13"`
+	FileVersion        *string   `long:"file-version" description:"File Version e.g. '1.7.13'"`
+	SHA256             *string   `long:"sha256" description:"SHA256 of file"`
+	MD5                *string   `long:"md5" description:"MD5 of file"`
+	Description        *string   `long:"description" description:"File description e.g. 'This is a file description.'"`
+	DocsURL            *string   `long:"docs-url" description:"URL of docs for file"`
+	SystemRequirements *[]string `long:"system-requirement" description:"System requirement of file"`
 }
 
 type AddProductFileCommand struct {
@@ -88,6 +90,8 @@ type ProductFileClient interface {
 		sha256 *string,
 		md5 *string,
 		description *string,
+		docsURL *string,
+		systemRequirements *[]string,
 	) error
 	AddToRelease(productSlug string, releaseVersion string, productFileID int) error
 	RemoveFromRelease(productSlug string, releaseVersion string, productFileID int) error
@@ -193,6 +197,8 @@ func (command *UpdateProductFileCommand) Execute([]string) error {
 		command.SHA256,
 		command.MD5,
 		command.Description,
+		command.DocsURL,
+		command.SystemRequirements,
 	)
 }
 

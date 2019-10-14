@@ -10,11 +10,11 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pivotal-cf/go-pivnet/v2"
+	"github.com/pivotal-cf/go-pivnet/v2/download"
 	"github.com/pivotal-cf/go-pivnet/v2/logger"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
 	"github.com/pivotal-cf/pivnet-cli/ui"
-	"github.com/pivotal-cf/go-pivnet/v2/download"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -235,6 +235,8 @@ func (c *ProductFileClient) Update(
 	sha256 *string,
 	md5 *string,
 	description *string,
+	docsURL *string,
+	systemRequirements *[]string,
 ) error {
 	productFile, err := c.pivnetClient.ProductFile(
 		productSlug,
@@ -262,6 +264,14 @@ func (c *ProductFileClient) Update(
 
 	if description != nil {
 		productFile.Description = *description
+	}
+
+	if docsURL != nil {
+		productFile.DocsURL = *docsURL
+	}
+	
+	if systemRequirements != nil {
+		productFile.SystemRequirements = *systemRequirements
 	}
 
 	updatedProductFile, err := c.pivnetClient.UpdateProductFile(productSlug, productFile)

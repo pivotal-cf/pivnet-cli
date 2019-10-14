@@ -4,10 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"log"
-	"os"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/go-pivnet/v2"
@@ -17,6 +13,9 @@ import (
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile/productfilefakes"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 var _ = Describe("productfile commands", func() {
@@ -367,17 +366,21 @@ var _ = Describe("productfile commands", func() {
 			productFileID int
 			productSlug   string
 
-			existingName        string
-			existingFileType    string
-			existingFileVersion string
-			existingMD5         string
-			existingDescription string
+			existingName               string
+			existingFileType           string
+			existingFileVersion        string
+			existingMD5                string
+			existingDescription        string
+			existingDocsURL            string
+			existingSystemRequirements []string
 
-			name        string
-			fileVersion string
-			sha256      string
-			md5         string
-			description string
+			name               string
+			fileVersion        string
+			sha256             string
+			md5                string
+			description        string
+			docsURL            string
+			systemRequirements []string
 
 			existingProductFile pivnet.ProductFile
 		)
@@ -391,12 +394,16 @@ var _ = Describe("productfile commands", func() {
 			existingFileVersion = "some-file-type"
 			existingMD5 = "some-md5"
 			existingDescription = "some-description"
+			existingDocsURL = "some-url.net"
+			existingSystemRequirements = []string{"1", "2"}
 
 			name = "some-new-name"
 			fileVersion = "some-new-file-type"
 			sha256 = "some-new-sha256"
 			md5 = "some-new-md5"
 			description = "some-new-description"
+			docsURL = "some-new-url.net"
+			systemRequirements = []string{"3", "4"}
 
 			existingProductFile = pivnet.ProductFile{
 				ID:          productFileID,
@@ -405,6 +412,8 @@ var _ = Describe("productfile commands", func() {
 				FileVersion: existingFileVersion,
 				MD5:         existingMD5,
 				Description: existingDescription,
+				DocsURL: existingDocsURL,
+				SystemRequirements: existingSystemRequirements,
 			}
 
 			fakePivnetClient.ProductFileReturns(existingProductFile, nil)
@@ -420,6 +429,8 @@ var _ = Describe("productfile commands", func() {
 				&sha256,
 				&md5,
 				&description,
+				&docsURL,
+				&systemRequirements,
 			)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -437,6 +448,8 @@ var _ = Describe("productfile commands", func() {
 			Expect(invokedProductFile.SHA256).To(Equal(sha256))
 			Expect(invokedProductFile.MD5).To(Equal(md5))
 			Expect(invokedProductFile.Description).To(Equal(description))
+			Expect(invokedProductFile.DocsURL).To(Equal(docsURL))
+			Expect(invokedProductFile.SystemRequirements).To(Equal(systemRequirements))
 		})
 
 		Context("when optional fields are nil", func() {
@@ -444,6 +457,8 @@ var _ = Describe("productfile commands", func() {
 				err := client.Update(
 					productFileID,
 					productSlug,
+					nil,
+					nil,
 					nil,
 					nil,
 					nil,
@@ -465,6 +480,8 @@ var _ = Describe("productfile commands", func() {
 				Expect(invokedProductFile.FileVersion).To(Equal(existingFileVersion))
 				Expect(invokedProductFile.MD5).To(Equal(existingMD5))
 				Expect(invokedProductFile.Description).To(Equal(existingDescription))
+				Expect(invokedProductFile.DocsURL).To(Equal(existingDocsURL))
+				Expect(invokedProductFile.SystemRequirements).To(Equal(existingSystemRequirements))
 			})
 		})
 
@@ -487,6 +504,8 @@ var _ = Describe("productfile commands", func() {
 					&sha256,
 					&md5,
 					&description,
+					&docsURL,
+					&systemRequirements,
 				)
 				Expect(err).NotTo(HaveOccurred())
 

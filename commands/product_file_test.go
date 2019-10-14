@@ -7,7 +7,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	pivnet "github.com/pivotal-cf/go-pivnet/v2"
+	"github.com/pivotal-cf/go-pivnet/v2"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
@@ -548,11 +548,13 @@ var _ = Describe("product file commands", func() {
 			productSlug   string
 			productFileID int
 
-			description string
-			fileVersion string
-			sha256      string
-			md5         string
-			name        string
+			description        string
+			fileVersion        string
+			sha256             string
+			md5                string
+			name               string
+			docsURL            string
+			systemRequirements []string
 
 			cmd commands.UpdateProductFileCommand
 		)
@@ -566,15 +568,19 @@ var _ = Describe("product file commands", func() {
 			sha256 = "some sha256"
 			md5 = "some md5"
 			name = "some product file"
+			docsURL = "some-docs-url"
+			systemRequirements = []string{"system1", "system2"}
 
 			cmd = commands.UpdateProductFileCommand{
-				ProductSlug:   productSlug,
-				ProductFileID: productFileID,
-				Name:          &name,
-				Description:   &description,
-				FileVersion:   &fileVersion,
-				SHA256:        &sha256,
-				MD5:           &md5,
+				ProductSlug:        productSlug,
+				ProductFileID:      productFileID,
+				Name:               &name,
+				Description:        &description,
+				FileVersion:        &fileVersion,
+				SHA256:             &sha256,
+				MD5:                &md5,
+				DocsURL:            &docsURL,
+				SystemRequirements: &systemRequirements,
 			}
 		})
 
@@ -586,12 +592,14 @@ var _ = Describe("product file commands", func() {
 			Expect(fakeProductFileClient.UpdateCallCount()).To(Equal(1))
 
 			invokedProductFileID,
-				invokedProductSlug,
-				invokedName,
-				invokedFileVersion,
-				invokedSHA256,
-				invokedMD5,
-				invokedDescription := fakeProductFileClient.UpdateArgsForCall(0)
+			invokedProductSlug,
+			invokedName,
+			invokedFileVersion,
+			invokedSHA256,
+			invokedMD5,
+			invokedDescription,
+			invokedDocsURL,
+			invokedSystemRequirements := fakeProductFileClient.UpdateArgsForCall(0)
 
 			Expect(invokedProductFileID).To(Equal(productFileID))
 			Expect(invokedProductSlug).To(Equal(productSlug))
@@ -600,6 +608,8 @@ var _ = Describe("product file commands", func() {
 			Expect(*invokedSHA256).To(Equal(sha256))
 			Expect(*invokedMD5).To(Equal(md5))
 			Expect(*invokedDescription).To(Equal(description))
+			Expect(*invokedDocsURL).To(Equal(docsURL))
+			Expect(*invokedSystemRequirements).To(Equal(systemRequirements))
 		})
 
 		Context("when the ProductFile client returns an error", func() {
