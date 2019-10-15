@@ -8,19 +8,10 @@ import (
 )
 
 type FakeProductClient struct {
-	ListStub        func() error
-	listMutex       sync.RWMutex
-	listArgsForCall []struct{}
-	listReturns     struct {
-		result1 error
-	}
-	listReturnsOnCall map[int]struct {
-		result1 error
-	}
-	GetStub        func(productSlug string) error
+	GetStub        func(string) error
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
-		productSlug string
+		arg1 string
 	}
 	getReturns struct {
 		result1 error
@@ -28,65 +19,36 @@ type FakeProductClient struct {
 	getReturnsOnCall map[int]struct {
 		result1 error
 	}
+	ListStub        func() error
+	listMutex       sync.RWMutex
+	listArgsForCall []struct {
+	}
+	listReturns struct {
+		result1 error
+	}
+	listReturnsOnCall map[int]struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeProductClient) List() error {
-	fake.listMutex.Lock()
-	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
-	fake.listArgsForCall = append(fake.listArgsForCall, struct{}{})
-	fake.recordInvocation("List", []interface{}{})
-	fake.listMutex.Unlock()
-	if fake.ListStub != nil {
-		return fake.ListStub()
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.listReturns.result1
-}
-
-func (fake *FakeProductClient) ListCallCount() int {
-	fake.listMutex.RLock()
-	defer fake.listMutex.RUnlock()
-	return len(fake.listArgsForCall)
-}
-
-func (fake *FakeProductClient) ListReturns(result1 error) {
-	fake.ListStub = nil
-	fake.listReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductClient) ListReturnsOnCall(i int, result1 error) {
-	fake.ListStub = nil
-	if fake.listReturnsOnCall == nil {
-		fake.listReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.listReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductClient) Get(productSlug string) error {
+func (fake *FakeProductClient) Get(arg1 string) error {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
-		productSlug string
-	}{productSlug})
-	fake.recordInvocation("Get", []interface{}{productSlug})
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("Get", []interface{}{arg1})
 	fake.getMutex.Unlock()
 	if fake.GetStub != nil {
-		return fake.GetStub(productSlug)
+		return fake.GetStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.getReturns.result1
+	fakeReturns := fake.getReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeProductClient) GetCallCount() int {
@@ -95,13 +57,22 @@ func (fake *FakeProductClient) GetCallCount() int {
 	return len(fake.getArgsForCall)
 }
 
+func (fake *FakeProductClient) GetCalls(stub func(string) error) {
+	fake.getMutex.Lock()
+	defer fake.getMutex.Unlock()
+	fake.GetStub = stub
+}
+
 func (fake *FakeProductClient) GetArgsForCall(i int) string {
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
-	return fake.getArgsForCall[i].productSlug
+	argsForCall := fake.getArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *FakeProductClient) GetReturns(result1 error) {
+	fake.getMutex.Lock()
+	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
 	fake.getReturns = struct {
 		result1 error
@@ -109,6 +80,8 @@ func (fake *FakeProductClient) GetReturns(result1 error) {
 }
 
 func (fake *FakeProductClient) GetReturnsOnCall(i int, result1 error) {
+	fake.getMutex.Lock()
+	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
 	if fake.getReturnsOnCall == nil {
 		fake.getReturnsOnCall = make(map[int]struct {
@@ -120,13 +93,65 @@ func (fake *FakeProductClient) GetReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakeProductClient) List() error {
+	fake.listMutex.Lock()
+	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
+	fake.listArgsForCall = append(fake.listArgsForCall, struct {
+	}{})
+	fake.recordInvocation("List", []interface{}{})
+	fake.listMutex.Unlock()
+	if fake.ListStub != nil {
+		return fake.ListStub()
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.listReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeProductClient) ListCallCount() int {
+	fake.listMutex.RLock()
+	defer fake.listMutex.RUnlock()
+	return len(fake.listArgsForCall)
+}
+
+func (fake *FakeProductClient) ListCalls(stub func() error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
+	fake.ListStub = stub
+}
+
+func (fake *FakeProductClient) ListReturns(result1 error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
+	fake.ListStub = nil
+	fake.listReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductClient) ListReturnsOnCall(i int, result1 error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
+	fake.ListStub = nil
+	if fake.listReturnsOnCall == nil {
+		fake.listReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.listReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeProductClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.listMutex.RLock()
-	defer fake.listMutex.RUnlock()
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
+	fake.listMutex.RLock()
+	defer fake.listMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

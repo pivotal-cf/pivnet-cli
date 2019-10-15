@@ -11,9 +11,9 @@ type ImageReferencesCommand struct {
 }
 
 type ImageReferenceCommand struct {
-	ProductSlug    string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
-	ReleaseVersion string `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1"`
-	ImageReferenceID  int    `long:"image-reference-id" short:"i" description:"Image reference ID e.g. 1234" required:"true"`
+	ProductSlug      string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
+	ReleaseVersion   string `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1"`
+	ImageReferenceID int    `long:"image-reference-id" short:"i" description:"Image reference ID e.g. 1234" required:"true"`
 }
 
 type CreateImageReferenceCommand struct {
@@ -26,9 +26,18 @@ type CreateImageReferenceCommand struct {
 	SystemRequirements []string `long:"system-requirement" description:"System-requirement of the image"`
 }
 
+type UpdateImageReferenceCommand struct {
+	ProductSlug        string    `long:"product-slug" short:"p" description:"Product slug e.g. 'p-mysql'" required:"true"`
+	ImageReferenceID   int       `long:"image-reference-id" short:"i" description:"Image reference ID e.g. 1234" required:"true"`
+	Name               *string   `long:"name" description:"Name e.g. 'p-mysql 1.7.13'" `
+	Description        *string   `long:"description" description:"Description of the image"`
+	DocsURL            *string   `long:"docs-url" description:"URL of docs for the image"`
+	SystemRequirements *[]string `long:"system-requirement" description:"System-requirement of the image"`
+}
+
 type DeleteImageReferenceCommand struct {
-	ProductSlug   string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
-	ImageReferenceID int `long:"image-reference-id" short:"i" description:"Image reference ID e.g. 1234" required:"true"`
+	ProductSlug      string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
+	ImageReferenceID int    `long:"image-reference-id" short:"i" description:"Image reference ID e.g. 1234" required:"true"`
 }
 
 type AddImageReferenceToReleaseCommand struct {
@@ -48,6 +57,14 @@ type ImageReferenceClient interface {
 	List(productSlug string, releaseVersion string) error
 	Get(productSlug string, releaseVersion string, imageReferenceID int) error
 	Create(config pivnet.CreateImageReferenceConfig) error
+	Update(
+		productSlug string,
+		imageReferenceID int,
+		name *string,
+		description *string,
+		docsURL *string,
+		systemRequirements *[]string,
+	) error
 	Delete(productSlug string, imageReferenceID int) error
 	AddToRelease(productSlug string, imageReferenceID int, releaseVersion string) error
 	RemoveFromRelease(productSlug string, imageReferenceID int, releaseVersion string) error
@@ -170,5 +187,27 @@ func (command *RemoveImageReferenceFromReleaseCommand) Execute([]string) error {
 		command.ProductSlug,
 		command.ImageReferenceID,
 		command.ReleaseVersion,
+	)
+}
+
+func (command *UpdateImageReferenceCommand) Execute([]string) error {
+	err := Init(true)
+	if err != nil {
+		return err
+	}
+
+	client := NewPivnetClient()
+	err = Auth.AuthenticateClient(client)
+	if err != nil {
+		return err
+	}
+
+	return NewImageReferenceClient(client).Update(
+		command.ProductSlug,
+		command.ImageReferenceID,
+		command.Name,
+		command.Description,
+		command.DocsURL,
+		command.SystemRequirements,
 	)
 }

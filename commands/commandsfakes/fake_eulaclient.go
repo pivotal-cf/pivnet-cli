@@ -8,31 +8,11 @@ import (
 )
 
 type FakeEULAClient struct {
-	ListStub        func() error
-	listMutex       sync.RWMutex
-	listArgsForCall []struct{}
-	listReturns     struct {
-		result1 error
-	}
-	listReturnsOnCall map[int]struct {
-		result1 error
-	}
-	GetStub        func(eulaSlug string) error
-	getMutex       sync.RWMutex
-	getArgsForCall []struct {
-		eulaSlug string
-	}
-	getReturns struct {
-		result1 error
-	}
-	getReturnsOnCall map[int]struct {
-		result1 error
-	}
-	AcceptEULAStub        func(productSlug string, releaseVersion string) error
+	AcceptEULAStub        func(string, string) error
 	acceptEULAMutex       sync.RWMutex
 	acceptEULAArgsForCall []struct {
-		productSlug    string
-		releaseVersion string
+		arg1 string
+		arg2 string
 	}
 	acceptEULAReturns struct {
 		result1 error
@@ -40,114 +20,48 @@ type FakeEULAClient struct {
 	acceptEULAReturnsOnCall map[int]struct {
 		result1 error
 	}
+	GetStub        func(string) error
+	getMutex       sync.RWMutex
+	getArgsForCall []struct {
+		arg1 string
+	}
+	getReturns struct {
+		result1 error
+	}
+	getReturnsOnCall map[int]struct {
+		result1 error
+	}
+	ListStub        func() error
+	listMutex       sync.RWMutex
+	listArgsForCall []struct {
+	}
+	listReturns struct {
+		result1 error
+	}
+	listReturnsOnCall map[int]struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeEULAClient) List() error {
-	fake.listMutex.Lock()
-	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
-	fake.listArgsForCall = append(fake.listArgsForCall, struct{}{})
-	fake.recordInvocation("List", []interface{}{})
-	fake.listMutex.Unlock()
-	if fake.ListStub != nil {
-		return fake.ListStub()
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.listReturns.result1
-}
-
-func (fake *FakeEULAClient) ListCallCount() int {
-	fake.listMutex.RLock()
-	defer fake.listMutex.RUnlock()
-	return len(fake.listArgsForCall)
-}
-
-func (fake *FakeEULAClient) ListReturns(result1 error) {
-	fake.ListStub = nil
-	fake.listReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeEULAClient) ListReturnsOnCall(i int, result1 error) {
-	fake.ListStub = nil
-	if fake.listReturnsOnCall == nil {
-		fake.listReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.listReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeEULAClient) Get(eulaSlug string) error {
-	fake.getMutex.Lock()
-	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
-	fake.getArgsForCall = append(fake.getArgsForCall, struct {
-		eulaSlug string
-	}{eulaSlug})
-	fake.recordInvocation("Get", []interface{}{eulaSlug})
-	fake.getMutex.Unlock()
-	if fake.GetStub != nil {
-		return fake.GetStub(eulaSlug)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.getReturns.result1
-}
-
-func (fake *FakeEULAClient) GetCallCount() int {
-	fake.getMutex.RLock()
-	defer fake.getMutex.RUnlock()
-	return len(fake.getArgsForCall)
-}
-
-func (fake *FakeEULAClient) GetArgsForCall(i int) string {
-	fake.getMutex.RLock()
-	defer fake.getMutex.RUnlock()
-	return fake.getArgsForCall[i].eulaSlug
-}
-
-func (fake *FakeEULAClient) GetReturns(result1 error) {
-	fake.GetStub = nil
-	fake.getReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeEULAClient) GetReturnsOnCall(i int, result1 error) {
-	fake.GetStub = nil
-	if fake.getReturnsOnCall == nil {
-		fake.getReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.getReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeEULAClient) AcceptEULA(productSlug string, releaseVersion string) error {
+func (fake *FakeEULAClient) AcceptEULA(arg1 string, arg2 string) error {
 	fake.acceptEULAMutex.Lock()
 	ret, specificReturn := fake.acceptEULAReturnsOnCall[len(fake.acceptEULAArgsForCall)]
 	fake.acceptEULAArgsForCall = append(fake.acceptEULAArgsForCall, struct {
-		productSlug    string
-		releaseVersion string
-	}{productSlug, releaseVersion})
-	fake.recordInvocation("AcceptEULA", []interface{}{productSlug, releaseVersion})
+		arg1 string
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("AcceptEULA", []interface{}{arg1, arg2})
 	fake.acceptEULAMutex.Unlock()
 	if fake.AcceptEULAStub != nil {
-		return fake.AcceptEULAStub(productSlug, releaseVersion)
+		return fake.AcceptEULAStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.acceptEULAReturns.result1
+	fakeReturns := fake.acceptEULAReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeEULAClient) AcceptEULACallCount() int {
@@ -156,13 +70,22 @@ func (fake *FakeEULAClient) AcceptEULACallCount() int {
 	return len(fake.acceptEULAArgsForCall)
 }
 
+func (fake *FakeEULAClient) AcceptEULACalls(stub func(string, string) error) {
+	fake.acceptEULAMutex.Lock()
+	defer fake.acceptEULAMutex.Unlock()
+	fake.AcceptEULAStub = stub
+}
+
 func (fake *FakeEULAClient) AcceptEULAArgsForCall(i int) (string, string) {
 	fake.acceptEULAMutex.RLock()
 	defer fake.acceptEULAMutex.RUnlock()
-	return fake.acceptEULAArgsForCall[i].productSlug, fake.acceptEULAArgsForCall[i].releaseVersion
+	argsForCall := fake.acceptEULAArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeEULAClient) AcceptEULAReturns(result1 error) {
+	fake.acceptEULAMutex.Lock()
+	defer fake.acceptEULAMutex.Unlock()
 	fake.AcceptEULAStub = nil
 	fake.acceptEULAReturns = struct {
 		result1 error
@@ -170,6 +93,8 @@ func (fake *FakeEULAClient) AcceptEULAReturns(result1 error) {
 }
 
 func (fake *FakeEULAClient) AcceptEULAReturnsOnCall(i int, result1 error) {
+	fake.acceptEULAMutex.Lock()
+	defer fake.acceptEULAMutex.Unlock()
 	fake.AcceptEULAStub = nil
 	if fake.acceptEULAReturnsOnCall == nil {
 		fake.acceptEULAReturnsOnCall = make(map[int]struct {
@@ -181,15 +106,127 @@ func (fake *FakeEULAClient) AcceptEULAReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakeEULAClient) Get(arg1 string) error {
+	fake.getMutex.Lock()
+	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
+	fake.getArgsForCall = append(fake.getArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("Get", []interface{}{arg1})
+	fake.getMutex.Unlock()
+	if fake.GetStub != nil {
+		return fake.GetStub(arg1)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.getReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeEULAClient) GetCallCount() int {
+	fake.getMutex.RLock()
+	defer fake.getMutex.RUnlock()
+	return len(fake.getArgsForCall)
+}
+
+func (fake *FakeEULAClient) GetCalls(stub func(string) error) {
+	fake.getMutex.Lock()
+	defer fake.getMutex.Unlock()
+	fake.GetStub = stub
+}
+
+func (fake *FakeEULAClient) GetArgsForCall(i int) string {
+	fake.getMutex.RLock()
+	defer fake.getMutex.RUnlock()
+	argsForCall := fake.getArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakeEULAClient) GetReturns(result1 error) {
+	fake.getMutex.Lock()
+	defer fake.getMutex.Unlock()
+	fake.GetStub = nil
+	fake.getReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeEULAClient) GetReturnsOnCall(i int, result1 error) {
+	fake.getMutex.Lock()
+	defer fake.getMutex.Unlock()
+	fake.GetStub = nil
+	if fake.getReturnsOnCall == nil {
+		fake.getReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.getReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeEULAClient) List() error {
+	fake.listMutex.Lock()
+	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
+	fake.listArgsForCall = append(fake.listArgsForCall, struct {
+	}{})
+	fake.recordInvocation("List", []interface{}{})
+	fake.listMutex.Unlock()
+	if fake.ListStub != nil {
+		return fake.ListStub()
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.listReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeEULAClient) ListCallCount() int {
+	fake.listMutex.RLock()
+	defer fake.listMutex.RUnlock()
+	return len(fake.listArgsForCall)
+}
+
+func (fake *FakeEULAClient) ListCalls(stub func() error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
+	fake.ListStub = stub
+}
+
+func (fake *FakeEULAClient) ListReturns(result1 error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
+	fake.ListStub = nil
+	fake.listReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeEULAClient) ListReturnsOnCall(i int, result1 error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
+	fake.ListStub = nil
+	if fake.listReturnsOnCall == nil {
+		fake.listReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.listReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeEULAClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.listMutex.RLock()
-	defer fake.listMutex.RUnlock()
-	fake.getMutex.RLock()
-	defer fake.getMutex.RUnlock()
 	fake.acceptEULAMutex.RLock()
 	defer fake.acceptEULAMutex.RUnlock()
+	fake.getMutex.RLock()
+	defer fake.getMutex.RUnlock()
+	fake.listMutex.RLock()
+	defer fake.listMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

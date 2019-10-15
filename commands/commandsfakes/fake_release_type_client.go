@@ -10,8 +10,9 @@ import (
 type FakeReleaseTypeClient struct {
 	ListStub        func() error
 	listMutex       sync.RWMutex
-	listArgsForCall []struct{}
-	listReturns     struct {
+	listArgsForCall []struct {
+	}
+	listReturns struct {
 		result1 error
 	}
 	listReturnsOnCall map[int]struct {
@@ -24,7 +25,8 @@ type FakeReleaseTypeClient struct {
 func (fake *FakeReleaseTypeClient) List() error {
 	fake.listMutex.Lock()
 	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
-	fake.listArgsForCall = append(fake.listArgsForCall, struct{}{})
+	fake.listArgsForCall = append(fake.listArgsForCall, struct {
+	}{})
 	fake.recordInvocation("List", []interface{}{})
 	fake.listMutex.Unlock()
 	if fake.ListStub != nil {
@@ -33,7 +35,8 @@ func (fake *FakeReleaseTypeClient) List() error {
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.listReturns.result1
+	fakeReturns := fake.listReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeReleaseTypeClient) ListCallCount() int {
@@ -42,7 +45,15 @@ func (fake *FakeReleaseTypeClient) ListCallCount() int {
 	return len(fake.listArgsForCall)
 }
 
+func (fake *FakeReleaseTypeClient) ListCalls(stub func() error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
+	fake.ListStub = stub
+}
+
 func (fake *FakeReleaseTypeClient) ListReturns(result1 error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
 	fake.ListStub = nil
 	fake.listReturns = struct {
 		result1 error
@@ -50,6 +61,8 @@ func (fake *FakeReleaseTypeClient) ListReturns(result1 error) {
 }
 
 func (fake *FakeReleaseTypeClient) ListReturnsOnCall(i int, result1 error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
 	fake.ListStub = nil
 	if fake.listReturnsOnCall == nil {
 		fake.listReturnsOnCall = make(map[int]struct {

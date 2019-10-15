@@ -5,96 +5,17 @@ import (
 	"io"
 	"sync"
 
-	"github.com/pivotal-cf/go-pivnet/v2"
+	pivnet "github.com/pivotal-cf/go-pivnet/v2"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 )
 
 type FakeProductFileClient struct {
-	ListStub        func(productSlug string, releaseVersion string) error
-	listMutex       sync.RWMutex
-	listArgsForCall []struct {
-		productSlug    string
-		releaseVersion string
-	}
-	listReturns struct {
-		result1 error
-	}
-	listReturnsOnCall map[int]struct {
-		result1 error
-	}
-	GetStub        func(productSlug string, releaseVersion string, productFileID int) error
-	getMutex       sync.RWMutex
-	getArgsForCall []struct {
-		productSlug    string
-		releaseVersion string
-		productFileID  int
-	}
-	getReturns struct {
-		result1 error
-	}
-	getReturnsOnCall map[int]struct {
-		result1 error
-	}
-	CreateStub        func(config pivnet.CreateProductFileConfig) error
-	createMutex       sync.RWMutex
-	createArgsForCall []struct {
-		config pivnet.CreateProductFileConfig
-	}
-	createReturns struct {
-		result1 error
-	}
-	createReturnsOnCall map[int]struct {
-		result1 error
-	}
-	UpdateStub        func(productFileID int, productSlug string, name *string, fileVersion *string, sha256 *string, md5 *string, description *string) error
-	updateMutex       sync.RWMutex
-	updateArgsForCall []struct {
-		productFileID int
-		productSlug   string
-		name          *string
-		fileVersion   *string
-		sha256        *string
-		md5           *string
-		description   *string
-	}
-	updateReturns struct {
-		result1 error
-	}
-	updateReturnsOnCall map[int]struct {
-		result1 error
-	}
-	AddToReleaseStub        func(productSlug string, releaseVersion string, productFileID int) error
-	addToReleaseMutex       sync.RWMutex
-	addToReleaseArgsForCall []struct {
-		productSlug    string
-		releaseVersion string
-		productFileID  int
-	}
-	addToReleaseReturns struct {
-		result1 error
-	}
-	addToReleaseReturnsOnCall map[int]struct {
-		result1 error
-	}
-	RemoveFromReleaseStub        func(productSlug string, releaseVersion string, productFileID int) error
-	removeFromReleaseMutex       sync.RWMutex
-	removeFromReleaseArgsForCall []struct {
-		productSlug    string
-		releaseVersion string
-		productFileID  int
-	}
-	removeFromReleaseReturns struct {
-		result1 error
-	}
-	removeFromReleaseReturnsOnCall map[int]struct {
-		result1 error
-	}
-	AddToFileGroupStub        func(productSlug string, fileGroupID int, productFileID int) error
+	AddToFileGroupStub        func(string, int, int) error
 	addToFileGroupMutex       sync.RWMutex
 	addToFileGroupArgsForCall []struct {
-		productSlug   string
-		fileGroupID   int
-		productFileID int
+		arg1 string
+		arg2 int
+		arg3 int
 	}
 	addToFileGroupReturns struct {
 		result1 error
@@ -102,24 +23,35 @@ type FakeProductFileClient struct {
 	addToFileGroupReturnsOnCall map[int]struct {
 		result1 error
 	}
-	RemoveFromFileGroupStub        func(productSlug string, fileGroupID int, productFileID int) error
-	removeFromFileGroupMutex       sync.RWMutex
-	removeFromFileGroupArgsForCall []struct {
-		productSlug   string
-		fileGroupID   int
-		productFileID int
+	AddToReleaseStub        func(string, string, int) error
+	addToReleaseMutex       sync.RWMutex
+	addToReleaseArgsForCall []struct {
+		arg1 string
+		arg2 string
+		arg3 int
 	}
-	removeFromFileGroupReturns struct {
+	addToReleaseReturns struct {
 		result1 error
 	}
-	removeFromFileGroupReturnsOnCall map[int]struct {
+	addToReleaseReturnsOnCall map[int]struct {
 		result1 error
 	}
-	DeleteStub        func(productSlug string, productFileID int) error
+	CreateStub        func(pivnet.CreateProductFileConfig) error
+	createMutex       sync.RWMutex
+	createArgsForCall []struct {
+		arg1 pivnet.CreateProductFileConfig
+	}
+	createReturns struct {
+		result1 error
+	}
+	createReturnsOnCall map[int]struct {
+		result1 error
+	}
+	DeleteStub        func(string, int) error
 	deleteMutex       sync.RWMutex
 	deleteArgsForCall []struct {
-		productSlug   string
-		productFileID int
+		arg1 string
+		arg2 int
 	}
 	deleteReturns struct {
 		result1 error
@@ -127,16 +59,16 @@ type FakeProductFileClient struct {
 	deleteReturnsOnCall map[int]struct {
 		result1 error
 	}
-	DownloadStub        func(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool, progressWriter io.Writer) error
+	DownloadStub        func(string, string, []string, []int, string, bool, io.Writer) error
 	downloadMutex       sync.RWMutex
 	downloadArgsForCall []struct {
-		productSlug    string
-		releaseVersion string
-		globs          []string
-		productFileIDs []int
-		downloadDir    string
-		acceptEULA     bool
-		progressWriter io.Writer
+		arg1 string
+		arg2 string
+		arg3 []string
+		arg4 []int
+		arg5 string
+		arg6 bool
+		arg7 io.Writer
 	}
 	downloadReturns struct {
 		result1 error
@@ -144,328 +76,98 @@ type FakeProductFileClient struct {
 	downloadReturnsOnCall map[int]struct {
 		result1 error
 	}
+	GetStub        func(string, string, int) error
+	getMutex       sync.RWMutex
+	getArgsForCall []struct {
+		arg1 string
+		arg2 string
+		arg3 int
+	}
+	getReturns struct {
+		result1 error
+	}
+	getReturnsOnCall map[int]struct {
+		result1 error
+	}
+	ListStub        func(string, string) error
+	listMutex       sync.RWMutex
+	listArgsForCall []struct {
+		arg1 string
+		arg2 string
+	}
+	listReturns struct {
+		result1 error
+	}
+	listReturnsOnCall map[int]struct {
+		result1 error
+	}
+	RemoveFromFileGroupStub        func(string, int, int) error
+	removeFromFileGroupMutex       sync.RWMutex
+	removeFromFileGroupArgsForCall []struct {
+		arg1 string
+		arg2 int
+		arg3 int
+	}
+	removeFromFileGroupReturns struct {
+		result1 error
+	}
+	removeFromFileGroupReturnsOnCall map[int]struct {
+		result1 error
+	}
+	RemoveFromReleaseStub        func(string, string, int) error
+	removeFromReleaseMutex       sync.RWMutex
+	removeFromReleaseArgsForCall []struct {
+		arg1 string
+		arg2 string
+		arg3 int
+	}
+	removeFromReleaseReturns struct {
+		result1 error
+	}
+	removeFromReleaseReturnsOnCall map[int]struct {
+		result1 error
+	}
+	UpdateStub        func(int, string, *string, *string, *string, *string, *string, *string, *[]string) error
+	updateMutex       sync.RWMutex
+	updateArgsForCall []struct {
+		arg1 int
+		arg2 string
+		arg3 *string
+		arg4 *string
+		arg5 *string
+		arg6 *string
+		arg7 *string
+		arg8 *string
+		arg9 *[]string
+	}
+	updateReturns struct {
+		result1 error
+	}
+	updateReturnsOnCall map[int]struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeProductFileClient) List(productSlug string, releaseVersion string) error {
-	fake.listMutex.Lock()
-	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
-	fake.listArgsForCall = append(fake.listArgsForCall, struct {
-		productSlug    string
-		releaseVersion string
-	}{productSlug, releaseVersion})
-	fake.recordInvocation("List", []interface{}{productSlug, releaseVersion})
-	fake.listMutex.Unlock()
-	if fake.ListStub != nil {
-		return fake.ListStub(productSlug, releaseVersion)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.listReturns.result1
-}
-
-func (fake *FakeProductFileClient) ListCallCount() int {
-	fake.listMutex.RLock()
-	defer fake.listMutex.RUnlock()
-	return len(fake.listArgsForCall)
-}
-
-func (fake *FakeProductFileClient) ListArgsForCall(i int) (string, string) {
-	fake.listMutex.RLock()
-	defer fake.listMutex.RUnlock()
-	return fake.listArgsForCall[i].productSlug, fake.listArgsForCall[i].releaseVersion
-}
-
-func (fake *FakeProductFileClient) ListReturns(result1 error) {
-	fake.ListStub = nil
-	fake.listReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) ListReturnsOnCall(i int, result1 error) {
-	fake.ListStub = nil
-	if fake.listReturnsOnCall == nil {
-		fake.listReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.listReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) Get(productSlug string, releaseVersion string, productFileID int) error {
-	fake.getMutex.Lock()
-	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
-	fake.getArgsForCall = append(fake.getArgsForCall, struct {
-		productSlug    string
-		releaseVersion string
-		productFileID  int
-	}{productSlug, releaseVersion, productFileID})
-	fake.recordInvocation("Get", []interface{}{productSlug, releaseVersion, productFileID})
-	fake.getMutex.Unlock()
-	if fake.GetStub != nil {
-		return fake.GetStub(productSlug, releaseVersion, productFileID)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.getReturns.result1
-}
-
-func (fake *FakeProductFileClient) GetCallCount() int {
-	fake.getMutex.RLock()
-	defer fake.getMutex.RUnlock()
-	return len(fake.getArgsForCall)
-}
-
-func (fake *FakeProductFileClient) GetArgsForCall(i int) (string, string, int) {
-	fake.getMutex.RLock()
-	defer fake.getMutex.RUnlock()
-	return fake.getArgsForCall[i].productSlug, fake.getArgsForCall[i].releaseVersion, fake.getArgsForCall[i].productFileID
-}
-
-func (fake *FakeProductFileClient) GetReturns(result1 error) {
-	fake.GetStub = nil
-	fake.getReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) GetReturnsOnCall(i int, result1 error) {
-	fake.GetStub = nil
-	if fake.getReturnsOnCall == nil {
-		fake.getReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.getReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) Create(config pivnet.CreateProductFileConfig) error {
-	fake.createMutex.Lock()
-	ret, specificReturn := fake.createReturnsOnCall[len(fake.createArgsForCall)]
-	fake.createArgsForCall = append(fake.createArgsForCall, struct {
-		config pivnet.CreateProductFileConfig
-	}{config})
-	fake.recordInvocation("Create", []interface{}{config})
-	fake.createMutex.Unlock()
-	if fake.CreateStub != nil {
-		return fake.CreateStub(config)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.createReturns.result1
-}
-
-func (fake *FakeProductFileClient) CreateCallCount() int {
-	fake.createMutex.RLock()
-	defer fake.createMutex.RUnlock()
-	return len(fake.createArgsForCall)
-}
-
-func (fake *FakeProductFileClient) CreateArgsForCall(i int) pivnet.CreateProductFileConfig {
-	fake.createMutex.RLock()
-	defer fake.createMutex.RUnlock()
-	return fake.createArgsForCall[i].config
-}
-
-func (fake *FakeProductFileClient) CreateReturns(result1 error) {
-	fake.CreateStub = nil
-	fake.createReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) CreateReturnsOnCall(i int, result1 error) {
-	fake.CreateStub = nil
-	if fake.createReturnsOnCall == nil {
-		fake.createReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.createReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) Update(productFileID int, productSlug string, name *string, fileVersion *string, sha256 *string, md5 *string, description *string) error {
-	fake.updateMutex.Lock()
-	ret, specificReturn := fake.updateReturnsOnCall[len(fake.updateArgsForCall)]
-	fake.updateArgsForCall = append(fake.updateArgsForCall, struct {
-		productFileID int
-		productSlug   string
-		name          *string
-		fileVersion   *string
-		sha256        *string
-		md5           *string
-		description   *string
-	}{productFileID, productSlug, name, fileVersion, sha256, md5, description})
-	fake.recordInvocation("Update", []interface{}{productFileID, productSlug, name, fileVersion, sha256, md5, description})
-	fake.updateMutex.Unlock()
-	if fake.UpdateStub != nil {
-		return fake.UpdateStub(productFileID, productSlug, name, fileVersion, sha256, md5, description)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.updateReturns.result1
-}
-
-func (fake *FakeProductFileClient) UpdateCallCount() int {
-	fake.updateMutex.RLock()
-	defer fake.updateMutex.RUnlock()
-	return len(fake.updateArgsForCall)
-}
-
-func (fake *FakeProductFileClient) UpdateArgsForCall(i int) (int, string, *string, *string, *string, *string, *string) {
-	fake.updateMutex.RLock()
-	defer fake.updateMutex.RUnlock()
-	return fake.updateArgsForCall[i].productFileID, fake.updateArgsForCall[i].productSlug, fake.updateArgsForCall[i].name, fake.updateArgsForCall[i].fileVersion, fake.updateArgsForCall[i].sha256, fake.updateArgsForCall[i].md5, fake.updateArgsForCall[i].description
-}
-
-func (fake *FakeProductFileClient) UpdateReturns(result1 error) {
-	fake.UpdateStub = nil
-	fake.updateReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) UpdateReturnsOnCall(i int, result1 error) {
-	fake.UpdateStub = nil
-	if fake.updateReturnsOnCall == nil {
-		fake.updateReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.updateReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) AddToRelease(productSlug string, releaseVersion string, productFileID int) error {
-	fake.addToReleaseMutex.Lock()
-	ret, specificReturn := fake.addToReleaseReturnsOnCall[len(fake.addToReleaseArgsForCall)]
-	fake.addToReleaseArgsForCall = append(fake.addToReleaseArgsForCall, struct {
-		productSlug    string
-		releaseVersion string
-		productFileID  int
-	}{productSlug, releaseVersion, productFileID})
-	fake.recordInvocation("AddToRelease", []interface{}{productSlug, releaseVersion, productFileID})
-	fake.addToReleaseMutex.Unlock()
-	if fake.AddToReleaseStub != nil {
-		return fake.AddToReleaseStub(productSlug, releaseVersion, productFileID)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.addToReleaseReturns.result1
-}
-
-func (fake *FakeProductFileClient) AddToReleaseCallCount() int {
-	fake.addToReleaseMutex.RLock()
-	defer fake.addToReleaseMutex.RUnlock()
-	return len(fake.addToReleaseArgsForCall)
-}
-
-func (fake *FakeProductFileClient) AddToReleaseArgsForCall(i int) (string, string, int) {
-	fake.addToReleaseMutex.RLock()
-	defer fake.addToReleaseMutex.RUnlock()
-	return fake.addToReleaseArgsForCall[i].productSlug, fake.addToReleaseArgsForCall[i].releaseVersion, fake.addToReleaseArgsForCall[i].productFileID
-}
-
-func (fake *FakeProductFileClient) AddToReleaseReturns(result1 error) {
-	fake.AddToReleaseStub = nil
-	fake.addToReleaseReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) AddToReleaseReturnsOnCall(i int, result1 error) {
-	fake.AddToReleaseStub = nil
-	if fake.addToReleaseReturnsOnCall == nil {
-		fake.addToReleaseReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.addToReleaseReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) RemoveFromRelease(productSlug string, releaseVersion string, productFileID int) error {
-	fake.removeFromReleaseMutex.Lock()
-	ret, specificReturn := fake.removeFromReleaseReturnsOnCall[len(fake.removeFromReleaseArgsForCall)]
-	fake.removeFromReleaseArgsForCall = append(fake.removeFromReleaseArgsForCall, struct {
-		productSlug    string
-		releaseVersion string
-		productFileID  int
-	}{productSlug, releaseVersion, productFileID})
-	fake.recordInvocation("RemoveFromRelease", []interface{}{productSlug, releaseVersion, productFileID})
-	fake.removeFromReleaseMutex.Unlock()
-	if fake.RemoveFromReleaseStub != nil {
-		return fake.RemoveFromReleaseStub(productSlug, releaseVersion, productFileID)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.removeFromReleaseReturns.result1
-}
-
-func (fake *FakeProductFileClient) RemoveFromReleaseCallCount() int {
-	fake.removeFromReleaseMutex.RLock()
-	defer fake.removeFromReleaseMutex.RUnlock()
-	return len(fake.removeFromReleaseArgsForCall)
-}
-
-func (fake *FakeProductFileClient) RemoveFromReleaseArgsForCall(i int) (string, string, int) {
-	fake.removeFromReleaseMutex.RLock()
-	defer fake.removeFromReleaseMutex.RUnlock()
-	return fake.removeFromReleaseArgsForCall[i].productSlug, fake.removeFromReleaseArgsForCall[i].releaseVersion, fake.removeFromReleaseArgsForCall[i].productFileID
-}
-
-func (fake *FakeProductFileClient) RemoveFromReleaseReturns(result1 error) {
-	fake.RemoveFromReleaseStub = nil
-	fake.removeFromReleaseReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) RemoveFromReleaseReturnsOnCall(i int, result1 error) {
-	fake.RemoveFromReleaseStub = nil
-	if fake.removeFromReleaseReturnsOnCall == nil {
-		fake.removeFromReleaseReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.removeFromReleaseReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeProductFileClient) AddToFileGroup(productSlug string, fileGroupID int, productFileID int) error {
+func (fake *FakeProductFileClient) AddToFileGroup(arg1 string, arg2 int, arg3 int) error {
 	fake.addToFileGroupMutex.Lock()
 	ret, specificReturn := fake.addToFileGroupReturnsOnCall[len(fake.addToFileGroupArgsForCall)]
 	fake.addToFileGroupArgsForCall = append(fake.addToFileGroupArgsForCall, struct {
-		productSlug   string
-		fileGroupID   int
-		productFileID int
-	}{productSlug, fileGroupID, productFileID})
-	fake.recordInvocation("AddToFileGroup", []interface{}{productSlug, fileGroupID, productFileID})
+		arg1 string
+		arg2 int
+		arg3 int
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("AddToFileGroup", []interface{}{arg1, arg2, arg3})
 	fake.addToFileGroupMutex.Unlock()
 	if fake.AddToFileGroupStub != nil {
-		return fake.AddToFileGroupStub(productSlug, fileGroupID, productFileID)
+		return fake.AddToFileGroupStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.addToFileGroupReturns.result1
+	fakeReturns := fake.addToFileGroupReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeProductFileClient) AddToFileGroupCallCount() int {
@@ -474,13 +176,22 @@ func (fake *FakeProductFileClient) AddToFileGroupCallCount() int {
 	return len(fake.addToFileGroupArgsForCall)
 }
 
+func (fake *FakeProductFileClient) AddToFileGroupCalls(stub func(string, int, int) error) {
+	fake.addToFileGroupMutex.Lock()
+	defer fake.addToFileGroupMutex.Unlock()
+	fake.AddToFileGroupStub = stub
+}
+
 func (fake *FakeProductFileClient) AddToFileGroupArgsForCall(i int) (string, int, int) {
 	fake.addToFileGroupMutex.RLock()
 	defer fake.addToFileGroupMutex.RUnlock()
-	return fake.addToFileGroupArgsForCall[i].productSlug, fake.addToFileGroupArgsForCall[i].fileGroupID, fake.addToFileGroupArgsForCall[i].productFileID
+	argsForCall := fake.addToFileGroupArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeProductFileClient) AddToFileGroupReturns(result1 error) {
+	fake.addToFileGroupMutex.Lock()
+	defer fake.addToFileGroupMutex.Unlock()
 	fake.AddToFileGroupStub = nil
 	fake.addToFileGroupReturns = struct {
 		result1 error
@@ -488,6 +199,8 @@ func (fake *FakeProductFileClient) AddToFileGroupReturns(result1 error) {
 }
 
 func (fake *FakeProductFileClient) AddToFileGroupReturnsOnCall(i int, result1 error) {
+	fake.addToFileGroupMutex.Lock()
+	defer fake.addToFileGroupMutex.Unlock()
 	fake.AddToFileGroupStub = nil
 	if fake.addToFileGroupReturnsOnCall == nil {
 		fake.addToFileGroupReturnsOnCall = make(map[int]struct {
@@ -499,72 +212,145 @@ func (fake *FakeProductFileClient) AddToFileGroupReturnsOnCall(i int, result1 er
 	}{result1}
 }
 
-func (fake *FakeProductFileClient) RemoveFromFileGroup(productSlug string, fileGroupID int, productFileID int) error {
-	fake.removeFromFileGroupMutex.Lock()
-	ret, specificReturn := fake.removeFromFileGroupReturnsOnCall[len(fake.removeFromFileGroupArgsForCall)]
-	fake.removeFromFileGroupArgsForCall = append(fake.removeFromFileGroupArgsForCall, struct {
-		productSlug   string
-		fileGroupID   int
-		productFileID int
-	}{productSlug, fileGroupID, productFileID})
-	fake.recordInvocation("RemoveFromFileGroup", []interface{}{productSlug, fileGroupID, productFileID})
-	fake.removeFromFileGroupMutex.Unlock()
-	if fake.RemoveFromFileGroupStub != nil {
-		return fake.RemoveFromFileGroupStub(productSlug, fileGroupID, productFileID)
+func (fake *FakeProductFileClient) AddToRelease(arg1 string, arg2 string, arg3 int) error {
+	fake.addToReleaseMutex.Lock()
+	ret, specificReturn := fake.addToReleaseReturnsOnCall[len(fake.addToReleaseArgsForCall)]
+	fake.addToReleaseArgsForCall = append(fake.addToReleaseArgsForCall, struct {
+		arg1 string
+		arg2 string
+		arg3 int
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("AddToRelease", []interface{}{arg1, arg2, arg3})
+	fake.addToReleaseMutex.Unlock()
+	if fake.AddToReleaseStub != nil {
+		return fake.AddToReleaseStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.removeFromFileGroupReturns.result1
+	fakeReturns := fake.addToReleaseReturns
+	return fakeReturns.result1
 }
 
-func (fake *FakeProductFileClient) RemoveFromFileGroupCallCount() int {
-	fake.removeFromFileGroupMutex.RLock()
-	defer fake.removeFromFileGroupMutex.RUnlock()
-	return len(fake.removeFromFileGroupArgsForCall)
+func (fake *FakeProductFileClient) AddToReleaseCallCount() int {
+	fake.addToReleaseMutex.RLock()
+	defer fake.addToReleaseMutex.RUnlock()
+	return len(fake.addToReleaseArgsForCall)
 }
 
-func (fake *FakeProductFileClient) RemoveFromFileGroupArgsForCall(i int) (string, int, int) {
-	fake.removeFromFileGroupMutex.RLock()
-	defer fake.removeFromFileGroupMutex.RUnlock()
-	return fake.removeFromFileGroupArgsForCall[i].productSlug, fake.removeFromFileGroupArgsForCall[i].fileGroupID, fake.removeFromFileGroupArgsForCall[i].productFileID
+func (fake *FakeProductFileClient) AddToReleaseCalls(stub func(string, string, int) error) {
+	fake.addToReleaseMutex.Lock()
+	defer fake.addToReleaseMutex.Unlock()
+	fake.AddToReleaseStub = stub
 }
 
-func (fake *FakeProductFileClient) RemoveFromFileGroupReturns(result1 error) {
-	fake.RemoveFromFileGroupStub = nil
-	fake.removeFromFileGroupReturns = struct {
+func (fake *FakeProductFileClient) AddToReleaseArgsForCall(i int) (string, string, int) {
+	fake.addToReleaseMutex.RLock()
+	defer fake.addToReleaseMutex.RUnlock()
+	argsForCall := fake.addToReleaseArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakeProductFileClient) AddToReleaseReturns(result1 error) {
+	fake.addToReleaseMutex.Lock()
+	defer fake.addToReleaseMutex.Unlock()
+	fake.AddToReleaseStub = nil
+	fake.addToReleaseReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakeProductFileClient) RemoveFromFileGroupReturnsOnCall(i int, result1 error) {
-	fake.RemoveFromFileGroupStub = nil
-	if fake.removeFromFileGroupReturnsOnCall == nil {
-		fake.removeFromFileGroupReturnsOnCall = make(map[int]struct {
+func (fake *FakeProductFileClient) AddToReleaseReturnsOnCall(i int, result1 error) {
+	fake.addToReleaseMutex.Lock()
+	defer fake.addToReleaseMutex.Unlock()
+	fake.AddToReleaseStub = nil
+	if fake.addToReleaseReturnsOnCall == nil {
+		fake.addToReleaseReturnsOnCall = make(map[int]struct {
 			result1 error
 		})
 	}
-	fake.removeFromFileGroupReturnsOnCall[i] = struct {
+	fake.addToReleaseReturnsOnCall[i] = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakeProductFileClient) Delete(productSlug string, productFileID int) error {
-	fake.deleteMutex.Lock()
-	ret, specificReturn := fake.deleteReturnsOnCall[len(fake.deleteArgsForCall)]
-	fake.deleteArgsForCall = append(fake.deleteArgsForCall, struct {
-		productSlug   string
-		productFileID int
-	}{productSlug, productFileID})
-	fake.recordInvocation("Delete", []interface{}{productSlug, productFileID})
-	fake.deleteMutex.Unlock()
-	if fake.DeleteStub != nil {
-		return fake.DeleteStub(productSlug, productFileID)
+func (fake *FakeProductFileClient) Create(arg1 pivnet.CreateProductFileConfig) error {
+	fake.createMutex.Lock()
+	ret, specificReturn := fake.createReturnsOnCall[len(fake.createArgsForCall)]
+	fake.createArgsForCall = append(fake.createArgsForCall, struct {
+		arg1 pivnet.CreateProductFileConfig
+	}{arg1})
+	fake.recordInvocation("Create", []interface{}{arg1})
+	fake.createMutex.Unlock()
+	if fake.CreateStub != nil {
+		return fake.CreateStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.deleteReturns.result1
+	fakeReturns := fake.createReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeProductFileClient) CreateCallCount() int {
+	fake.createMutex.RLock()
+	defer fake.createMutex.RUnlock()
+	return len(fake.createArgsForCall)
+}
+
+func (fake *FakeProductFileClient) CreateCalls(stub func(pivnet.CreateProductFileConfig) error) {
+	fake.createMutex.Lock()
+	defer fake.createMutex.Unlock()
+	fake.CreateStub = stub
+}
+
+func (fake *FakeProductFileClient) CreateArgsForCall(i int) pivnet.CreateProductFileConfig {
+	fake.createMutex.RLock()
+	defer fake.createMutex.RUnlock()
+	argsForCall := fake.createArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakeProductFileClient) CreateReturns(result1 error) {
+	fake.createMutex.Lock()
+	defer fake.createMutex.Unlock()
+	fake.CreateStub = nil
+	fake.createReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) CreateReturnsOnCall(i int, result1 error) {
+	fake.createMutex.Lock()
+	defer fake.createMutex.Unlock()
+	fake.CreateStub = nil
+	if fake.createReturnsOnCall == nil {
+		fake.createReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.createReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) Delete(arg1 string, arg2 int) error {
+	fake.deleteMutex.Lock()
+	ret, specificReturn := fake.deleteReturnsOnCall[len(fake.deleteArgsForCall)]
+	fake.deleteArgsForCall = append(fake.deleteArgsForCall, struct {
+		arg1 string
+		arg2 int
+	}{arg1, arg2})
+	fake.recordInvocation("Delete", []interface{}{arg1, arg2})
+	fake.deleteMutex.Unlock()
+	if fake.DeleteStub != nil {
+		return fake.DeleteStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.deleteReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeProductFileClient) DeleteCallCount() int {
@@ -573,13 +359,22 @@ func (fake *FakeProductFileClient) DeleteCallCount() int {
 	return len(fake.deleteArgsForCall)
 }
 
+func (fake *FakeProductFileClient) DeleteCalls(stub func(string, int) error) {
+	fake.deleteMutex.Lock()
+	defer fake.deleteMutex.Unlock()
+	fake.DeleteStub = stub
+}
+
 func (fake *FakeProductFileClient) DeleteArgsForCall(i int) (string, int) {
 	fake.deleteMutex.RLock()
 	defer fake.deleteMutex.RUnlock()
-	return fake.deleteArgsForCall[i].productSlug, fake.deleteArgsForCall[i].productFileID
+	argsForCall := fake.deleteArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeProductFileClient) DeleteReturns(result1 error) {
+	fake.deleteMutex.Lock()
+	defer fake.deleteMutex.Unlock()
 	fake.DeleteStub = nil
 	fake.deleteReturns = struct {
 		result1 error
@@ -587,6 +382,8 @@ func (fake *FakeProductFileClient) DeleteReturns(result1 error) {
 }
 
 func (fake *FakeProductFileClient) DeleteReturnsOnCall(i int, result1 error) {
+	fake.deleteMutex.Lock()
+	defer fake.deleteMutex.Unlock()
 	fake.DeleteStub = nil
 	if fake.deleteReturnsOnCall == nil {
 		fake.deleteReturnsOnCall = make(map[int]struct {
@@ -598,37 +395,38 @@ func (fake *FakeProductFileClient) DeleteReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeProductFileClient) Download(productSlug string, releaseVersion string, globs []string, productFileIDs []int, downloadDir string, acceptEULA bool, progressWriter io.Writer) error {
-	var globsCopy []string
-	if globs != nil {
-		globsCopy = make([]string, len(globs))
-		copy(globsCopy, globs)
+func (fake *FakeProductFileClient) Download(arg1 string, arg2 string, arg3 []string, arg4 []int, arg5 string, arg6 bool, arg7 io.Writer) error {
+	var arg3Copy []string
+	if arg3 != nil {
+		arg3Copy = make([]string, len(arg3))
+		copy(arg3Copy, arg3)
 	}
-	var productFileIDsCopy []int
-	if productFileIDs != nil {
-		productFileIDsCopy = make([]int, len(productFileIDs))
-		copy(productFileIDsCopy, productFileIDs)
+	var arg4Copy []int
+	if arg4 != nil {
+		arg4Copy = make([]int, len(arg4))
+		copy(arg4Copy, arg4)
 	}
 	fake.downloadMutex.Lock()
 	ret, specificReturn := fake.downloadReturnsOnCall[len(fake.downloadArgsForCall)]
 	fake.downloadArgsForCall = append(fake.downloadArgsForCall, struct {
-		productSlug    string
-		releaseVersion string
-		globs          []string
-		productFileIDs []int
-		downloadDir    string
-		acceptEULA     bool
-		progressWriter io.Writer
-	}{productSlug, releaseVersion, globsCopy, productFileIDsCopy, downloadDir, acceptEULA, progressWriter})
-	fake.recordInvocation("Download", []interface{}{productSlug, releaseVersion, globsCopy, productFileIDsCopy, downloadDir, acceptEULA, progressWriter})
+		arg1 string
+		arg2 string
+		arg3 []string
+		arg4 []int
+		arg5 string
+		arg6 bool
+		arg7 io.Writer
+	}{arg1, arg2, arg3Copy, arg4Copy, arg5, arg6, arg7})
+	fake.recordInvocation("Download", []interface{}{arg1, arg2, arg3Copy, arg4Copy, arg5, arg6, arg7})
 	fake.downloadMutex.Unlock()
 	if fake.DownloadStub != nil {
-		return fake.DownloadStub(productSlug, releaseVersion, globs, productFileIDs, downloadDir, acceptEULA, progressWriter)
+		return fake.DownloadStub(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.downloadReturns.result1
+	fakeReturns := fake.downloadReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeProductFileClient) DownloadCallCount() int {
@@ -637,13 +435,22 @@ func (fake *FakeProductFileClient) DownloadCallCount() int {
 	return len(fake.downloadArgsForCall)
 }
 
+func (fake *FakeProductFileClient) DownloadCalls(stub func(string, string, []string, []int, string, bool, io.Writer) error) {
+	fake.downloadMutex.Lock()
+	defer fake.downloadMutex.Unlock()
+	fake.DownloadStub = stub
+}
+
 func (fake *FakeProductFileClient) DownloadArgsForCall(i int) (string, string, []string, []int, string, bool, io.Writer) {
 	fake.downloadMutex.RLock()
 	defer fake.downloadMutex.RUnlock()
-	return fake.downloadArgsForCall[i].productSlug, fake.downloadArgsForCall[i].releaseVersion, fake.downloadArgsForCall[i].globs, fake.downloadArgsForCall[i].productFileIDs, fake.downloadArgsForCall[i].downloadDir, fake.downloadArgsForCall[i].acceptEULA, fake.downloadArgsForCall[i].progressWriter
+	argsForCall := fake.downloadArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6, argsForCall.arg7
 }
 
 func (fake *FakeProductFileClient) DownloadReturns(result1 error) {
+	fake.downloadMutex.Lock()
+	defer fake.downloadMutex.Unlock()
 	fake.DownloadStub = nil
 	fake.downloadReturns = struct {
 		result1 error
@@ -651,6 +458,8 @@ func (fake *FakeProductFileClient) DownloadReturns(result1 error) {
 }
 
 func (fake *FakeProductFileClient) DownloadReturnsOnCall(i int, result1 error) {
+	fake.downloadMutex.Lock()
+	defer fake.downloadMutex.Unlock()
 	fake.DownloadStub = nil
 	if fake.downloadReturnsOnCall == nil {
 		fake.downloadReturnsOnCall = make(map[int]struct {
@@ -662,29 +471,344 @@ func (fake *FakeProductFileClient) DownloadReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakeProductFileClient) Get(arg1 string, arg2 string, arg3 int) error {
+	fake.getMutex.Lock()
+	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
+	fake.getArgsForCall = append(fake.getArgsForCall, struct {
+		arg1 string
+		arg2 string
+		arg3 int
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("Get", []interface{}{arg1, arg2, arg3})
+	fake.getMutex.Unlock()
+	if fake.GetStub != nil {
+		return fake.GetStub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.getReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeProductFileClient) GetCallCount() int {
+	fake.getMutex.RLock()
+	defer fake.getMutex.RUnlock()
+	return len(fake.getArgsForCall)
+}
+
+func (fake *FakeProductFileClient) GetCalls(stub func(string, string, int) error) {
+	fake.getMutex.Lock()
+	defer fake.getMutex.Unlock()
+	fake.GetStub = stub
+}
+
+func (fake *FakeProductFileClient) GetArgsForCall(i int) (string, string, int) {
+	fake.getMutex.RLock()
+	defer fake.getMutex.RUnlock()
+	argsForCall := fake.getArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakeProductFileClient) GetReturns(result1 error) {
+	fake.getMutex.Lock()
+	defer fake.getMutex.Unlock()
+	fake.GetStub = nil
+	fake.getReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) GetReturnsOnCall(i int, result1 error) {
+	fake.getMutex.Lock()
+	defer fake.getMutex.Unlock()
+	fake.GetStub = nil
+	if fake.getReturnsOnCall == nil {
+		fake.getReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.getReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) List(arg1 string, arg2 string) error {
+	fake.listMutex.Lock()
+	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
+	fake.listArgsForCall = append(fake.listArgsForCall, struct {
+		arg1 string
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("List", []interface{}{arg1, arg2})
+	fake.listMutex.Unlock()
+	if fake.ListStub != nil {
+		return fake.ListStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.listReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeProductFileClient) ListCallCount() int {
+	fake.listMutex.RLock()
+	defer fake.listMutex.RUnlock()
+	return len(fake.listArgsForCall)
+}
+
+func (fake *FakeProductFileClient) ListCalls(stub func(string, string) error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
+	fake.ListStub = stub
+}
+
+func (fake *FakeProductFileClient) ListArgsForCall(i int) (string, string) {
+	fake.listMutex.RLock()
+	defer fake.listMutex.RUnlock()
+	argsForCall := fake.listArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeProductFileClient) ListReturns(result1 error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
+	fake.ListStub = nil
+	fake.listReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) ListReturnsOnCall(i int, result1 error) {
+	fake.listMutex.Lock()
+	defer fake.listMutex.Unlock()
+	fake.ListStub = nil
+	if fake.listReturnsOnCall == nil {
+		fake.listReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.listReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) RemoveFromFileGroup(arg1 string, arg2 int, arg3 int) error {
+	fake.removeFromFileGroupMutex.Lock()
+	ret, specificReturn := fake.removeFromFileGroupReturnsOnCall[len(fake.removeFromFileGroupArgsForCall)]
+	fake.removeFromFileGroupArgsForCall = append(fake.removeFromFileGroupArgsForCall, struct {
+		arg1 string
+		arg2 int
+		arg3 int
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("RemoveFromFileGroup", []interface{}{arg1, arg2, arg3})
+	fake.removeFromFileGroupMutex.Unlock()
+	if fake.RemoveFromFileGroupStub != nil {
+		return fake.RemoveFromFileGroupStub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.removeFromFileGroupReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeProductFileClient) RemoveFromFileGroupCallCount() int {
+	fake.removeFromFileGroupMutex.RLock()
+	defer fake.removeFromFileGroupMutex.RUnlock()
+	return len(fake.removeFromFileGroupArgsForCall)
+}
+
+func (fake *FakeProductFileClient) RemoveFromFileGroupCalls(stub func(string, int, int) error) {
+	fake.removeFromFileGroupMutex.Lock()
+	defer fake.removeFromFileGroupMutex.Unlock()
+	fake.RemoveFromFileGroupStub = stub
+}
+
+func (fake *FakeProductFileClient) RemoveFromFileGroupArgsForCall(i int) (string, int, int) {
+	fake.removeFromFileGroupMutex.RLock()
+	defer fake.removeFromFileGroupMutex.RUnlock()
+	argsForCall := fake.removeFromFileGroupArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakeProductFileClient) RemoveFromFileGroupReturns(result1 error) {
+	fake.removeFromFileGroupMutex.Lock()
+	defer fake.removeFromFileGroupMutex.Unlock()
+	fake.RemoveFromFileGroupStub = nil
+	fake.removeFromFileGroupReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) RemoveFromFileGroupReturnsOnCall(i int, result1 error) {
+	fake.removeFromFileGroupMutex.Lock()
+	defer fake.removeFromFileGroupMutex.Unlock()
+	fake.RemoveFromFileGroupStub = nil
+	if fake.removeFromFileGroupReturnsOnCall == nil {
+		fake.removeFromFileGroupReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.removeFromFileGroupReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) RemoveFromRelease(arg1 string, arg2 string, arg3 int) error {
+	fake.removeFromReleaseMutex.Lock()
+	ret, specificReturn := fake.removeFromReleaseReturnsOnCall[len(fake.removeFromReleaseArgsForCall)]
+	fake.removeFromReleaseArgsForCall = append(fake.removeFromReleaseArgsForCall, struct {
+		arg1 string
+		arg2 string
+		arg3 int
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("RemoveFromRelease", []interface{}{arg1, arg2, arg3})
+	fake.removeFromReleaseMutex.Unlock()
+	if fake.RemoveFromReleaseStub != nil {
+		return fake.RemoveFromReleaseStub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.removeFromReleaseReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeProductFileClient) RemoveFromReleaseCallCount() int {
+	fake.removeFromReleaseMutex.RLock()
+	defer fake.removeFromReleaseMutex.RUnlock()
+	return len(fake.removeFromReleaseArgsForCall)
+}
+
+func (fake *FakeProductFileClient) RemoveFromReleaseCalls(stub func(string, string, int) error) {
+	fake.removeFromReleaseMutex.Lock()
+	defer fake.removeFromReleaseMutex.Unlock()
+	fake.RemoveFromReleaseStub = stub
+}
+
+func (fake *FakeProductFileClient) RemoveFromReleaseArgsForCall(i int) (string, string, int) {
+	fake.removeFromReleaseMutex.RLock()
+	defer fake.removeFromReleaseMutex.RUnlock()
+	argsForCall := fake.removeFromReleaseArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakeProductFileClient) RemoveFromReleaseReturns(result1 error) {
+	fake.removeFromReleaseMutex.Lock()
+	defer fake.removeFromReleaseMutex.Unlock()
+	fake.RemoveFromReleaseStub = nil
+	fake.removeFromReleaseReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) RemoveFromReleaseReturnsOnCall(i int, result1 error) {
+	fake.removeFromReleaseMutex.Lock()
+	defer fake.removeFromReleaseMutex.Unlock()
+	fake.RemoveFromReleaseStub = nil
+	if fake.removeFromReleaseReturnsOnCall == nil {
+		fake.removeFromReleaseReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.removeFromReleaseReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) Update(arg1 int, arg2 string, arg3 *string, arg4 *string, arg5 *string, arg6 *string, arg7 *string, arg8 *string, arg9 *[]string) error {
+	fake.updateMutex.Lock()
+	ret, specificReturn := fake.updateReturnsOnCall[len(fake.updateArgsForCall)]
+	fake.updateArgsForCall = append(fake.updateArgsForCall, struct {
+		arg1 int
+		arg2 string
+		arg3 *string
+		arg4 *string
+		arg5 *string
+		arg6 *string
+		arg7 *string
+		arg8 *string
+		arg9 *[]string
+	}{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9})
+	fake.recordInvocation("Update", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9})
+	fake.updateMutex.Unlock()
+	if fake.UpdateStub != nil {
+		return fake.UpdateStub(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.updateReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeProductFileClient) UpdateCallCount() int {
+	fake.updateMutex.RLock()
+	defer fake.updateMutex.RUnlock()
+	return len(fake.updateArgsForCall)
+}
+
+func (fake *FakeProductFileClient) UpdateCalls(stub func(int, string, *string, *string, *string, *string, *string, *string, *[]string) error) {
+	fake.updateMutex.Lock()
+	defer fake.updateMutex.Unlock()
+	fake.UpdateStub = stub
+}
+
+func (fake *FakeProductFileClient) UpdateArgsForCall(i int) (int, string, *string, *string, *string, *string, *string, *string, *[]string) {
+	fake.updateMutex.RLock()
+	defer fake.updateMutex.RUnlock()
+	argsForCall := fake.updateArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6, argsForCall.arg7, argsForCall.arg8, argsForCall.arg9
+}
+
+func (fake *FakeProductFileClient) UpdateReturns(result1 error) {
+	fake.updateMutex.Lock()
+	defer fake.updateMutex.Unlock()
+	fake.UpdateStub = nil
+	fake.updateReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductFileClient) UpdateReturnsOnCall(i int, result1 error) {
+	fake.updateMutex.Lock()
+	defer fake.updateMutex.Unlock()
+	fake.UpdateStub = nil
+	if fake.updateReturnsOnCall == nil {
+		fake.updateReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.updateReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeProductFileClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.listMutex.RLock()
-	defer fake.listMutex.RUnlock()
-	fake.getMutex.RLock()
-	defer fake.getMutex.RUnlock()
-	fake.createMutex.RLock()
-	defer fake.createMutex.RUnlock()
-	fake.updateMutex.RLock()
-	defer fake.updateMutex.RUnlock()
-	fake.addToReleaseMutex.RLock()
-	defer fake.addToReleaseMutex.RUnlock()
-	fake.removeFromReleaseMutex.RLock()
-	defer fake.removeFromReleaseMutex.RUnlock()
 	fake.addToFileGroupMutex.RLock()
 	defer fake.addToFileGroupMutex.RUnlock()
-	fake.removeFromFileGroupMutex.RLock()
-	defer fake.removeFromFileGroupMutex.RUnlock()
+	fake.addToReleaseMutex.RLock()
+	defer fake.addToReleaseMutex.RUnlock()
+	fake.createMutex.RLock()
+	defer fake.createMutex.RUnlock()
 	fake.deleteMutex.RLock()
 	defer fake.deleteMutex.RUnlock()
 	fake.downloadMutex.RLock()
 	defer fake.downloadMutex.RUnlock()
+	fake.getMutex.RLock()
+	defer fake.getMutex.RUnlock()
+	fake.listMutex.RLock()
+	defer fake.listMutex.RUnlock()
+	fake.removeFromFileGroupMutex.RLock()
+	defer fake.removeFromFileGroupMutex.RUnlock()
+	fake.removeFromReleaseMutex.RLock()
+	defer fake.removeFromReleaseMutex.RUnlock()
+	fake.updateMutex.RLock()
+	defer fake.updateMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

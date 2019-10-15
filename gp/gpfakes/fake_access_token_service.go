@@ -10,8 +10,9 @@ import (
 type FakeAccessTokenService struct {
 	AccessTokenStub        func() (string, error)
 	accessTokenMutex       sync.RWMutex
-	accessTokenArgsForCall []struct{}
-	accessTokenReturns     struct {
+	accessTokenArgsForCall []struct {
+	}
+	accessTokenReturns struct {
 		result1 string
 		result2 error
 	}
@@ -26,7 +27,8 @@ type FakeAccessTokenService struct {
 func (fake *FakeAccessTokenService) AccessToken() (string, error) {
 	fake.accessTokenMutex.Lock()
 	ret, specificReturn := fake.accessTokenReturnsOnCall[len(fake.accessTokenArgsForCall)]
-	fake.accessTokenArgsForCall = append(fake.accessTokenArgsForCall, struct{}{})
+	fake.accessTokenArgsForCall = append(fake.accessTokenArgsForCall, struct {
+	}{})
 	fake.recordInvocation("AccessToken", []interface{}{})
 	fake.accessTokenMutex.Unlock()
 	if fake.AccessTokenStub != nil {
@@ -35,7 +37,8 @@ func (fake *FakeAccessTokenService) AccessToken() (string, error) {
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.accessTokenReturns.result1, fake.accessTokenReturns.result2
+	fakeReturns := fake.accessTokenReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeAccessTokenService) AccessTokenCallCount() int {
@@ -44,7 +47,15 @@ func (fake *FakeAccessTokenService) AccessTokenCallCount() int {
 	return len(fake.accessTokenArgsForCall)
 }
 
+func (fake *FakeAccessTokenService) AccessTokenCalls(stub func() (string, error)) {
+	fake.accessTokenMutex.Lock()
+	defer fake.accessTokenMutex.Unlock()
+	fake.AccessTokenStub = stub
+}
+
 func (fake *FakeAccessTokenService) AccessTokenReturns(result1 string, result2 error) {
+	fake.accessTokenMutex.Lock()
+	defer fake.accessTokenMutex.Unlock()
 	fake.AccessTokenStub = nil
 	fake.accessTokenReturns = struct {
 		result1 string
@@ -53,6 +64,8 @@ func (fake *FakeAccessTokenService) AccessTokenReturns(result1 string, result2 e
 }
 
 func (fake *FakeAccessTokenService) AccessTokenReturnsOnCall(i int, result1 string, result2 error) {
+	fake.accessTokenMutex.Lock()
+	defer fake.accessTokenMutex.Unlock()
 	fake.AccessTokenStub = nil
 	if fake.accessTokenReturnsOnCall == nil {
 		fake.accessTokenReturnsOnCall = make(map[int]struct {

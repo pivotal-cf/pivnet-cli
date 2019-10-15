@@ -8,12 +8,12 @@ import (
 )
 
 type FakeCurlClient struct {
-	MakeRequestStub        func(method string, body string, url string) error
+	MakeRequestStub        func(string, string, string) error
 	makeRequestMutex       sync.RWMutex
 	makeRequestArgsForCall []struct {
-		method string
-		body   string
-		url    string
+		arg1 string
+		arg2 string
+		arg3 string
 	}
 	makeRequestReturns struct {
 		result1 error
@@ -25,23 +25,24 @@ type FakeCurlClient struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCurlClient) MakeRequest(method string, body string, url string) error {
+func (fake *FakeCurlClient) MakeRequest(arg1 string, arg2 string, arg3 string) error {
 	fake.makeRequestMutex.Lock()
 	ret, specificReturn := fake.makeRequestReturnsOnCall[len(fake.makeRequestArgsForCall)]
 	fake.makeRequestArgsForCall = append(fake.makeRequestArgsForCall, struct {
-		method string
-		body   string
-		url    string
-	}{method, body, url})
-	fake.recordInvocation("MakeRequest", []interface{}{method, body, url})
+		arg1 string
+		arg2 string
+		arg3 string
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("MakeRequest", []interface{}{arg1, arg2, arg3})
 	fake.makeRequestMutex.Unlock()
 	if fake.MakeRequestStub != nil {
-		return fake.MakeRequestStub(method, body, url)
+		return fake.MakeRequestStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.makeRequestReturns.result1
+	fakeReturns := fake.makeRequestReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeCurlClient) MakeRequestCallCount() int {
@@ -50,13 +51,22 @@ func (fake *FakeCurlClient) MakeRequestCallCount() int {
 	return len(fake.makeRequestArgsForCall)
 }
 
+func (fake *FakeCurlClient) MakeRequestCalls(stub func(string, string, string) error) {
+	fake.makeRequestMutex.Lock()
+	defer fake.makeRequestMutex.Unlock()
+	fake.MakeRequestStub = stub
+}
+
 func (fake *FakeCurlClient) MakeRequestArgsForCall(i int) (string, string, string) {
 	fake.makeRequestMutex.RLock()
 	defer fake.makeRequestMutex.RUnlock()
-	return fake.makeRequestArgsForCall[i].method, fake.makeRequestArgsForCall[i].body, fake.makeRequestArgsForCall[i].url
+	argsForCall := fake.makeRequestArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeCurlClient) MakeRequestReturns(result1 error) {
+	fake.makeRequestMutex.Lock()
+	defer fake.makeRequestMutex.Unlock()
 	fake.MakeRequestStub = nil
 	fake.makeRequestReturns = struct {
 		result1 error
@@ -64,6 +74,8 @@ func (fake *FakeCurlClient) MakeRequestReturns(result1 error) {
 }
 
 func (fake *FakeCurlClient) MakeRequestReturnsOnCall(i int, result1 error) {
+	fake.makeRequestMutex.Lock()
+	defer fake.makeRequestMutex.Unlock()
 	fake.MakeRequestStub = nil
 	if fake.makeRequestReturnsOnCall == nil {
 		fake.makeRequestReturnsOnCall = make(map[int]struct {

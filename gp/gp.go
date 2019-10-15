@@ -194,6 +194,10 @@ func (c Client) UpdateProductFile(productSlug string, productFile pivnet.Product
 	return c.client.ProductFiles.Update(productSlug, productFile)
 }
 
+func (c Client) UpdateImageReference(productSlug string, imageReference pivnet.ImageReference) (pivnet.ImageReference, error) {
+	return c.client.ImageReferences.Update(productSlug, imageReference)
+}
+
 func (c Client) AddProductFileToRelease(productSlug string, releaseID int, productFileID int) error {
 	return c.client.ProductFiles.AddToRelease(productSlug, releaseID, productFileID)
 }

@@ -2,9 +2,10 @@ package imagereference
 
 import (
 	"fmt"
-	"github.com/pivotal-cf/pivnet-cli/ui"
 	"io"
 	"strconv"
+
+	"github.com/pivotal-cf/pivnet-cli/ui"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pivotal-cf/go-pivnet/v2"
@@ -24,16 +25,17 @@ type PivnetClient interface {
 	DeleteImageReference(productSlug string, releaseID int) (pivnet.ImageReference, error)
 	AddImageReferenceToRelease(productSlug string, imageReferenceID int, releaseID int) error
 	RemoveImageReferenceFromRelease(productSlug string, imageReferenceID int, releaseID int) error
+	UpdateImageReference(productSlug string, imageReference pivnet.ImageReference) (pivnet.ImageReference, error)
 }
 
 type ImageReferenceClient struct {
-	pivnetClient     PivnetClient
-	eh               errorhandler.ErrorHandler
-	format           string
-	outputWriter     io.Writer
-	logWriter        io.Writer
-	printer          printer.Printer
-	l                logger.Logger
+	pivnetClient PivnetClient
+	eh           errorhandler.ErrorHandler
+	format       string
+	outputWriter io.Writer
+	logWriter    io.Writer
+	printer      printer.Printer
+	l            logger.Logger
 }
 
 func NewImageReferenceClient(
@@ -46,14 +48,46 @@ func NewImageReferenceClient(
 	l logger.Logger,
 ) *ImageReferenceClient {
 	return &ImageReferenceClient{
-		pivnetClient:     pivnetClient,
-		eh:               eh,
-		format:           format,
-		outputWriter:     outputWriter,
-		logWriter:        logWriter,
-		printer:          printer,
-		l:                l,
+		pivnetClient: pivnetClient,
+		eh:           eh,
+		format:       format,
+		outputWriter: outputWriter,
+		logWriter:    logWriter,
+		printer:      printer,
+		l:            l,
 	}
+}
+
+func (c *ImageReferenceClient) Update(productSlug string, imageReferenceID int, name *string, description *string, docsURL *string, systemRequirements *[]string) error {
+	imageReference, err := c.pivnetClient.ImageReference(
+		productSlug,
+		imageReferenceID,
+	)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	if name != nil {
+		imageReference.Name = *name
+	}
+
+	if description != nil {
+		imageReference.Description = *description
+	}
+
+	if docsURL != nil {
+		imageReference.DocsURL = *docsURL
+	}
+
+	if systemRequirements != nil {
+		imageReference.SystemRequirements = *systemRequirements
+	}
+
+	updatedImageReference, err := c.pivnetClient.UpdateImageReference(productSlug, imageReference)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+	return c.printImageReference(updatedImageReference)
 }
 
 func (c *ImageReferenceClient) List(productSlug string, releaseVersion string) error {
@@ -113,7 +147,6 @@ func (c *ImageReferenceClient) printImageReferences(imageReferences []pivnet.Ima
 
 	return nil
 }
-
 
 func (c *ImageReferenceClient) printImageReference(imageReference pivnet.ImageReference) error {
 	switch c.format {

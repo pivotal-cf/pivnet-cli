@@ -49,7 +49,7 @@ var _ = Describe("ErrorHandler", func() {
 	It("writes to outWriter", func() {
 		_ = errorHandler.HandleError(inputErr)
 
-		Expect(outWriter.String()).To(Equal(fmt.Sprintln("some error")))
+		Expect(outWriter.String()).To(ContainSubstring(fmt.Sprint("some error")))
 	})
 
 	Context("when the error is nil", func() {
@@ -79,7 +79,7 @@ var _ = Describe("ErrorHandler", func() {
 		It("writes to logWriter", func() {
 			_ = errorHandler.HandleError(inputErr)
 
-			Expect(logWriter.String()).To(Equal(fmt.Sprintln("some error")))
+			Expect(logWriter.String()).To(ContainSubstring(fmt.Sprint("some error")))
 		})
 	})
 
@@ -91,7 +91,7 @@ var _ = Describe("ErrorHandler", func() {
 		It("writes to logWriter", func() {
 			_ = errorHandler.HandleError(inputErr)
 
-			Expect(logWriter.String()).To(Equal(fmt.Sprintln("some error")))
+			Expect(logWriter.String()).To(ContainSubstring(fmt.Sprint("some error")))
 		})
 	})
 
@@ -104,7 +104,7 @@ var _ = Describe("ErrorHandler", func() {
 			It("returns custom message", func() {
 				_ = errorHandler.HandleError(inputErr)
 
-				Expect(outWriter.String()).To(Equal(fmt.Sprintln("Failed to authenticate - please provide valid API token")))
+				Expect(outWriter.String()).To(ContainSubstring(fmt.Sprint("Failed to authenticate - please provide valid API token")))
 			})
 		})
 
@@ -119,7 +119,7 @@ var _ = Describe("ErrorHandler", func() {
 			It("returns custom message", func() {
 				_ = errorHandler.HandleError(inputErr)
 
-				Expect(outWriter.String()).To(Equal(fmt.Sprintln("Pivnet error: something not found")))
+				Expect(outWriter.String()).To(ContainSubstring(fmt.Sprint("Pivnet error: something not found")))
 			})
 		})
 

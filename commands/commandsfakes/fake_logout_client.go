@@ -8,10 +8,10 @@ import (
 )
 
 type FakeLogoutClient struct {
-	LogoutStub        func(profileName string) error
+	LogoutStub        func(string) error
 	logoutMutex       sync.RWMutex
 	logoutArgsForCall []struct {
-		profileName string
+		arg1 string
 	}
 	logoutReturns struct {
 		result1 error
@@ -23,21 +23,22 @@ type FakeLogoutClient struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeLogoutClient) Logout(profileName string) error {
+func (fake *FakeLogoutClient) Logout(arg1 string) error {
 	fake.logoutMutex.Lock()
 	ret, specificReturn := fake.logoutReturnsOnCall[len(fake.logoutArgsForCall)]
 	fake.logoutArgsForCall = append(fake.logoutArgsForCall, struct {
-		profileName string
-	}{profileName})
-	fake.recordInvocation("Logout", []interface{}{profileName})
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("Logout", []interface{}{arg1})
 	fake.logoutMutex.Unlock()
 	if fake.LogoutStub != nil {
-		return fake.LogoutStub(profileName)
+		return fake.LogoutStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.logoutReturns.result1
+	fakeReturns := fake.logoutReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeLogoutClient) LogoutCallCount() int {
@@ -46,13 +47,22 @@ func (fake *FakeLogoutClient) LogoutCallCount() int {
 	return len(fake.logoutArgsForCall)
 }
 
+func (fake *FakeLogoutClient) LogoutCalls(stub func(string) error) {
+	fake.logoutMutex.Lock()
+	defer fake.logoutMutex.Unlock()
+	fake.LogoutStub = stub
+}
+
 func (fake *FakeLogoutClient) LogoutArgsForCall(i int) string {
 	fake.logoutMutex.RLock()
 	defer fake.logoutMutex.RUnlock()
-	return fake.logoutArgsForCall[i].profileName
+	argsForCall := fake.logoutArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *FakeLogoutClient) LogoutReturns(result1 error) {
+	fake.logoutMutex.Lock()
+	defer fake.logoutMutex.Unlock()
 	fake.LogoutStub = nil
 	fake.logoutReturns = struct {
 		result1 error
@@ -60,6 +70,8 @@ func (fake *FakeLogoutClient) LogoutReturns(result1 error) {
 }
 
 func (fake *FakeLogoutClient) LogoutReturnsOnCall(i int, result1 error) {
+	fake.logoutMutex.Lock()
+	defer fake.logoutMutex.Unlock()
 	fake.LogoutStub = nil
 	if fake.logoutReturnsOnCall == nil {
 		fake.logoutReturnsOnCall = make(map[int]struct {

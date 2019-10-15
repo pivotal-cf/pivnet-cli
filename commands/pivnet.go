@@ -105,6 +105,7 @@ type PivnetCommand struct {
 	DeleteImageReference            DeleteImageReferenceCommand            `command:"delete-image-reference" alias:"dir" description:"Delete a container image reference"`
 	AddImageReferenceToRelease      AddImageReferenceToReleaseCommand      `command:"add-image-reference" alias:"air" description:"Add image reference to release"`
 	RemoveImageReferenceFromRelease RemoveImageReferenceFromReleaseCommand `command:"remove-image-reference" alias:"rir" description:"Remove image reference from release"`
+	UpdateImageReference            UpdateImageReferenceCommand            `command:"update-image-reference" alias:"uir" description:"Update a container image reference"`
 
 	Releases      ReleasesCommand      `command:"releases" alias:"rs" description:"List releases"`
 	Release       ReleaseCommand       `command:"release" alias:"r" description:"Show release"`

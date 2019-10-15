@@ -9,10 +9,10 @@ import (
 )
 
 type FakeAuthenticator struct {
-	AuthenticateClientStub        func(client auth.AuthClient) error
+	AuthenticateClientStub        func(auth.AuthClient) error
 	authenticateClientMutex       sync.RWMutex
 	authenticateClientArgsForCall []struct {
-		client auth.AuthClient
+		arg1 auth.AuthClient
 	}
 	authenticateClientReturns struct {
 		result1 error
@@ -24,21 +24,22 @@ type FakeAuthenticator struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeAuthenticator) AuthenticateClient(client auth.AuthClient) error {
+func (fake *FakeAuthenticator) AuthenticateClient(arg1 auth.AuthClient) error {
 	fake.authenticateClientMutex.Lock()
 	ret, specificReturn := fake.authenticateClientReturnsOnCall[len(fake.authenticateClientArgsForCall)]
 	fake.authenticateClientArgsForCall = append(fake.authenticateClientArgsForCall, struct {
-		client auth.AuthClient
-	}{client})
-	fake.recordInvocation("AuthenticateClient", []interface{}{client})
+		arg1 auth.AuthClient
+	}{arg1})
+	fake.recordInvocation("AuthenticateClient", []interface{}{arg1})
 	fake.authenticateClientMutex.Unlock()
 	if fake.AuthenticateClientStub != nil {
-		return fake.AuthenticateClientStub(client)
+		return fake.AuthenticateClientStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.authenticateClientReturns.result1
+	fakeReturns := fake.authenticateClientReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeAuthenticator) AuthenticateClientCallCount() int {
@@ -47,13 +48,22 @@ func (fake *FakeAuthenticator) AuthenticateClientCallCount() int {
 	return len(fake.authenticateClientArgsForCall)
 }
 
+func (fake *FakeAuthenticator) AuthenticateClientCalls(stub func(auth.AuthClient) error) {
+	fake.authenticateClientMutex.Lock()
+	defer fake.authenticateClientMutex.Unlock()
+	fake.AuthenticateClientStub = stub
+}
+
 func (fake *FakeAuthenticator) AuthenticateClientArgsForCall(i int) auth.AuthClient {
 	fake.authenticateClientMutex.RLock()
 	defer fake.authenticateClientMutex.RUnlock()
-	return fake.authenticateClientArgsForCall[i].client
+	argsForCall := fake.authenticateClientArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *FakeAuthenticator) AuthenticateClientReturns(result1 error) {
+	fake.authenticateClientMutex.Lock()
+	defer fake.authenticateClientMutex.Unlock()
 	fake.AuthenticateClientStub = nil
 	fake.authenticateClientReturns = struct {
 		result1 error
@@ -61,6 +71,8 @@ func (fake *FakeAuthenticator) AuthenticateClientReturns(result1 error) {
 }
 
 func (fake *FakeAuthenticator) AuthenticateClientReturnsOnCall(i int, result1 error) {
+	fake.authenticateClientMutex.Lock()
+	defer fake.authenticateClientMutex.Unlock()
 	fake.AuthenticateClientStub = nil
 	if fake.authenticateClientReturnsOnCall == nil {
 		fake.authenticateClientReturnsOnCall = make(map[int]struct {

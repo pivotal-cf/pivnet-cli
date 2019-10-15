@@ -269,7 +269,7 @@ func (c *ProductFileClient) Update(
 	if docsURL != nil {
 		productFile.DocsURL = *docsURL
 	}
-	
+
 	if systemRequirements != nil {
 		productFile.SystemRequirements = *systemRequirements
 	}
