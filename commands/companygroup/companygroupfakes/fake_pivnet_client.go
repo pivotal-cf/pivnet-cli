@@ -9,10 +9,39 @@ import (
 )
 
 type FakePivnetClient struct {
+	AddCompanyGroupMemberStub        func(int, string, string) (pivnet.CompanyGroup, error)
+	addCompanyGroupMemberMutex       sync.RWMutex
+	addCompanyGroupMemberArgsForCall []struct {
+		arg1 int
+		arg2 string
+		arg3 string
+	}
+	addCompanyGroupMemberReturns struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}
+	addCompanyGroupMemberReturnsOnCall map[int]struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}
+	CompanyGroupStub        func(int) (pivnet.CompanyGroup, error)
+	companyGroupMutex       sync.RWMutex
+	companyGroupArgsForCall []struct {
+		arg1 int
+	}
+	companyGroupReturns struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}
+	companyGroupReturnsOnCall map[int]struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}
 	CompanyGroupsStub        func() ([]pivnet.CompanyGroup, error)
 	companyGroupsMutex       sync.RWMutex
-	companyGroupsArgsForCall []struct{}
-	companyGroupsReturns     struct {
+	companyGroupsArgsForCall []struct {
+	}
+	companyGroupsReturns struct {
 		result1 []pivnet.CompanyGroup
 		result2 error
 	}
@@ -20,14 +49,157 @@ type FakePivnetClient struct {
 		result1 []pivnet.CompanyGroup
 		result2 error
 	}
+	RemoveCompanyGroupMemberStub        func(int, string) (pivnet.CompanyGroup, error)
+	removeCompanyGroupMemberMutex       sync.RWMutex
+	removeCompanyGroupMemberArgsForCall []struct {
+		arg1 int
+		arg2 string
+	}
+	removeCompanyGroupMemberReturns struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}
+	removeCompanyGroupMemberReturnsOnCall map[int]struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakePivnetClient) AddCompanyGroupMember(arg1 int, arg2 string, arg3 string) (pivnet.CompanyGroup, error) {
+	fake.addCompanyGroupMemberMutex.Lock()
+	ret, specificReturn := fake.addCompanyGroupMemberReturnsOnCall[len(fake.addCompanyGroupMemberArgsForCall)]
+	fake.addCompanyGroupMemberArgsForCall = append(fake.addCompanyGroupMemberArgsForCall, struct {
+		arg1 int
+		arg2 string
+		arg3 string
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("AddCompanyGroupMember", []interface{}{arg1, arg2, arg3})
+	fake.addCompanyGroupMemberMutex.Unlock()
+	if fake.AddCompanyGroupMemberStub != nil {
+		return fake.AddCompanyGroupMemberStub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.addCompanyGroupMemberReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakePivnetClient) AddCompanyGroupMemberCallCount() int {
+	fake.addCompanyGroupMemberMutex.RLock()
+	defer fake.addCompanyGroupMemberMutex.RUnlock()
+	return len(fake.addCompanyGroupMemberArgsForCall)
+}
+
+func (fake *FakePivnetClient) AddCompanyGroupMemberCalls(stub func(int, string, string) (pivnet.CompanyGroup, error)) {
+	fake.addCompanyGroupMemberMutex.Lock()
+	defer fake.addCompanyGroupMemberMutex.Unlock()
+	fake.AddCompanyGroupMemberStub = stub
+}
+
+func (fake *FakePivnetClient) AddCompanyGroupMemberArgsForCall(i int) (int, string, string) {
+	fake.addCompanyGroupMemberMutex.RLock()
+	defer fake.addCompanyGroupMemberMutex.RUnlock()
+	argsForCall := fake.addCompanyGroupMemberArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakePivnetClient) AddCompanyGroupMemberReturns(result1 pivnet.CompanyGroup, result2 error) {
+	fake.addCompanyGroupMemberMutex.Lock()
+	defer fake.addCompanyGroupMemberMutex.Unlock()
+	fake.AddCompanyGroupMemberStub = nil
+	fake.addCompanyGroupMemberReturns = struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) AddCompanyGroupMemberReturnsOnCall(i int, result1 pivnet.CompanyGroup, result2 error) {
+	fake.addCompanyGroupMemberMutex.Lock()
+	defer fake.addCompanyGroupMemberMutex.Unlock()
+	fake.AddCompanyGroupMemberStub = nil
+	if fake.addCompanyGroupMemberReturnsOnCall == nil {
+		fake.addCompanyGroupMemberReturnsOnCall = make(map[int]struct {
+			result1 pivnet.CompanyGroup
+			result2 error
+		})
+	}
+	fake.addCompanyGroupMemberReturnsOnCall[i] = struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) CompanyGroup(arg1 int) (pivnet.CompanyGroup, error) {
+	fake.companyGroupMutex.Lock()
+	ret, specificReturn := fake.companyGroupReturnsOnCall[len(fake.companyGroupArgsForCall)]
+	fake.companyGroupArgsForCall = append(fake.companyGroupArgsForCall, struct {
+		arg1 int
+	}{arg1})
+	fake.recordInvocation("CompanyGroup", []interface{}{arg1})
+	fake.companyGroupMutex.Unlock()
+	if fake.CompanyGroupStub != nil {
+		return fake.CompanyGroupStub(arg1)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.companyGroupReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakePivnetClient) CompanyGroupCallCount() int {
+	fake.companyGroupMutex.RLock()
+	defer fake.companyGroupMutex.RUnlock()
+	return len(fake.companyGroupArgsForCall)
+}
+
+func (fake *FakePivnetClient) CompanyGroupCalls(stub func(int) (pivnet.CompanyGroup, error)) {
+	fake.companyGroupMutex.Lock()
+	defer fake.companyGroupMutex.Unlock()
+	fake.CompanyGroupStub = stub
+}
+
+func (fake *FakePivnetClient) CompanyGroupArgsForCall(i int) int {
+	fake.companyGroupMutex.RLock()
+	defer fake.companyGroupMutex.RUnlock()
+	argsForCall := fake.companyGroupArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakePivnetClient) CompanyGroupReturns(result1 pivnet.CompanyGroup, result2 error) {
+	fake.companyGroupMutex.Lock()
+	defer fake.companyGroupMutex.Unlock()
+	fake.CompanyGroupStub = nil
+	fake.companyGroupReturns = struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) CompanyGroupReturnsOnCall(i int, result1 pivnet.CompanyGroup, result2 error) {
+	fake.companyGroupMutex.Lock()
+	defer fake.companyGroupMutex.Unlock()
+	fake.CompanyGroupStub = nil
+	if fake.companyGroupReturnsOnCall == nil {
+		fake.companyGroupReturnsOnCall = make(map[int]struct {
+			result1 pivnet.CompanyGroup
+			result2 error
+		})
+	}
+	fake.companyGroupReturnsOnCall[i] = struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakePivnetClient) CompanyGroups() ([]pivnet.CompanyGroup, error) {
 	fake.companyGroupsMutex.Lock()
 	ret, specificReturn := fake.companyGroupsReturnsOnCall[len(fake.companyGroupsArgsForCall)]
-	fake.companyGroupsArgsForCall = append(fake.companyGroupsArgsForCall, struct{}{})
+	fake.companyGroupsArgsForCall = append(fake.companyGroupsArgsForCall, struct {
+	}{})
 	fake.recordInvocation("CompanyGroups", []interface{}{})
 	fake.companyGroupsMutex.Unlock()
 	if fake.CompanyGroupsStub != nil {
@@ -36,7 +208,8 @@ func (fake *FakePivnetClient) CompanyGroups() ([]pivnet.CompanyGroup, error) {
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.companyGroupsReturns.result1, fake.companyGroupsReturns.result2
+	fakeReturns := fake.companyGroupsReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakePivnetClient) CompanyGroupsCallCount() int {
@@ -45,7 +218,15 @@ func (fake *FakePivnetClient) CompanyGroupsCallCount() int {
 	return len(fake.companyGroupsArgsForCall)
 }
 
+func (fake *FakePivnetClient) CompanyGroupsCalls(stub func() ([]pivnet.CompanyGroup, error)) {
+	fake.companyGroupsMutex.Lock()
+	defer fake.companyGroupsMutex.Unlock()
+	fake.CompanyGroupsStub = stub
+}
+
 func (fake *FakePivnetClient) CompanyGroupsReturns(result1 []pivnet.CompanyGroup, result2 error) {
+	fake.companyGroupsMutex.Lock()
+	defer fake.companyGroupsMutex.Unlock()
 	fake.CompanyGroupsStub = nil
 	fake.companyGroupsReturns = struct {
 		result1 []pivnet.CompanyGroup
@@ -54,6 +235,8 @@ func (fake *FakePivnetClient) CompanyGroupsReturns(result1 []pivnet.CompanyGroup
 }
 
 func (fake *FakePivnetClient) CompanyGroupsReturnsOnCall(i int, result1 []pivnet.CompanyGroup, result2 error) {
+	fake.companyGroupsMutex.Lock()
+	defer fake.companyGroupsMutex.Unlock()
 	fake.CompanyGroupsStub = nil
 	if fake.companyGroupsReturnsOnCall == nil {
 		fake.companyGroupsReturnsOnCall = make(map[int]struct {
@@ -67,11 +250,81 @@ func (fake *FakePivnetClient) CompanyGroupsReturnsOnCall(i int, result1 []pivnet
 	}{result1, result2}
 }
 
+func (fake *FakePivnetClient) RemoveCompanyGroupMember(arg1 int, arg2 string) (pivnet.CompanyGroup, error) {
+	fake.removeCompanyGroupMemberMutex.Lock()
+	ret, specificReturn := fake.removeCompanyGroupMemberReturnsOnCall[len(fake.removeCompanyGroupMemberArgsForCall)]
+	fake.removeCompanyGroupMemberArgsForCall = append(fake.removeCompanyGroupMemberArgsForCall, struct {
+		arg1 int
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("RemoveCompanyGroupMember", []interface{}{arg1, arg2})
+	fake.removeCompanyGroupMemberMutex.Unlock()
+	if fake.RemoveCompanyGroupMemberStub != nil {
+		return fake.RemoveCompanyGroupMemberStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.removeCompanyGroupMemberReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakePivnetClient) RemoveCompanyGroupMemberCallCount() int {
+	fake.removeCompanyGroupMemberMutex.RLock()
+	defer fake.removeCompanyGroupMemberMutex.RUnlock()
+	return len(fake.removeCompanyGroupMemberArgsForCall)
+}
+
+func (fake *FakePivnetClient) RemoveCompanyGroupMemberCalls(stub func(int, string) (pivnet.CompanyGroup, error)) {
+	fake.removeCompanyGroupMemberMutex.Lock()
+	defer fake.removeCompanyGroupMemberMutex.Unlock()
+	fake.RemoveCompanyGroupMemberStub = stub
+}
+
+func (fake *FakePivnetClient) RemoveCompanyGroupMemberArgsForCall(i int) (int, string) {
+	fake.removeCompanyGroupMemberMutex.RLock()
+	defer fake.removeCompanyGroupMemberMutex.RUnlock()
+	argsForCall := fake.removeCompanyGroupMemberArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakePivnetClient) RemoveCompanyGroupMemberReturns(result1 pivnet.CompanyGroup, result2 error) {
+	fake.removeCompanyGroupMemberMutex.Lock()
+	defer fake.removeCompanyGroupMemberMutex.Unlock()
+	fake.RemoveCompanyGroupMemberStub = nil
+	fake.removeCompanyGroupMemberReturns = struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) RemoveCompanyGroupMemberReturnsOnCall(i int, result1 pivnet.CompanyGroup, result2 error) {
+	fake.removeCompanyGroupMemberMutex.Lock()
+	defer fake.removeCompanyGroupMemberMutex.Unlock()
+	fake.RemoveCompanyGroupMemberStub = nil
+	if fake.removeCompanyGroupMemberReturnsOnCall == nil {
+		fake.removeCompanyGroupMemberReturnsOnCall = make(map[int]struct {
+			result1 pivnet.CompanyGroup
+			result2 error
+		})
+	}
+	fake.removeCompanyGroupMemberReturnsOnCall[i] = struct {
+		result1 pivnet.CompanyGroup
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.addCompanyGroupMemberMutex.RLock()
+	defer fake.addCompanyGroupMemberMutex.RUnlock()
+	fake.companyGroupMutex.RLock()
+	defer fake.companyGroupMutex.RUnlock()
 	fake.companyGroupsMutex.RLock()
 	defer fake.companyGroupsMutex.RUnlock()
+	fake.removeCompanyGroupMemberMutex.RLock()
+	defer fake.removeCompanyGroupMemberMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

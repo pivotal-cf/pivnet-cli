@@ -128,6 +128,18 @@ func (c Client) CompanyGroups() ([]pivnet.CompanyGroup, error) {
 	return c.client.CompanyGroups.List()
 }
 
+func (c Client) CompanyGroup(companyGroupID int) (pivnet.CompanyGroup, error) {
+	return c.client.CompanyGroups.Get(companyGroupID)
+}
+
+func (c Client) AddCompanyGroupMember(companyGroupID int, emailAddress string, isAdmin string) (pivnet.CompanyGroup, error) {
+	return c.client.CompanyGroups.AddMember(companyGroupID, emailAddress, isAdmin)
+}
+
+func (c Client) RemoveCompanyGroupMember(companyGroupID int, emailAddress string) (pivnet.CompanyGroup, error) {
+	return c.client.CompanyGroups.RemoveMember(companyGroupID, emailAddress)
+}
+
 func (c Client) EULA(eulaSlug string) (pivnet.EULA, error) {
 	return c.client.EULA.Get(eulaSlug)
 }

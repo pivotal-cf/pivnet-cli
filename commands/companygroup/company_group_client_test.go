@@ -2,7 +2,6 @@ package companygroup_test
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"github.com/pivotal-cf/pivnet-cli/commands/companygroup"
 	"github.com/pivotal-cf/pivnet-cli/commands/companygroup/companygroupfakes"
@@ -22,8 +21,6 @@ var _ = Describe("company group client", func() {
 
 		outBuffer bytes.Buffer
 
-		companygroups []pivnet.CompanyGroup
-
 		client *companygroup.CompanyGroupClient
 	)
 
@@ -33,17 +30,6 @@ var _ = Describe("company group client", func() {
 		outBuffer = bytes.Buffer{}
 
 		fakeErrorHandler = &errorhandlerfakes.FakeErrorHandler{}
-
-		companygroups = []pivnet.CompanyGroup{
-			{
-				ID:          1234,
-				Name:        "company-group-1234",
-			},
-			{
-				ID:          2345,
-				Name:        "company-group-2345",
-			},
-		}
 
 		client = companygroup.NewCompanyGroupClient(
 			fakePivnetClient,
@@ -55,19 +41,12 @@ var _ = Describe("company group client", func() {
 	})
 
 	Describe("List", func() {
-		BeforeEach(func() {
-			fakePivnetClient.CompanyGroupsReturns(companygroups, nil)
-		})
+		It("List the CompanyGroups", func() {
+			Expect(fakePivnetClient.CompanyGroupsCallCount()).To(Equal(0))
 
-		It("lists all CompanyGroups", func() {
-			err := client.List()
-			Expect(err).NotTo(HaveOccurred())
+			_ = client.List()
 
-			var returnedCompanyGroups []pivnet.CompanyGroup
-			err = json.Unmarshal(outBuffer.Bytes(), &returnedCompanyGroups)
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(returnedCompanyGroups).To(Equal(companygroups))
+			Expect(fakePivnetClient.CompanyGroupsCallCount()).To(Equal(1))
 		})
 
 		Context("when there is an error", func() {
@@ -82,6 +61,105 @@ var _ = Describe("company group client", func() {
 
 			It("invokes the error handler", func() {
 				err := client.List()
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+	})
+
+	Describe("Get", func() {
+		It("Get the CompanyGroup", func() {
+			Expect(fakePivnetClient.CompanyGroupCallCount()).To(Equal(0))
+
+			_ = client.Get(4567)
+
+			Expect(fakePivnetClient.CompanyGroupCallCount()).To(Equal(1))
+
+			companyGroupId := fakePivnetClient.CompanyGroupArgsForCall(0)
+			Expect(companyGroupId).To(Equal(4567))
+		})
+
+		Context("when there is an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("companygroup error")
+				fakePivnetClient.CompanyGroupReturns(pivnet.CompanyGroup{}, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.Get(4567)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+	})
+
+	Describe("AddCompanyGroupMember", func() {
+		It("Add member to the company group and return the CompanyGroup", func() {
+			Expect(fakePivnetClient.AddCompanyGroupMemberCallCount()).To(Equal(0))
+
+			_ = client.AddMember(4567, "dude@dude.dude", "false")
+
+			Expect(fakePivnetClient.AddCompanyGroupMemberCallCount()).To(Equal(1))
+
+			companyGroupId, memberEmail, isAdmin := fakePivnetClient.AddCompanyGroupMemberArgsForCall(0)
+			Expect(companyGroupId).To(Equal(4567))
+			Expect(memberEmail).To(Equal("dude@dude.dude"))
+			Expect(isAdmin).To(Equal("false"))
+		})
+
+		Context("when there is an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("companygroup error")
+				fakePivnetClient.AddCompanyGroupMemberReturns(pivnet.CompanyGroup{}, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.AddMember(123,"blah", "")
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+	})
+
+	Describe("RemoveCompanyGroupMember", func() {
+		It("Remove member to the company group and return the CompanyGroup", func() {
+			Expect(fakePivnetClient.RemoveCompanyGroupMemberCallCount()).To(Equal(0))
+
+			_ = client.RemoveMember(4567, "dude@dude.dude")
+
+			Expect(fakePivnetClient.RemoveCompanyGroupMemberCallCount()).To(Equal(1))
+
+			companyGroupId, memberEmail := fakePivnetClient.RemoveCompanyGroupMemberArgsForCall(0)
+			Expect(companyGroupId).To(Equal(4567))
+			Expect(memberEmail).To(Equal("dude@dude.dude"))
+		})
+
+		Context("when there is an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("companygroup error")
+				fakePivnetClient.RemoveCompanyGroupMemberReturns(pivnet.CompanyGroup{}, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.RemoveMember(123,"blah")
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))

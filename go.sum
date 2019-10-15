@@ -66,6 +66,8 @@ github.com/pivotal-cf/go-pivnet/v2 v2.0.6 h1:jiRkpOsXZnrq5LTQHZMuhcRsphpnisacVlp
 github.com/pivotal-cf/go-pivnet/v2 v2.0.6/go.mod h1:mxhWiCcPaAkp6+ojnyfmWvsfLIWiMfNdqfoF4dtCQ8Q=
 github.com/pivotal-cf/go-pivnet/v2 v2.0.7-0.20191014090417-9bef9b3e75ac h1:7Zi61YCTupLHFYLSTdQYJi3sTVFfQB1w7NXM9l2qc5o=
 github.com/pivotal-cf/go-pivnet/v2 v2.0.7-0.20191014090417-9bef9b3e75ac/go.mod h1:Ormn4YO2MooU40LNFwECoLd8XZFwbRcysET+OAn7FLg=
+github.com/pivotal-cf/go-pivnet/v2 v2.0.7 h1:wj9tMoAJsXp7OTwRHbqscaEwLNiFP+KCKWwJ50AvG/8=
+github.com/pivotal-cf/go-pivnet/v2 v2.0.7/go.mod h1:Ormn4YO2MooU40LNFwECoLd8XZFwbRcysET+OAn7FLg=
 github.com/robdimsdale/sanitizer v0.0.0-20160522134901-ab2334cb7539 h1:h3AVw1v3JIE9Y1HyjYyiPTG73ywlF4754oiIjkxPjNk=
 github.com/robdimsdale/sanitizer v0.0.0-20160522134901-ab2334cb7539/go.mod h1:tqCODtkKV+9Tfvt9JURvKCTxJ69bA/OU/QhsaQLK/rc=
 github.com/sclevine/spec v1.2.0/go.mod h1:W4J29eT/Kzv7/b9IWLB055Z+qvVC9vt0Arko24q7p+U=
