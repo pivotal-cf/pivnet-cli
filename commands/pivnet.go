@@ -121,10 +121,13 @@ type PivnetCommand struct {
 	UpdateUserGroup UpdateUserGroupCommand `command:"update-user-group" alias:"uug" description:"Update user group"`
 	DeleteUserGroup DeleteUserGroupCommand `command:"delete-user-group" alias:"dug" description:"Delete user group"`
 
-	CompanyGroups CompanyGroupsCommand `command:"company-groups" alias:"cgs" description:"List managed company groups"`
-
 	AddUserGroupMember    AddUserGroupMemberCommand    `command:"add-user-group-member" alias:"augm" description:"Add user group member to group"`
 	RemoveUserGroupMember RemoveUserGroupMemberCommand `command:"remove-user-group-member" alias:"rugm" description:"Remove user group member from group"`
+
+	CompanyGroups CompanyGroupsCommand `command:"company-groups" alias:"cgs" description:"List managed company groups"`
+	CompanyGroup CompanyGroupCommand `command:"company-group" alias:"cg" description:"Show company group"`
+	AddCompanyGroupMember AddCompanyGroupMemberCommand `command:"company-group-add-member" alias:"cgam" description:"Add a member to a company group"`
+	RemoveCompanyGroupMember RemoveCompanyGroupMemberCommand `command:"company-group-remove-member" alias:"cgrm" description:"Remove a member to a company group"`
 
 	ReleaseDependencies     ReleaseDependenciesCommand     `command:"release-dependencies" alias:"rds" description:"List release dependencies"`
 	AddReleaseDependency    AddReleaseDependencyCommand    `command:"add-release-dependency" alias:"ard" description:"Add release dependency"`
