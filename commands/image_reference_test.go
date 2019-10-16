@@ -529,7 +529,7 @@ var _ = Describe("image reference commands", func() {
 		})
 	})
 
-	FDescribe("UpdateImagereferenceCommand", func() {
+	Describe("UpdateImagereferenceCommand", func() {
 		var (
 			productSlug      string
 			imageReferenceID int
