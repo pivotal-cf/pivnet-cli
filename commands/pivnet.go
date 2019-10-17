@@ -80,6 +80,7 @@ type PivnetCommand struct {
 
 	Products ProductsCommand `command:"products" alias:"ps" description:"List products"`
 	Product  ProductCommand  `command:"product" alias:"p" description:"Show product"`
+	ProductSlugs ProductSlugsCommand `command:"product-slugs" alias:"psl" description:"Show slugs associated to a product"`
 
 	ProductFiles      ProductFilesCommand      `command:"product-files" alias:"pfs" description:"List product files"`
 	ProductFile       ProductFileCommand       `command:"product-file" alias:"pf" description:"Show product file"`
