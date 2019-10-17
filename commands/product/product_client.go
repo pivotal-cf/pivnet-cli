@@ -1,6 +1,8 @@
 package product
 
 import (
+	"fmt"
+	"github.com/fatih/color"
 	"io"
 	"strconv"
 
@@ -14,6 +16,7 @@ import (
 type PivnetClient interface {
 	Products() ([]pivnet.Product, error)
 	FindProductForSlug(productSlug string) (pivnet.Product, error)
+	SlugAlias(productSlug string) (pivnet.SlugAliasResponse, error)
 }
 
 type ProductClient struct {
@@ -111,6 +114,42 @@ func (c *ProductClient) printProduct(product pivnet.Product) error {
 		return c.printer.PrintJSON(product)
 	case printer.PrintAsYAML:
 		return c.printer.PrintYAML(product)
+	}
+
+	return nil
+}
+
+func (c *ProductClient) SlugAlias(productSlug string) error {
+	slugAliasResponse, err := c.pivnetClient.SlugAlias(productSlug)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	return c.printSlugAlias(slugAliasResponse)
+}
+
+func (c *ProductClient) printSlugAlias(response pivnet.SlugAliasResponse) error {
+	switch c.format {
+
+	case printer.PrintAsTable:
+		b := color.New(color.Bold).SprintFunc()
+
+		fmt.Println("")
+		fmt.Println("Current Product Slug: ", b(response.CurrentSlug))
+		fmt.Println("")
+
+		table := tablewriter.NewWriter(c.outputWriter)
+		table.SetHeader([]string{"Slugs"})
+
+		for _, slug := range response.Slugs {
+			table.Append([]string{slug})
+		}
+		table.Render()
+		return nil
+	case printer.PrintAsJSON:
+		return c.printer.PrintJSON(response)
+	case printer.PrintAsYAML:
+		return c.printer.PrintYAML(response)
 	}
 
 	return nil

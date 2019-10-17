@@ -198,6 +198,10 @@ func (c Client) FindProductForSlug(slug string) (pivnet.Product, error) {
 	return c.client.Products.Get(slug)
 }
 
+func (c Client) SlugAlias(slug string) (pivnet.SlugAliasResponse, error) {
+	return c.client.Products.SlugAlias(slug)
+}
+
 func (c Client) CreateProductFile(config pivnet.CreateProductFileConfig) (pivnet.ProductFile, error) {
 	return c.client.ProductFiles.Create(config)
 }

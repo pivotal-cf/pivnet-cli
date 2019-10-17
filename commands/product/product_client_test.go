@@ -129,4 +129,41 @@ var _ = Describe("product commands", func() {
 			})
 		})
 	})
+
+	Describe("SlugList", func() {
+		var (
+			productSlug string
+		)
+
+		BeforeEach(func() {
+			productSlug = "some-product-slug"
+		})
+
+		It("gets all slugs of a Product", func() {
+			Expect(fakePivnetClient.SlugAliasCallCount()).To(Equal(0))
+
+			_ = client.SlugAlias(productSlug)
+
+			Expect(fakePivnetClient.SlugAliasCallCount()).To(Equal(1))
+		})
+
+		Context("when there is an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("product error")
+				fakePivnetClient.SlugAliasReturns(pivnet.SlugAliasResponse{}, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.SlugAlias(productSlug)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+	})
 })

@@ -29,6 +29,17 @@ type FakeProductClient struct {
 	listReturnsOnCall map[int]struct {
 		result1 error
 	}
+	SlugAliasStub        func(string) error
+	slugAliasMutex       sync.RWMutex
+	slugAliasArgsForCall []struct {
+		arg1 string
+	}
+	slugAliasReturns struct {
+		result1 error
+	}
+	slugAliasReturnsOnCall map[int]struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -145,6 +156,66 @@ func (fake *FakeProductClient) ListReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakeProductClient) SlugAlias(arg1 string) error {
+	fake.slugAliasMutex.Lock()
+	ret, specificReturn := fake.slugAliasReturnsOnCall[len(fake.slugAliasArgsForCall)]
+	fake.slugAliasArgsForCall = append(fake.slugAliasArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("SlugAlias", []interface{}{arg1})
+	fake.slugAliasMutex.Unlock()
+	if fake.SlugAliasStub != nil {
+		return fake.SlugAliasStub(arg1)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.slugAliasReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeProductClient) SlugAliasCallCount() int {
+	fake.slugAliasMutex.RLock()
+	defer fake.slugAliasMutex.RUnlock()
+	return len(fake.slugAliasArgsForCall)
+}
+
+func (fake *FakeProductClient) SlugAliasCalls(stub func(string) error) {
+	fake.slugAliasMutex.Lock()
+	defer fake.slugAliasMutex.Unlock()
+	fake.SlugAliasStub = stub
+}
+
+func (fake *FakeProductClient) SlugAliasArgsForCall(i int) string {
+	fake.slugAliasMutex.RLock()
+	defer fake.slugAliasMutex.RUnlock()
+	argsForCall := fake.slugAliasArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakeProductClient) SlugAliasReturns(result1 error) {
+	fake.slugAliasMutex.Lock()
+	defer fake.slugAliasMutex.Unlock()
+	fake.SlugAliasStub = nil
+	fake.slugAliasReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeProductClient) SlugAliasReturnsOnCall(i int, result1 error) {
+	fake.slugAliasMutex.Lock()
+	defer fake.slugAliasMutex.Unlock()
+	fake.SlugAliasStub = nil
+	if fake.slugAliasReturnsOnCall == nil {
+		fake.slugAliasReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.slugAliasReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeProductClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -152,6 +223,8 @@ func (fake *FakeProductClient) Invocations() map[string][][]interface{} {
 	defer fake.getMutex.RUnlock()
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
+	fake.slugAliasMutex.RLock()
+	defer fake.slugAliasMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
