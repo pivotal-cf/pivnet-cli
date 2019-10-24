@@ -26,7 +26,7 @@ func TestCLI(t *testing.T) {
 var _ = BeforeSuite(func() {
 	By("Compiling binary")
 	var err error
-	pivnetBinPath, err = gexec.Build("github.com/pivotal-cf/pivnet-cli", "-race", "--tags", "forceposix")
+	pivnetBinPath, err = gexec.Build("github.com/pivotal-cf/pivnet-cli", "-race", "--tags", "forceposix", "-ldflags", "-X main.buildVersion=0.0.0")
 	Expect(err).ShouldNot(HaveOccurred())
 })
 

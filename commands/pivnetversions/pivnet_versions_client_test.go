@@ -81,12 +81,17 @@ var _ = Describe("pivnetversions commands", func() {
 
 	Describe("PivnetVersions.Warn", func() {
 		It("returns a warning if the current Pivnet CLI version is out of date", func() {
-			result := client.Warn("old_version")
+			result := client.Warn("1.2.2")
 			Expect(result).NotTo(BeEmpty())
 		})
 
 		It("returns empty if the current Pivnet CLI version is up to date", func() {
 			result := client.Warn("1.2.3")
+			Expect(result).To(BeEmpty())
+		})
+
+		It("returns empty if the current Pivnet CLI version is newer", func() {
+			result := client.Warn("1.2.4")
 			Expect(result).To(BeEmpty())
 		})
 

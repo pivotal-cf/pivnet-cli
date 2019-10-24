@@ -2,13 +2,13 @@ package pivnetversions
 
 import (
 	"fmt"
-	"github.com/pivotal-cf/pivnet-cli/version"
 	"io"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pivotal-cf/go-pivnet/v2"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/semver"
 )
 
 //go:generate counterfeiter . PivnetClient
@@ -65,8 +65,13 @@ func (c *PivnetVersionsClient) List() error {
 
 func (c *PivnetVersionsClient) Warn(currentVersion string) string {
 	pivnetVersions, err := c.pivnetClient.PivnetVersions()
-	if err == nil && currentVersion != pivnetVersions.PivnetCliVersion {
-		return fmt.Sprintf("Warning: Your version of Pivnet CLI (%s) does not match the currently released version (%s).", version.Version, pivnetVersions.PivnetCliVersion)
+	if err == nil {
+		comparison, err := semver.Compare(currentVersion, pivnetVersions.PivnetCliVersion)
+		if err == nil && comparison < 0 {
+			return fmt.Sprintf("Warning: Your version of Pivnet CLI (%s) does not match the currently released version (%s).", currentVersion, pivnetVersions.PivnetCliVersion)
+		} else {
+			return ""
+		}
 	} else {
 		return ""
 	}

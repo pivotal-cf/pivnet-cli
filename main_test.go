@@ -49,7 +49,7 @@ var _ = Describe("pivnet cli", func() {
 			Name: "some-product-name",
 		}
 
-		pivnetVersions = pivnet.PivnetVersions{"cli-version", "resource-version"}
+		pivnetVersions = pivnet.PivnetVersions{"99", "99"}
 
 		var err error
 		tempDir, err = ioutil.TempDir("", "pivnet-cli-integration-tests")
@@ -137,14 +137,14 @@ var _ = Describe("pivnet cli", func() {
 			session := runMainWithArgs("-v")
 
 			Eventually(session, executableTimeout).Should(gexec.Exit(0))
-			Expect(session).Should(gbytes.Say("dev"))
+			Expect(session).Should(gbytes.Say("0.0.0"))
 		})
 
 		It("displays version with '--version'", func() {
 			session := runMainWithArgs("--version")
 
 			Eventually(session, executableTimeout).Should(gexec.Exit(0))
-			Expect(session).Should(gbytes.Say("dev"))
+			Expect(session).Should(gbytes.Say("0.0.0"))
 		})
 	})
 
