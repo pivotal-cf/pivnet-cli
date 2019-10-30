@@ -4,6 +4,7 @@ import "github.com/pivotal-cf/pivnet-cli/commands/release"
 
 type ReleasesCommand struct {
 	ProductSlug string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
+	Limit       string `long:"limit" short:"l" description:"Limit the number of returned releases to the most recent"`
 }
 
 type ReleaseCommand struct {
@@ -33,6 +34,7 @@ type CreateReleaseCommand struct {
 //go:generate counterfeiter . ReleaseClient
 type ReleaseClient interface {
 	List(productSlug string) error
+	ListWithLimit(productSlug string, limit string) error
 	Get(productSlug string, releaseVersion string) error
 	Create(productSlug string, releaseVersion string, releaseType string, eulaSlug string) error
 	Update(productSlug string, releaseVersion string, availability *string, releaseType *string) error
@@ -61,6 +63,9 @@ func (command *ReleasesCommand) Execute([]string) error {
 		return err
 	}
 
+	if command.Limit != "" {
+		return NewReleaseClient(client).ListWithLimit(command.ProductSlug, command.Limit)
+	}
 	return NewReleaseClient(client).List(command.ProductSlug)
 }
 

@@ -15,7 +15,7 @@ import (
 
 //go:generate counterfeiter . PivnetClient
 type PivnetClient interface {
-	ReleasesForProductSlug(productSlug string) ([]pivnet.Release, error)
+	ReleasesForProductSlug(productSlug string, params ...pivnet.QueryParameter) ([]pivnet.Release, error)
 	ReleaseForVersion(productSlug string, releaseVersion string) (pivnet.Release, error)
 	ReleaseUpgradePaths(productSlug string, releaseID int) ([]pivnet.ReleaseUpgradePath, error)
 	AddReleaseUpgradePath(productSlug string, releaseID int, previousReleaseID int) error

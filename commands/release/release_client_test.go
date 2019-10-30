@@ -94,6 +94,48 @@ var _ = Describe("release commands", func() {
 		})
 	})
 
+	Describe("ListWithLimit", func() {
+		var (
+			productSlug    string
+		)
+
+		BeforeEach(func() {
+			productSlug = "some-product-slug"
+
+			fakePivnetClient.ReleasesForProductSlugReturns(releases, nil)
+		})
+
+		It("lists all Releases", func() {
+			Expect(fakePivnetClient.ReleasesForProductSlugCallCount()).To(Equal(0))
+
+			err := client.ListWithLimit(productSlug, "0")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(fakePivnetClient.ReleasesForProductSlugCallCount()).To(Equal(1))
+			slug, params := fakePivnetClient.ReleasesForProductSlugArgsForCall(0)
+			Expect(slug).To(Equal(productSlug))
+			Expect(params).To(Equal([]pivnet.QueryParameter{{"limit", "0"}}))
+		})
+
+		Context("when there is an error", func() {
+			var (
+				expectedErr error
+			)
+
+			BeforeEach(func() {
+				expectedErr = errors.New("releases error")
+				fakePivnetClient.ReleasesForProductSlugReturns(nil, expectedErr)
+			})
+
+			It("invokes the error handler", func() {
+				err := client.ListWithLimit(productSlug, "")
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+			})
+		})
+	})
+
 	Describe("Get", func() {
 		var (
 			productSlug    string

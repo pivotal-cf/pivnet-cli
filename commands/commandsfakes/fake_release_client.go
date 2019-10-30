@@ -57,6 +57,18 @@ type FakeReleaseClient struct {
 	listReturnsOnCall map[int]struct {
 		result1 error
 	}
+	ListWithLimitStub        func(string, string) error
+	listWithLimitMutex       sync.RWMutex
+	listWithLimitArgsForCall []struct {
+		arg1 string
+		arg2 string
+	}
+	listWithLimitReturns struct {
+		result1 error
+	}
+	listWithLimitReturnsOnCall map[int]struct {
+		result1 error
+	}
 	UpdateStub        func(string, string, *string, *string) error
 	updateMutex       sync.RWMutex
 	updateArgsForCall []struct {
@@ -320,6 +332,67 @@ func (fake *FakeReleaseClient) ListReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakeReleaseClient) ListWithLimit(arg1 string, arg2 string) error {
+	fake.listWithLimitMutex.Lock()
+	ret, specificReturn := fake.listWithLimitReturnsOnCall[len(fake.listWithLimitArgsForCall)]
+	fake.listWithLimitArgsForCall = append(fake.listWithLimitArgsForCall, struct {
+		arg1 string
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("ListWithLimit", []interface{}{arg1, arg2})
+	fake.listWithLimitMutex.Unlock()
+	if fake.ListWithLimitStub != nil {
+		return fake.ListWithLimitStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.listWithLimitReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeReleaseClient) ListWithLimitCallCount() int {
+	fake.listWithLimitMutex.RLock()
+	defer fake.listWithLimitMutex.RUnlock()
+	return len(fake.listWithLimitArgsForCall)
+}
+
+func (fake *FakeReleaseClient) ListWithLimitCalls(stub func(string, string) error) {
+	fake.listWithLimitMutex.Lock()
+	defer fake.listWithLimitMutex.Unlock()
+	fake.ListWithLimitStub = stub
+}
+
+func (fake *FakeReleaseClient) ListWithLimitArgsForCall(i int) (string, string) {
+	fake.listWithLimitMutex.RLock()
+	defer fake.listWithLimitMutex.RUnlock()
+	argsForCall := fake.listWithLimitArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeReleaseClient) ListWithLimitReturns(result1 error) {
+	fake.listWithLimitMutex.Lock()
+	defer fake.listWithLimitMutex.Unlock()
+	fake.ListWithLimitStub = nil
+	fake.listWithLimitReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeReleaseClient) ListWithLimitReturnsOnCall(i int, result1 error) {
+	fake.listWithLimitMutex.Lock()
+	defer fake.listWithLimitMutex.Unlock()
+	fake.ListWithLimitStub = nil
+	if fake.listWithLimitReturnsOnCall == nil {
+		fake.listWithLimitReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.listWithLimitReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeReleaseClient) Update(arg1 string, arg2 string, arg3 *string, arg4 *string) error {
 	fake.updateMutex.Lock()
 	ret, specificReturn := fake.updateReturnsOnCall[len(fake.updateArgsForCall)]
@@ -394,6 +467,8 @@ func (fake *FakeReleaseClient) Invocations() map[string][][]interface{} {
 	defer fake.getMutex.RUnlock()
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
+	fake.listWithLimitMutex.RLock()
+	defer fake.listWithLimitMutex.RUnlock()
 	fake.updateMutex.RLock()
 	defer fake.updateMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

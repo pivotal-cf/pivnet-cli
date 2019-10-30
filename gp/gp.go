@@ -37,8 +37,8 @@ func (c Client) PivnetVersions() (pivnet.PivnetVersions, error) {
 	return c.client.PivnetVersions.List()
 }
 
-func (c Client) ReleasesForProductSlug(productSlug string) ([]pivnet.Release, error) {
-	return c.client.Releases.List(productSlug)
+func (c Client) ReleasesForProductSlug(productSlug string, params ...pivnet.QueryParameter) ([]pivnet.Release, error) {
+	return c.client.Releases.List(productSlug, params...)
 }
 
 func (c Client) Release(productSlug string, releaseID int) (pivnet.Release, error) {

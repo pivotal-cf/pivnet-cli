@@ -14,7 +14,7 @@ import (
 
 //go:generate counterfeiter . PivnetClient
 type PivnetClient interface {
-	ReleasesForProductSlug(productSlug string) ([]pivnet.Release, error)
+	ReleasesForProductSlug(productSlug string, params ...pivnet.QueryParameter) ([]pivnet.Release, error)
 	ReleaseForVersion(productSlug string, releaseVersion string) (pivnet.Release, error)
 	CreateRelease(config pivnet.CreateReleaseConfig) (pivnet.Release, error)
 	UpdateRelease(productSlug string, release pivnet.Release) (pivnet.Release, error)
@@ -49,6 +49,15 @@ func NewReleaseClient(
 
 func (c *ReleaseClient) List(productSlug string) error {
 	releases, err := c.pivnetClient.ReleasesForProductSlug(productSlug)
+	if err != nil {
+		return c.eh.HandleError(err)
+	}
+
+	return c.printReleases(releases)
+}
+
+func (c *ReleaseClient) ListWithLimit(productSlug string, limit string) error {
+	releases, err := c.pivnetClient.ReleasesForProductSlug(productSlug, pivnet.QueryParameter{"limit", limit})
 	if err != nil {
 		return c.eh.HandleError(err)
 	}

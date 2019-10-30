@@ -44,6 +44,46 @@ var _ = Describe("release commands", func() {
 			Expect(fakeReleaseClient.ListCallCount()).To(Equal(1))
 		})
 
+		Context("when a limit is provided", func() {
+			var (
+				slug string
+				limit string
+			)
+
+			BeforeEach(func() {
+				slug = "product-slug"
+				limit = "5"
+				cmd = commands.ReleasesCommand{slug, limit}
+			})
+
+			It("invokes the Release client for the method ListWithLimit", func() {
+				Expect(fakeReleaseClient.ListWithLimitCallCount()).To(Equal(0))
+				err := cmd.Execute(nil)
+
+				Expect(err).ToNot(HaveOccurred())
+				Expect(fakeReleaseClient.ListWithLimitCallCount()).To(Equal(1))
+				slug, params := fakeReleaseClient.ListWithLimitArgsForCall(0)
+
+				Expect(slug).To(Equal(slug))
+				Expect(params).To(Equal(limit))
+			})
+
+			Context("when method ListWithLimit return an error", func() {
+				var expectedErr error
+
+				BeforeEach(func() {
+					expectedErr = errors.New("expected error")
+					fakeReleaseClient.ListWithLimitReturns(expectedErr)
+				})
+
+				It("forward the error", func() {
+					err := cmd.Execute(nil)
+
+					Expect(err).To(Equal(expectedErr))
+				})
+			})
+		})
+
 		Context("when the Release client returns an error", func() {
 			var (
 				expectedErr error
@@ -100,6 +140,24 @@ var _ = Describe("release commands", func() {
 
 			It("contains long name", func() {
 				Expect(longTag(field)).To(Equal("product-slug"))
+			})
+		})
+
+		Describe("limit flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.ReleasesCommand{}, "Limit")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("l"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("limit"))
 			})
 		})
 	})
