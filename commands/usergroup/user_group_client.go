@@ -117,13 +117,14 @@ func (c *UserGroupClient) printUserGroup(userGroup pivnet.UserGroup) error {
 	switch c.format {
 	case printer.PrintAsTable:
 		table := tablewriter.NewWriter(c.outputWriter)
-		table.SetHeader([]string{"ID", "Name", "Description", "Members"})
+		table.SetHeader([]string{"ID", "Name", "Description", "Members", "Admins"})
 
 		userGroupAsString := []string{
 			strconv.Itoa(userGroup.ID),
 			userGroup.Name,
 			userGroup.Description,
-			strings.Join(userGroup.Members, ", "),
+			strings.Join(userGroup.Members, ",\n"),
+			strings.Join(userGroup.Admins, ",\n"),
 		}
 		table.Append(userGroupAsString)
 		table.Render()
