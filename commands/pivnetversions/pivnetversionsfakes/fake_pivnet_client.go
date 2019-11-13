@@ -4,7 +4,7 @@ package pivnetversionsfakes
 import (
 	"sync"
 
-	pivnet "github.com/pivotal-cf/go-pivnet/v2"
+	pivnet "github.com/pivotal-cf/go-pivnet/v3"
 	"github.com/pivotal-cf/pivnet-cli/commands/pivnetversions"
 )
 

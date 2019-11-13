@@ -4,9 +4,9 @@ import (
 	"errors"
 	"io"
 
-	pivnet "github.com/pivotal-cf/go-pivnet/v2"
-	"github.com/pivotal-cf/go-pivnet/v2/md5sum"
-	"github.com/pivotal-cf/go-pivnet/v2/sha256sum"
+	pivnet "github.com/pivotal-cf/go-pivnet/v3"
+	"github.com/pivotal-cf/go-pivnet/v3/md5sum"
+	"github.com/pivotal-cf/go-pivnet/v3/sha256sum"
 	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
 )
 
