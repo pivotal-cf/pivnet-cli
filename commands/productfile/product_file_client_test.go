@@ -1183,6 +1183,35 @@ var _ = Describe("productfile commands", func() {
 			})
 		})
 
+		Context("when there is an error for eula not accepted", func() {
+			BeforeEach(func() {
+				downloadErr = errors.New("eula error")
+			})
+
+			It("invokes the error handler", func() {
+				files,_ := ioutil.ReadDir(downloadDir)
+				numberOfFilesBeforeDownload := len(files)
+
+				err := client.Download(
+					productSlug,
+					releaseVersion,
+					globs,
+					productFileIDs,
+					downloadDir,
+					acceptEULA,
+					GinkgoWriter,
+				)
+
+				files,_ = ioutil.ReadDir(downloadDir)
+				numberOfFileAfterDownload := len(files)
+
+				Expect(err).NotTo(HaveOccurred())
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+
+				Expect(numberOfFileAfterDownload).To(Equal(numberOfFilesBeforeDownload))
+			})
+		})
+
 		Context("when acceptEULA is true", func() {
 			BeforeEach(func() {
 				acceptEULA = true

@@ -535,6 +535,7 @@ func (c *ProductFileClient) Download(
 
 		err = c.pivnetClient.DownloadProductFile(fileInfo, productSlug, release.ID, pf.ID, progressWriter)
 		if err != nil {
+			_ = os.Remove(localFilepath)
 			return c.eh.HandleError(err)
 		}
 
