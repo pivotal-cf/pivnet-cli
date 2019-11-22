@@ -91,6 +91,20 @@ type FakePivnetClient struct {
 		result1 []pivnet.ImageReference
 		result2 error
 	}
+	ImageReferencesForDigestStub        func(string, string) ([]pivnet.ImageReference, error)
+	imageReferencesForDigestMutex       sync.RWMutex
+	imageReferencesForDigestArgsForCall []struct {
+		arg1 string
+		arg2 string
+	}
+	imageReferencesForDigestReturns struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}
+	imageReferencesForDigestReturnsOnCall map[int]struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}
 	ImageReferencesForReleaseStub        func(string, int) ([]pivnet.ImageReference, error)
 	imageReferencesForReleaseMutex       sync.RWMutex
 	imageReferencesForReleaseArgsForCall []struct {
@@ -531,6 +545,70 @@ func (fake *FakePivnetClient) ImageReferencesReturnsOnCall(i int, result1 []pivn
 	}{result1, result2}
 }
 
+func (fake *FakePivnetClient) ImageReferencesForDigest(arg1 string, arg2 string) ([]pivnet.ImageReference, error) {
+	fake.imageReferencesForDigestMutex.Lock()
+	ret, specificReturn := fake.imageReferencesForDigestReturnsOnCall[len(fake.imageReferencesForDigestArgsForCall)]
+	fake.imageReferencesForDigestArgsForCall = append(fake.imageReferencesForDigestArgsForCall, struct {
+		arg1 string
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("ImageReferencesForDigest", []interface{}{arg1, arg2})
+	fake.imageReferencesForDigestMutex.Unlock()
+	if fake.ImageReferencesForDigestStub != nil {
+		return fake.ImageReferencesForDigestStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.imageReferencesForDigestReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakePivnetClient) ImageReferencesForDigestCallCount() int {
+	fake.imageReferencesForDigestMutex.RLock()
+	defer fake.imageReferencesForDigestMutex.RUnlock()
+	return len(fake.imageReferencesForDigestArgsForCall)
+}
+
+func (fake *FakePivnetClient) ImageReferencesForDigestCalls(stub func(string, string) ([]pivnet.ImageReference, error)) {
+	fake.imageReferencesForDigestMutex.Lock()
+	defer fake.imageReferencesForDigestMutex.Unlock()
+	fake.ImageReferencesForDigestStub = stub
+}
+
+func (fake *FakePivnetClient) ImageReferencesForDigestArgsForCall(i int) (string, string) {
+	fake.imageReferencesForDigestMutex.RLock()
+	defer fake.imageReferencesForDigestMutex.RUnlock()
+	argsForCall := fake.imageReferencesForDigestArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakePivnetClient) ImageReferencesForDigestReturns(result1 []pivnet.ImageReference, result2 error) {
+	fake.imageReferencesForDigestMutex.Lock()
+	defer fake.imageReferencesForDigestMutex.Unlock()
+	fake.ImageReferencesForDigestStub = nil
+	fake.imageReferencesForDigestReturns = struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) ImageReferencesForDigestReturnsOnCall(i int, result1 []pivnet.ImageReference, result2 error) {
+	fake.imageReferencesForDigestMutex.Lock()
+	defer fake.imageReferencesForDigestMutex.Unlock()
+	fake.ImageReferencesForDigestStub = nil
+	if fake.imageReferencesForDigestReturnsOnCall == nil {
+		fake.imageReferencesForDigestReturnsOnCall = make(map[int]struct {
+			result1 []pivnet.ImageReference
+			result2 error
+		})
+	}
+	fake.imageReferencesForDigestReturnsOnCall[i] = struct {
+		result1 []pivnet.ImageReference
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakePivnetClient) ImageReferencesForRelease(arg1 string, arg2 int) ([]pivnet.ImageReference, error) {
 	fake.imageReferencesForReleaseMutex.Lock()
 	ret, specificReturn := fake.imageReferencesForReleaseReturnsOnCall[len(fake.imageReferencesForReleaseArgsForCall)]
@@ -800,6 +878,8 @@ func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {
 	defer fake.imageReferenceForReleaseMutex.RUnlock()
 	fake.imageReferencesMutex.RLock()
 	defer fake.imageReferencesMutex.RUnlock()
+	fake.imageReferencesForDigestMutex.RLock()
+	defer fake.imageReferencesForDigestMutex.RUnlock()
 	fake.imageReferencesForReleaseMutex.RLock()
 	defer fake.imageReferencesForReleaseMutex.RUnlock()
 	fake.releaseForVersionMutex.RLock()

@@ -234,6 +234,10 @@ func (c Client) ImageReferencesForRelease(productSlug string, releaseID int) ([]
 	return c.client.ImageReferences.ListForRelease(productSlug, releaseID)
 }
 
+func (c Client) ImageReferencesForDigest(productSlug string, imageReferenceDigest string) ([]pivnet.ImageReference, error) {
+	return c.client.ImageReferences.ListForDigest(productSlug, imageReferenceDigest)
+}
+
 func (c Client) ImageReferences(productSlug string) ([]pivnet.ImageReference, error) {
 	return c.client.ImageReferences.List(productSlug)
 }

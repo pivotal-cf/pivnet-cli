@@ -8,6 +8,7 @@ import (
 type ImageReferencesCommand struct {
 	ProductSlug    string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql" required:"true"`
 	ReleaseVersion string `long:"release-version" short:"r" description:"Release version e.g. 0.1.2-rc1 (Required for non-admins)"`
+	ImageDigest    string `long:"digest" short:"d" description:"Image digest e.g. sha256:9f86d0... (if provided ignores release-version value)"`
 }
 
 type ImageReferenceCommand struct {
@@ -54,7 +55,7 @@ type RemoveImageReferenceFromReleaseCommand struct {
 
 //go:generate counterfeiter . ImageReferenceClient
 type ImageReferenceClient interface {
-	List(productSlug string, releaseVersion string) error
+	List(productSlug string, releaseVersion string, imageDigest string) error
 	Get(productSlug string, releaseVersion string, imageReferenceID int) error
 	Create(config pivnet.CreateImageReferenceConfig) error
 	Update(
@@ -94,7 +95,7 @@ func (command *ImageReferencesCommand) Execute([]string) error {
 		return err
 	}
 
-	return NewImageReferenceClient(client).List(command.ProductSlug, command.ReleaseVersion)
+	return NewImageReferenceClient(client).List(command.ProductSlug, command.ReleaseVersion, command.ImageDigest)
 }
 
 func (command *ImageReferenceCommand) Execute([]string) error {

@@ -8,21 +8,11 @@ import (
 )
 
 type FakePivnetRCReadWriter struct {
-	WriteToFileStub        func(contents []byte) error
-	writeToFileMutex       sync.RWMutex
-	writeToFileArgsForCall []struct {
-		contents []byte
-	}
-	writeToFileReturns struct {
-		result1 error
-	}
-	writeToFileReturnsOnCall map[int]struct {
-		result1 error
-	}
 	ReadFromFileStub        func() ([]byte, error)
 	readFromFileMutex       sync.RWMutex
-	readFromFileArgsForCall []struct{}
-	readFromFileReturns     struct {
+	readFromFileArgsForCall []struct {
+	}
+	readFromFileReturns struct {
 		result1 []byte
 		result2 error
 	}
@@ -30,67 +20,26 @@ type FakePivnetRCReadWriter struct {
 		result1 []byte
 		result2 error
 	}
+	WriteToFileStub        func([]byte) error
+	writeToFileMutex       sync.RWMutex
+	writeToFileArgsForCall []struct {
+		arg1 []byte
+	}
+	writeToFileReturns struct {
+		result1 error
+	}
+	writeToFileReturnsOnCall map[int]struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
-}
-
-func (fake *FakePivnetRCReadWriter) WriteToFile(contents []byte) error {
-	var contentsCopy []byte
-	if contents != nil {
-		contentsCopy = make([]byte, len(contents))
-		copy(contentsCopy, contents)
-	}
-	fake.writeToFileMutex.Lock()
-	ret, specificReturn := fake.writeToFileReturnsOnCall[len(fake.writeToFileArgsForCall)]
-	fake.writeToFileArgsForCall = append(fake.writeToFileArgsForCall, struct {
-		contents []byte
-	}{contentsCopy})
-	fake.recordInvocation("WriteToFile", []interface{}{contentsCopy})
-	fake.writeToFileMutex.Unlock()
-	if fake.WriteToFileStub != nil {
-		return fake.WriteToFileStub(contents)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.writeToFileReturns.result1
-}
-
-func (fake *FakePivnetRCReadWriter) WriteToFileCallCount() int {
-	fake.writeToFileMutex.RLock()
-	defer fake.writeToFileMutex.RUnlock()
-	return len(fake.writeToFileArgsForCall)
-}
-
-func (fake *FakePivnetRCReadWriter) WriteToFileArgsForCall(i int) []byte {
-	fake.writeToFileMutex.RLock()
-	defer fake.writeToFileMutex.RUnlock()
-	return fake.writeToFileArgsForCall[i].contents
-}
-
-func (fake *FakePivnetRCReadWriter) WriteToFileReturns(result1 error) {
-	fake.WriteToFileStub = nil
-	fake.writeToFileReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakePivnetRCReadWriter) WriteToFileReturnsOnCall(i int, result1 error) {
-	fake.WriteToFileStub = nil
-	if fake.writeToFileReturnsOnCall == nil {
-		fake.writeToFileReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.writeToFileReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
 }
 
 func (fake *FakePivnetRCReadWriter) ReadFromFile() ([]byte, error) {
 	fake.readFromFileMutex.Lock()
 	ret, specificReturn := fake.readFromFileReturnsOnCall[len(fake.readFromFileArgsForCall)]
-	fake.readFromFileArgsForCall = append(fake.readFromFileArgsForCall, struct{}{})
+	fake.readFromFileArgsForCall = append(fake.readFromFileArgsForCall, struct {
+	}{})
 	fake.recordInvocation("ReadFromFile", []interface{}{})
 	fake.readFromFileMutex.Unlock()
 	if fake.ReadFromFileStub != nil {
@@ -99,7 +48,8 @@ func (fake *FakePivnetRCReadWriter) ReadFromFile() ([]byte, error) {
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.readFromFileReturns.result1, fake.readFromFileReturns.result2
+	fakeReturns := fake.readFromFileReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakePivnetRCReadWriter) ReadFromFileCallCount() int {
@@ -108,7 +58,15 @@ func (fake *FakePivnetRCReadWriter) ReadFromFileCallCount() int {
 	return len(fake.readFromFileArgsForCall)
 }
 
+func (fake *FakePivnetRCReadWriter) ReadFromFileCalls(stub func() ([]byte, error)) {
+	fake.readFromFileMutex.Lock()
+	defer fake.readFromFileMutex.Unlock()
+	fake.ReadFromFileStub = stub
+}
+
 func (fake *FakePivnetRCReadWriter) ReadFromFileReturns(result1 []byte, result2 error) {
+	fake.readFromFileMutex.Lock()
+	defer fake.readFromFileMutex.Unlock()
 	fake.ReadFromFileStub = nil
 	fake.readFromFileReturns = struct {
 		result1 []byte
@@ -117,6 +75,8 @@ func (fake *FakePivnetRCReadWriter) ReadFromFileReturns(result1 []byte, result2 
 }
 
 func (fake *FakePivnetRCReadWriter) ReadFromFileReturnsOnCall(i int, result1 []byte, result2 error) {
+	fake.readFromFileMutex.Lock()
+	defer fake.readFromFileMutex.Unlock()
 	fake.ReadFromFileStub = nil
 	if fake.readFromFileReturnsOnCall == nil {
 		fake.readFromFileReturnsOnCall = make(map[int]struct {
@@ -130,13 +90,78 @@ func (fake *FakePivnetRCReadWriter) ReadFromFileReturnsOnCall(i int, result1 []b
 	}{result1, result2}
 }
 
+func (fake *FakePivnetRCReadWriter) WriteToFile(arg1 []byte) error {
+	var arg1Copy []byte
+	if arg1 != nil {
+		arg1Copy = make([]byte, len(arg1))
+		copy(arg1Copy, arg1)
+	}
+	fake.writeToFileMutex.Lock()
+	ret, specificReturn := fake.writeToFileReturnsOnCall[len(fake.writeToFileArgsForCall)]
+	fake.writeToFileArgsForCall = append(fake.writeToFileArgsForCall, struct {
+		arg1 []byte
+	}{arg1Copy})
+	fake.recordInvocation("WriteToFile", []interface{}{arg1Copy})
+	fake.writeToFileMutex.Unlock()
+	if fake.WriteToFileStub != nil {
+		return fake.WriteToFileStub(arg1)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.writeToFileReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakePivnetRCReadWriter) WriteToFileCallCount() int {
+	fake.writeToFileMutex.RLock()
+	defer fake.writeToFileMutex.RUnlock()
+	return len(fake.writeToFileArgsForCall)
+}
+
+func (fake *FakePivnetRCReadWriter) WriteToFileCalls(stub func([]byte) error) {
+	fake.writeToFileMutex.Lock()
+	defer fake.writeToFileMutex.Unlock()
+	fake.WriteToFileStub = stub
+}
+
+func (fake *FakePivnetRCReadWriter) WriteToFileArgsForCall(i int) []byte {
+	fake.writeToFileMutex.RLock()
+	defer fake.writeToFileMutex.RUnlock()
+	argsForCall := fake.writeToFileArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakePivnetRCReadWriter) WriteToFileReturns(result1 error) {
+	fake.writeToFileMutex.Lock()
+	defer fake.writeToFileMutex.Unlock()
+	fake.WriteToFileStub = nil
+	fake.writeToFileReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakePivnetRCReadWriter) WriteToFileReturnsOnCall(i int, result1 error) {
+	fake.writeToFileMutex.Lock()
+	defer fake.writeToFileMutex.Unlock()
+	fake.WriteToFileStub = nil
+	if fake.writeToFileReturnsOnCall == nil {
+		fake.writeToFileReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.writeToFileReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakePivnetRCReadWriter) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.writeToFileMutex.RLock()
-	defer fake.writeToFileMutex.RUnlock()
 	fake.readFromFileMutex.RLock()
 	defer fake.readFromFileMutex.RUnlock()
+	fake.writeToFileMutex.RLock()
+	defer fake.writeToFileMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

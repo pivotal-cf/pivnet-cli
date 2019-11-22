@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 
 	"github.com/pivotal-cf/pivnet-cli/ui"
 
@@ -18,6 +19,7 @@ import (
 type PivnetClient interface {
 	ImageReferences(productSlug string) ([]pivnet.ImageReference, error)
 	ImageReferencesForRelease(productSlug string, releaseID int) ([]pivnet.ImageReference, error)
+	ImageReferencesForDigest(productSlug string, imageReferenceDigest string) ([]pivnet.ImageReference, error)
 	ImageReference(productSlug string, imageReferenceID int) (pivnet.ImageReference, error)
 	ImageReferenceForRelease(productSlug string, releaseID int, imageReferenceID int) (pivnet.ImageReference, error)
 	ReleaseForVersion(productSlug string, releaseVersion string) (pivnet.Release, error)
@@ -90,7 +92,16 @@ func (c *ImageReferenceClient) Update(productSlug string, imageReferenceID int, 
 	return c.printImageReference(updatedImageReference)
 }
 
-func (c *ImageReferenceClient) List(productSlug string, releaseVersion string) error {
+func (c *ImageReferenceClient) List(productSlug string, releaseVersion string, imageDigest string) error {
+	if imageDigest != "" {
+		imageReferences, err := c.pivnetClient.ImageReferencesForDigest(productSlug, imageDigest)
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
+
+		return c.printImageReferencesForDigest(imageReferences)
+	}
+
 	if releaseVersion == "" {
 		imageReferences, err := c.pivnetClient.ImageReferences(productSlug)
 		if err != nil {
@@ -134,6 +145,38 @@ func (c *ImageReferenceClient) printImageReferences(imageReferences []pivnet.Ima
 				imageReference.Name,
 				imageReference.ImagePath,
 				imageReference.Digest,
+			}
+			table.Append(imageReferenceAsString)
+		}
+		table.Render()
+		return nil
+	case printer.PrintAsJSON:
+		return c.printer.PrintJSON(imageReferences)
+	case printer.PrintAsYAML:
+		return c.printer.PrintYAML(imageReferences)
+	}
+
+	return nil
+}
+
+func (c *ImageReferenceClient) printImageReferencesForDigest(imageReferences []pivnet.ImageReference) error {
+	switch c.format {
+
+	case printer.PrintAsTable:
+		table := tablewriter.NewWriter(c.outputWriter)
+		table.SetHeader([]string{
+			"ID",
+			"Name",
+			"Image Path",
+			"releases",
+		})
+
+		for _, imageReference := range imageReferences {
+			imageReferenceAsString := []string{
+				strconv.Itoa(imageReference.ID),
+				imageReference.Name,
+				imageReference.ImagePath,
+				strings.Join(imageReference.ReleaseVersions, ","),
 			}
 			table.Append(imageReferenceAsString)
 		}

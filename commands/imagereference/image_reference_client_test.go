@@ -71,17 +71,19 @@ var _ = Describe("imagereference commands", func() {
 		var (
 			productSlug    string
 			releaseVersion string
+			digest         string
 		)
 
 		BeforeEach(func() {
 			productSlug = "some-product-slug"
 			releaseVersion = ""
+			digest = ""
 
 			fakePivnetClient.ImageReferencesReturns(imageReferences, nil)
 		})
 
 		It("lists all ImageReferences", func() {
-			err := client.List(productSlug, releaseVersion)
+			err := client.List(productSlug, releaseVersion, digest)
 			Expect(err).NotTo(HaveOccurred())
 
 			var returnedImageReferences []pivnet.ImageReference
@@ -102,7 +104,7 @@ var _ = Describe("imagereference commands", func() {
 			})
 
 			It("invokes the error handler", func() {
-				err := client.List(productSlug, releaseVersion)
+				err := client.List(productSlug, releaseVersion, digest)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
@@ -117,7 +119,7 @@ var _ = Describe("imagereference commands", func() {
 			})
 
 			It("lists all ImageReferences", func() {
-				err := client.List(productSlug, releaseVersion)
+				err := client.List(productSlug, releaseVersion, digest)
 				Expect(err).NotTo(HaveOccurred())
 
 				var returnedImageReferences []pivnet.ImageReference
@@ -138,7 +140,7 @@ var _ = Describe("imagereference commands", func() {
 				})
 
 				It("invokes the error handler", func() {
-					err := client.List(productSlug, releaseVersion)
+					err := client.List(productSlug, releaseVersion, digest)
 					Expect(err).NotTo(HaveOccurred())
 
 					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
@@ -157,7 +159,78 @@ var _ = Describe("imagereference commands", func() {
 				})
 
 				It("invokes the error handler", func() {
-					err := client.List(productSlug, releaseVersion)
+					err := client.List(productSlug, releaseVersion, digest)
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
+					Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(Equal(expectedErr))
+				})
+			})
+		})
+
+		Context("when an image digest is provided", func() {
+			BeforeEach(func() {
+				digest = "sha256:digest"
+				imageReferences = []pivnet.ImageReference{
+					{
+						ID:                 1234,
+						Name:               "my name",
+						ImagePath:          "my/path:123",
+						Description:        "my description",
+						DocsURL:            "my.docs.url",
+						Digest:             "sha256:mydigest",
+						SystemRequirements: []string{"requirement1", "requirement2"},
+						ReleaseVersions:    []string{"1.0.0", "1.2.3"},
+					},
+					{
+						ID:                 9876,
+						Name:               "other image name",
+						ImagePath:          "other image/path:123",
+						Description:        "other image description",
+						DocsURL:            "other image.docs.url",
+						Digest:             "sha256:mydigest",
+						SystemRequirements: []string{"requirement3", "requirement4"},
+						ReleaseVersions:    []string{},
+					},
+				}
+
+				fakePivnetClient.ImageReferencesForDigestReturns(imageReferences, nil)
+			})
+
+			It("invoke proper list command on client", func() {
+				Expect(fakePivnetClient.ImageReferencesForDigestCallCount()).To(Equal(0))
+
+				err := client.List(productSlug, releaseVersion, digest)
+
+				Expect(err).ToNot(HaveOccurred())
+				Expect(fakePivnetClient.ImageReferencesForDigestCallCount()).To(Equal(1))
+
+				invokedProductSlug, invokedDigest := fakePivnetClient.ImageReferencesForDigestArgsForCall(0)
+
+				Expect(invokedProductSlug).To(Equal(productSlug))
+				Expect(invokedDigest).To(Equal(digest))
+
+				var returnedImageReferences []pivnet.ImageReference
+				err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReferences)
+				Expect(err).ToNot(HaveOccurred())
+
+				expectedImageReferences := imageReferences
+				expectedImageReferences[1].ReleaseVersions = nil
+				Expect(returnedImageReferences).To(Equal(expectedImageReferences))
+			})
+
+			Context("when there is an error", func() {
+				var (
+					expectedErr error
+				)
+
+				BeforeEach(func() {
+					expectedErr = errors.New("imageReferences error")
+					fakePivnetClient.ImageReferencesForDigestReturns(nil, expectedErr)
+				})
+
+				It("invokes the error handler", func() {
+					err := client.List(productSlug, releaseVersion, digest)
 					Expect(err).NotTo(HaveOccurred())
 
 					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
