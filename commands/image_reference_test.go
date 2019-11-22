@@ -121,6 +121,24 @@ var _ = Describe("image reference commands", func() {
 				Expect(longTag(field)).To(Equal("release-version"))
 			})
 		})
+
+		Describe("ImageDigest flag", func() {
+			BeforeEach(func() {
+				field = fieldFor(commands.ImageReferencesCommand{}, "ImageDigest")
+			})
+
+			It("is not required", func() {
+				Expect(isRequired(field)).To(BeFalse())
+			})
+
+			It("contains short name", func() {
+				Expect(shortTag(field)).To(Equal("d"))
+			})
+
+			It("contains long name", func() {
+				Expect(longTag(field)).To(Equal("digest"))
+			})
+		})
 	})
 
 	Describe("ImageReferenceCommand", func() {

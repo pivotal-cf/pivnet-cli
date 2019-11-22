@@ -58,11 +58,12 @@ type FakeImageReferenceClient struct {
 	getReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ListStub        func(string, string) error
+	ListStub        func(string, string, string) error
 	listMutex       sync.RWMutex
 	listArgsForCall []struct {
 		arg1 string
 		arg2 string
+		arg3 string
 	}
 	listReturns struct {
 		result1 error
@@ -348,17 +349,18 @@ func (fake *FakeImageReferenceClient) GetReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) List(arg1 string, arg2 string) error {
+func (fake *FakeImageReferenceClient) List(arg1 string, arg2 string, arg3 string) error {
 	fake.listMutex.Lock()
 	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
 	fake.listArgsForCall = append(fake.listArgsForCall, struct {
 		arg1 string
 		arg2 string
-	}{arg1, arg2})
-	fake.recordInvocation("List", []interface{}{arg1, arg2})
+		arg3 string
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("List", []interface{}{arg1, arg2, arg3})
 	fake.listMutex.Unlock()
 	if fake.ListStub != nil {
-		return fake.ListStub(arg1, arg2)
+		return fake.ListStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1
@@ -373,17 +375,17 @@ func (fake *FakeImageReferenceClient) ListCallCount() int {
 	return len(fake.listArgsForCall)
 }
 
-func (fake *FakeImageReferenceClient) ListCalls(stub func(string, string) error) {
+func (fake *FakeImageReferenceClient) ListCalls(stub func(string, string, string) error) {
 	fake.listMutex.Lock()
 	defer fake.listMutex.Unlock()
 	fake.ListStub = stub
 }
 
-func (fake *FakeImageReferenceClient) ListArgsForCall(i int) (string, string) {
+func (fake *FakeImageReferenceClient) ListArgsForCall(i int) (string, string, string) {
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
 	argsForCall := fake.listArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeImageReferenceClient) ListReturns(result1 error) {

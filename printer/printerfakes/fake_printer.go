@@ -8,17 +8,6 @@ import (
 )
 
 type FakePrinter struct {
-	PrintYAMLStub        func(interface{}) error
-	printYAMLMutex       sync.RWMutex
-	printYAMLArgsForCall []struct {
-		arg1 interface{}
-	}
-	printYAMLReturns struct {
-		result1 error
-	}
-	printYAMLReturnsOnCall map[int]struct {
-		result1 error
-	}
 	PrintJSONStub        func(interface{}) error
 	printJSONMutex       sync.RWMutex
 	printJSONArgsForCall []struct {
@@ -30,10 +19,21 @@ type FakePrinter struct {
 	printJSONReturnsOnCall map[int]struct {
 		result1 error
 	}
-	PrintlnStub        func(message string) error
+	PrintYAMLStub        func(interface{}) error
+	printYAMLMutex       sync.RWMutex
+	printYAMLArgsForCall []struct {
+		arg1 interface{}
+	}
+	printYAMLReturns struct {
+		result1 error
+	}
+	printYAMLReturnsOnCall map[int]struct {
+		result1 error
+	}
+	PrintlnStub        func(string) error
 	printlnMutex       sync.RWMutex
 	printlnArgsForCall []struct {
-		message string
+		arg1 string
 	}
 	printlnReturns struct {
 		result1 error
@@ -43,54 +43,6 @@ type FakePrinter struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
-}
-
-func (fake *FakePrinter) PrintYAML(arg1 interface{}) error {
-	fake.printYAMLMutex.Lock()
-	ret, specificReturn := fake.printYAMLReturnsOnCall[len(fake.printYAMLArgsForCall)]
-	fake.printYAMLArgsForCall = append(fake.printYAMLArgsForCall, struct {
-		arg1 interface{}
-	}{arg1})
-	fake.recordInvocation("PrintYAML", []interface{}{arg1})
-	fake.printYAMLMutex.Unlock()
-	if fake.PrintYAMLStub != nil {
-		return fake.PrintYAMLStub(arg1)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.printYAMLReturns.result1
-}
-
-func (fake *FakePrinter) PrintYAMLCallCount() int {
-	fake.printYAMLMutex.RLock()
-	defer fake.printYAMLMutex.RUnlock()
-	return len(fake.printYAMLArgsForCall)
-}
-
-func (fake *FakePrinter) PrintYAMLArgsForCall(i int) interface{} {
-	fake.printYAMLMutex.RLock()
-	defer fake.printYAMLMutex.RUnlock()
-	return fake.printYAMLArgsForCall[i].arg1
-}
-
-func (fake *FakePrinter) PrintYAMLReturns(result1 error) {
-	fake.PrintYAMLStub = nil
-	fake.printYAMLReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakePrinter) PrintYAMLReturnsOnCall(i int, result1 error) {
-	fake.PrintYAMLStub = nil
-	if fake.printYAMLReturnsOnCall == nil {
-		fake.printYAMLReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.printYAMLReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
 }
 
 func (fake *FakePrinter) PrintJSON(arg1 interface{}) error {
@@ -107,7 +59,8 @@ func (fake *FakePrinter) PrintJSON(arg1 interface{}) error {
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.printJSONReturns.result1
+	fakeReturns := fake.printJSONReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakePrinter) PrintJSONCallCount() int {
@@ -116,13 +69,22 @@ func (fake *FakePrinter) PrintJSONCallCount() int {
 	return len(fake.printJSONArgsForCall)
 }
 
+func (fake *FakePrinter) PrintJSONCalls(stub func(interface{}) error) {
+	fake.printJSONMutex.Lock()
+	defer fake.printJSONMutex.Unlock()
+	fake.PrintJSONStub = stub
+}
+
 func (fake *FakePrinter) PrintJSONArgsForCall(i int) interface{} {
 	fake.printJSONMutex.RLock()
 	defer fake.printJSONMutex.RUnlock()
-	return fake.printJSONArgsForCall[i].arg1
+	argsForCall := fake.printJSONArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *FakePrinter) PrintJSONReturns(result1 error) {
+	fake.printJSONMutex.Lock()
+	defer fake.printJSONMutex.Unlock()
 	fake.PrintJSONStub = nil
 	fake.printJSONReturns = struct {
 		result1 error
@@ -130,6 +92,8 @@ func (fake *FakePrinter) PrintJSONReturns(result1 error) {
 }
 
 func (fake *FakePrinter) PrintJSONReturnsOnCall(i int, result1 error) {
+	fake.printJSONMutex.Lock()
+	defer fake.printJSONMutex.Unlock()
 	fake.PrintJSONStub = nil
 	if fake.printJSONReturnsOnCall == nil {
 		fake.printJSONReturnsOnCall = make(map[int]struct {
@@ -141,21 +105,82 @@ func (fake *FakePrinter) PrintJSONReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakePrinter) Println(message string) error {
-	fake.printlnMutex.Lock()
-	ret, specificReturn := fake.printlnReturnsOnCall[len(fake.printlnArgsForCall)]
-	fake.printlnArgsForCall = append(fake.printlnArgsForCall, struct {
-		message string
-	}{message})
-	fake.recordInvocation("Println", []interface{}{message})
-	fake.printlnMutex.Unlock()
-	if fake.PrintlnStub != nil {
-		return fake.PrintlnStub(message)
+func (fake *FakePrinter) PrintYAML(arg1 interface{}) error {
+	fake.printYAMLMutex.Lock()
+	ret, specificReturn := fake.printYAMLReturnsOnCall[len(fake.printYAMLArgsForCall)]
+	fake.printYAMLArgsForCall = append(fake.printYAMLArgsForCall, struct {
+		arg1 interface{}
+	}{arg1})
+	fake.recordInvocation("PrintYAML", []interface{}{arg1})
+	fake.printYAMLMutex.Unlock()
+	if fake.PrintYAMLStub != nil {
+		return fake.PrintYAMLStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.printlnReturns.result1
+	fakeReturns := fake.printYAMLReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakePrinter) PrintYAMLCallCount() int {
+	fake.printYAMLMutex.RLock()
+	defer fake.printYAMLMutex.RUnlock()
+	return len(fake.printYAMLArgsForCall)
+}
+
+func (fake *FakePrinter) PrintYAMLCalls(stub func(interface{}) error) {
+	fake.printYAMLMutex.Lock()
+	defer fake.printYAMLMutex.Unlock()
+	fake.PrintYAMLStub = stub
+}
+
+func (fake *FakePrinter) PrintYAMLArgsForCall(i int) interface{} {
+	fake.printYAMLMutex.RLock()
+	defer fake.printYAMLMutex.RUnlock()
+	argsForCall := fake.printYAMLArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakePrinter) PrintYAMLReturns(result1 error) {
+	fake.printYAMLMutex.Lock()
+	defer fake.printYAMLMutex.Unlock()
+	fake.PrintYAMLStub = nil
+	fake.printYAMLReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakePrinter) PrintYAMLReturnsOnCall(i int, result1 error) {
+	fake.printYAMLMutex.Lock()
+	defer fake.printYAMLMutex.Unlock()
+	fake.PrintYAMLStub = nil
+	if fake.printYAMLReturnsOnCall == nil {
+		fake.printYAMLReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.printYAMLReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakePrinter) Println(arg1 string) error {
+	fake.printlnMutex.Lock()
+	ret, specificReturn := fake.printlnReturnsOnCall[len(fake.printlnArgsForCall)]
+	fake.printlnArgsForCall = append(fake.printlnArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("Println", []interface{}{arg1})
+	fake.printlnMutex.Unlock()
+	if fake.PrintlnStub != nil {
+		return fake.PrintlnStub(arg1)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.printlnReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakePrinter) PrintlnCallCount() int {
@@ -164,13 +189,22 @@ func (fake *FakePrinter) PrintlnCallCount() int {
 	return len(fake.printlnArgsForCall)
 }
 
+func (fake *FakePrinter) PrintlnCalls(stub func(string) error) {
+	fake.printlnMutex.Lock()
+	defer fake.printlnMutex.Unlock()
+	fake.PrintlnStub = stub
+}
+
 func (fake *FakePrinter) PrintlnArgsForCall(i int) string {
 	fake.printlnMutex.RLock()
 	defer fake.printlnMutex.RUnlock()
-	return fake.printlnArgsForCall[i].message
+	argsForCall := fake.printlnArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *FakePrinter) PrintlnReturns(result1 error) {
+	fake.printlnMutex.Lock()
+	defer fake.printlnMutex.Unlock()
 	fake.PrintlnStub = nil
 	fake.printlnReturns = struct {
 		result1 error
@@ -178,6 +212,8 @@ func (fake *FakePrinter) PrintlnReturns(result1 error) {
 }
 
 func (fake *FakePrinter) PrintlnReturnsOnCall(i int, result1 error) {
+	fake.printlnMutex.Lock()
+	defer fake.printlnMutex.Unlock()
 	fake.PrintlnStub = nil
 	if fake.printlnReturnsOnCall == nil {
 		fake.printlnReturnsOnCall = make(map[int]struct {
@@ -192,10 +228,10 @@ func (fake *FakePrinter) PrintlnReturnsOnCall(i int, result1 error) {
 func (fake *FakePrinter) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.printYAMLMutex.RLock()
-	defer fake.printYAMLMutex.RUnlock()
 	fake.printJSONMutex.RLock()
 	defer fake.printJSONMutex.RUnlock()
+	fake.printYAMLMutex.RLock()
+	defer fake.printYAMLMutex.RUnlock()
 	fake.printlnMutex.RLock()
 	defer fake.printlnMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
