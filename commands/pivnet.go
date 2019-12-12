@@ -145,7 +145,7 @@ type PivnetCommand struct {
 
 	Logger    logger.Logger
 	userAgent string
-	profile   *rc.PivnetProfile
+	Profile   *rc.PivnetProfile
 }
 
 var Pivnet PivnetCommand
@@ -169,9 +169,9 @@ func NewPivnetClient() *gp.Client {
 	var refreshToken string
 	var host string
 
-	if Pivnet.profile != nil {
-		refreshToken = Pivnet.profile.APIToken
-		host = Pivnet.profile.Host
+	if Pivnet.Profile != nil {
+		refreshToken = Pivnet.Profile.APIToken
+		host = Pivnet.Profile.Host
 	}
 
 	accessTokenService := CreateAccessTokenService(RC, Pivnet.ProfileName, refreshToken, host, Pivnet.SkipSSLValidation)
@@ -242,7 +242,7 @@ var Init = func(profileRequired bool) error {
 	}
 
 	if profile != nil {
-		Pivnet.profile = profile
+		Pivnet.Profile = profile
 
 		sanitizeWriters(profile.APIToken)
 	}

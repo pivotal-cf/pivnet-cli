@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
+	"github.com/pivotal-cf/pivnet-cli/rc"
+	"github.com/pivotal-cf/pivnet-cli/rc/filesystem"
 	"os"
 
 	"github.com/jessevdk/go-flags"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/version"
+	"github.com/pivotal-cf/pivnet-cli/hostwarning"
 )
 
 var (
@@ -60,6 +63,15 @@ func main() {
 		result := client.Warn(version.Version)
 		if result != "" {
 			fmt.Fprintf(os.Stderr, "\n%s\n", result)
+		}
+
+		rcFileReadWriter := filesystem.NewPivnetRCReadWriter(commands.Pivnet.ConfigFile)
+		rch := rc.NewRCHandler(rcFileReadWriter)
+		if commands.Pivnet.Profile != nil {
+		    profile, err := rch.ProfileForName(commands.Pivnet.Profile.Name)
+		    if err == nil && profile != nil {
+				fmt.Fprint(os.Stderr, hostwarning.NewHostWarning(profile.Host).Warn())
+			}
 		}
 	}
 }

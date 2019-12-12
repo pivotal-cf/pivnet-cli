@@ -159,6 +159,7 @@ var _ = Describe("pivnet cli", func() {
 
 	var sharedAssertions = func(apiToken string) {
 		Describe("printing as json", func() {
+			var session *gexec.Session
 			BeforeEach(func() {
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -178,19 +179,18 @@ var _ = Describe("pivnet cli", func() {
 						ghttp.RespondWithJSONEncoded(http.StatusOK, pivnetVersions),
 					),
 				)
-			})
-
-			It("prints as json", func() {
 				login(apiToken)
 
-				session := runMainWithArgs(
+				session = runMainWithArgs(
 					"--format=json",
 					"product",
 					"--product-slug", product.Slug,
 				)
 
 				Eventually(session, executableTimeout).Should(gexec.Exit(0))
+			})
 
+			It("prints as json", func() {
 				var receivedProduct pivnet.Product
 				err := json.Unmarshal(session.Out.Contents(), &receivedProduct)
 				Expect(err).NotTo(HaveOccurred())
@@ -199,21 +199,41 @@ var _ = Describe("pivnet cli", func() {
 			})
 
 			It("prints the warning that their CLI version is out of date", func() {
-				login(apiToken)
-
-				session := runMainWithArgs(
-					"--format=json",
-					"product",
-					"--product-slug", product.Slug,
-				)
-
-				Eventually(session, executableTimeout).Should(gexec.Exit(0))
-
 				Expect(session.Err).Should(gbytes.Say("Warning: Your version of Pivnet CLI"))
+			})
+
+			It("prints the warning that the host is not production", func() {
+				Expect(session.Err).Should(gbytes.Say("Warning: You are currently targeting %s", server.URL()))
+			})
+
+			Context("when it logs out", func(){
+				BeforeEach(func() {
+					server.AppendHandlers(
+						ghttp.CombineHandlers(
+							ghttp.VerifyRequest(
+								"GET",
+								fmt.Sprintf("%s/versions", apiPrefix),
+							),
+							ghttp.RespondWithJSONEncoded(http.StatusOK, pivnetVersions),
+						),
+					)
+				})
+
+				It("does not print the warning about the host and not error", func() {
+					session = runMainWithArgs(
+						"--format=json",
+						"logout",
+					)
+
+					Eventually(session, executableTimeout).Should(gexec.Exit(0))
+
+					Expect(session.Err).ShouldNot(gbytes.Say("Warning: You are currently targeting %s", server.URL()))
+				})
 			})
 		})
 
 		Describe("printing as yaml", func() {
+			var session *gexec.Session
 			BeforeEach(func() {
 				server.AppendHandlers(
 					ghttp.CombineHandlers(
@@ -233,18 +253,19 @@ var _ = Describe("pivnet cli", func() {
 						ghttp.RespondWithJSONEncoded(http.StatusOK, pivnetVersions),
 					),
 				)
+
+				login(apiToken)
+
+				session = runMainWithArgs(
+					"--format=json",
+					"product",
+					"--product-slug", product.Slug,
+				)
+
+				Eventually(session, executableTimeout).Should(gexec.Exit(0))
 			})
 
 			It("prints as yaml", func() {
-				login(apiToken)
-
-				session := runMainWithArgs(
-					"--format=yaml",
-					"product",
-					"--product-slug", product.Slug)
-
-				Eventually(session, executableTimeout).Should(gexec.Exit(0))
-
 				var receivedProduct pivnet.Product
 				err := yaml.Unmarshal(session.Out.Contents(), &receivedProduct)
 				Expect(err).NotTo(HaveOccurred())
@@ -253,17 +274,36 @@ var _ = Describe("pivnet cli", func() {
 			})
 
 			It("prints the warning that their CLI version is out of date", func() {
-				login(apiToken)
-
-				session := runMainWithArgs(
-					"--format=yaml",
-					"product",
-					"--product-slug", product.Slug,
-				)
-
-				Eventually(session, executableTimeout).Should(gexec.Exit(0))
-
 				Expect(session.Err).Should(gbytes.Say("Warning: Your version of Pivnet CLI"))
+			})
+
+			It("prints the warning that the host is not production", func() {
+				Expect(session.Err).Should(gbytes.Say("Warning: You are currently targeting %s", server.URL()))
+			})
+
+			Context("when it logs out", func(){
+				BeforeEach(func() {
+					server.AppendHandlers(
+						ghttp.CombineHandlers(
+							ghttp.VerifyRequest(
+								"GET",
+								fmt.Sprintf("%s/versions", apiPrefix),
+							),
+							ghttp.RespondWithJSONEncoded(http.StatusOK, pivnetVersions),
+						),
+					)
+				})
+
+				It("does not print the warning about the host and not error", func() {
+					session = runMainWithArgs(
+						"--format=json",
+						"logout",
+					)
+
+					Eventually(session, executableTimeout).Should(gexec.Exit(0))
+
+					Expect(session.Err).ShouldNot(gbytes.Say("Warning: You are currently targeting %s", server.URL()))
+				})
 			})
 		})
 	}
