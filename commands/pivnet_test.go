@@ -631,6 +631,90 @@ var _ = Describe("Pivnet commands", func() {
 		})
 	})
 
+	Describe("HelmChartReferences command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "HelmChartReferences")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("helm-chart-references"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("hrs"))
+		})
+	})
+
+	Describe("HelmChartReference command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "HelmChartReference")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("helm-chart-reference"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("hr"))
+		})
+	})
+
+	Describe("CreateHelmChartReference command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "CreateHelmChartReference")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("create-helm-chart-reference"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("chr"))
+		})
+	})
+
+	Describe("DeleteHelmChartReference command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "DeleteHelmChartReference")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("delete-helm-chart-reference"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("dhr"))
+		})
+	})
+
+	Describe("AddHelmChartReferenceToRelease command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "AddHelmChartReferenceToRelease")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("add-helm-chart-reference"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("ahr"))
+		})
+	})
+
+	Describe("RemoveHelmChartReferenceFromRelease command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "RemoveHelmChartReferenceFromRelease")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("remove-helm-chart-reference"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("rhr"))
+		})
+	})
+
 	Describe("Releases command", func() {
 		BeforeEach(func() {
 			field = fieldFor(commands.Pivnet, "Releases")

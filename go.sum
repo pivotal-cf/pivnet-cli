@@ -80,6 +80,10 @@ github.com/pivotal-cf/go-pivnet/v3 v3.0.0 h1:6l9EbBzEJvQDcWf7p7uXvuez3Qpv8Tklnza
 github.com/pivotal-cf/go-pivnet/v3 v3.0.0/go.mod h1:qmP9QfOQuVuY/lGITecbyjsDpcSGQh619GpqpCuB6ZQ=
 github.com/pivotal-cf/go-pivnet/v3 v3.0.1 h1:8uxVV2JbE4aKnyOZpBjeN+HUfbtN/WuoNuTaGuL9/Sk=
 github.com/pivotal-cf/go-pivnet/v3 v3.0.1/go.mod h1:qmP9QfOQuVuY/lGITecbyjsDpcSGQh619GpqpCuB6ZQ=
+github.com/pivotal-cf/go-pivnet/v3 v3.0.2 h1:yeLAQSHhk/bRATgFsNXLIbj+P5op0odgdvrcbUGLK6Q=
+github.com/pivotal-cf/go-pivnet/v3 v3.0.2/go.mod h1:qmP9QfOQuVuY/lGITecbyjsDpcSGQh619GpqpCuB6ZQ=
+github.com/pivotal-cf/go-pivnet/v3 v3.0.3 h1:xSWlOPbMJA5e+nqjKjIy1SXYxqRKKBxR8jrcnIBgih4=
+github.com/pivotal-cf/go-pivnet/v3 v3.0.3/go.mod h1:qmP9QfOQuVuY/lGITecbyjsDpcSGQh619GpqpCuB6ZQ=
 github.com/robdimsdale/sanitizer v0.0.0-20160522134901-ab2334cb7539 h1:h3AVw1v3JIE9Y1HyjYyiPTG73ywlF4754oiIjkxPjNk=
 github.com/robdimsdale/sanitizer v0.0.0-20160522134901-ab2334cb7539/go.mod h1:tqCODtkKV+9Tfvt9JURvKCTxJ69bA/OU/QhsaQLK/rc=
 github.com/sclevine/spec v1.2.0/go.mod h1:W4J29eT/Kzv7/b9IWLB055Z+qvVC9vt0Arko24q7p+U=

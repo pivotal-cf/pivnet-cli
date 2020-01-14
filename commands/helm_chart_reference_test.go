@@ -10,49 +10,49 @@ import (
 	pivnet "github.com/pivotal-cf/go-pivnet/v3"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
-	"github.com/pivotal-cf/pivnet-cli/commands/imagereference"
+	"github.com/pivotal-cf/pivnet-cli/commands/helmchartreference"
 )
 
-var _ = Describe("image reference commands", func() {
+var _ = Describe("helm chart reference commands", func() {
 	var (
 		field reflect.StructField
 
-		fakeImageReferenceClient *commandsfakes.FakeImageReferenceClient
+		fakeHelmChartReferenceClient *commandsfakes.FakeHelmChartReferenceClient
 	)
 
 	BeforeEach(func() {
-		fakeImageReferenceClient = &commandsfakes.FakeImageReferenceClient{}
+		fakeHelmChartReferenceClient = &commandsfakes.FakeHelmChartReferenceClient{}
 
-		commands.NewImageReferenceClient = func(imagereference.PivnetClient) commands.ImageReferenceClient {
-			return fakeImageReferenceClient
+		commands.NewHelmChartReferenceClient = func(helmchartreference.PivnetClient) commands.HelmChartReferenceClient {
+			return fakeHelmChartReferenceClient
 		}
 	})
 
-	Describe("ImageReferencesCommand", func() {
+	Describe("HelmChartReferencesCommand", func() {
 		var (
-			cmd commands.ImageReferencesCommand
+			cmd commands.HelmChartReferencesCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.ImageReferencesCommand{}
+			cmd = commands.HelmChartReferencesCommand{}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the HelmChartReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.ListCallCount()).To(Equal(1))
+			Expect(fakeHelmChartReferenceClient.ListCallCount()).To(Equal(1))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the HelmChartReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.ListReturns(expectedErr)
+				fakeHelmChartReferenceClient.ListReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -88,7 +88,7 @@ var _ = Describe("image reference commands", func() {
 
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferencesCommand{}, "ProductSlug")
+				field = fieldFor(commands.HelmChartReferencesCommand{}, "ProductSlug")
 			})
 
 			It("is required", func() {
@@ -106,7 +106,7 @@ var _ = Describe("image reference commands", func() {
 
 		Describe("ReleaseVersion flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferencesCommand{}, "ReleaseVersion")
+				field = fieldFor(commands.HelmChartReferencesCommand{}, "ReleaseVersion")
 			})
 
 			It("is not required", func() {
@@ -119,53 +119,35 @@ var _ = Describe("image reference commands", func() {
 
 			It("contains long name", func() {
 				Expect(longTag(field)).To(Equal("release-version"))
-			})
-		})
-
-		Describe("ImageDigest flag", func() {
-			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferencesCommand{}, "ImageDigest")
-			})
-
-			It("is not required", func() {
-				Expect(isRequired(field)).To(BeFalse())
-			})
-
-			It("contains short name", func() {
-				Expect(shortTag(field)).To(Equal("d"))
-			})
-
-			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("digest"))
 			})
 		})
 	})
 
-	Describe("ImageReferenceCommand", func() {
+	Describe("HelmChartReferenceCommand", func() {
 		var (
-			cmd commands.ImageReferenceCommand
+			cmd commands.HelmChartReferenceCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.ImageReferenceCommand{}
+			cmd = commands.HelmChartReferenceCommand{}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the HelmChartReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.GetCallCount()).To(Equal(1))
+			Expect(fakeHelmChartReferenceClient.GetCallCount()).To(Equal(1))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the HelmChartReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.GetReturns(expectedErr)
+				fakeHelmChartReferenceClient.GetReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -201,7 +183,7 @@ var _ = Describe("image reference commands", func() {
 
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferenceCommand{}, "ProductSlug")
+				field = fieldFor(commands.HelmChartReferenceCommand{}, "ProductSlug")
 			})
 
 			It("is required", func() {
@@ -219,7 +201,7 @@ var _ = Describe("image reference commands", func() {
 
 		Describe("ReleaseVersion flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferenceCommand{}, "ReleaseVersion")
+				field = fieldFor(commands.HelmChartReferenceCommand{}, "ReleaseVersion")
 			})
 
 			It("is not required", func() {
@@ -235,9 +217,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImageReferenceID flag", func() {
+		Describe("HelmChartReferenceID flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferenceCommand{}, "ImageReferenceID")
+				field = fieldFor(commands.HelmChartReferenceCommand{}, "HelmChartReferenceID")
 			})
 
 			It("is required", func() {
@@ -249,73 +231,69 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-reference-id"))
+				Expect(longTag(field)).To(Equal("helm-chart-reference-id"))
 			})
 		})
 	})
 
-	Describe("CreateImageReferenceCommand", func() {
+	Describe("CreateHelmChartReferenceCommand", func() {
 		var (
 			productSlug string
 			name        string
-			imagePath   string
-			digest      string
+			version     string
 
 			description        string
 			docsURL            string
 			systemRequirements []string
 
-			cmd commands.CreateImageReferenceCommand
+			cmd commands.CreateHelmChartReferenceCommand
 		)
 
 		BeforeEach(func() {
 			productSlug = "some product slug"
-			name = "some image reference"
-			imagePath = "some image path"
-			digest = "some digest"
+			name = "some helm chart reference"
+			version = "some version"
 
 			description = "some description"
 			docsURL = "some-docs-url"
 			systemRequirements = []string{"system1", "system2"}
 
-			cmd = commands.CreateImageReferenceCommand{
+			cmd = commands.CreateHelmChartReferenceCommand{
 				ProductSlug:        productSlug,
 				Name:               name,
-				ImagePath:          imagePath,
-				Digest:             digest,
+				Version:            version,
 				Description:        description,
 				DocsURL:            docsURL,
 				SystemRequirements: systemRequirements,
 			}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the HelmChartReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			config := pivnet.CreateImageReferenceConfig{
+			config := pivnet.CreateHelmChartReferenceConfig{
 				ProductSlug:        productSlug,
 				Name:               name,
-				ImagePath:          imagePath,
-				Digest:             digest,
+				Version:            version,
 				Description:        description,
 				DocsURL:            docsURL,
 				SystemRequirements: systemRequirements,
 			}
 
-			Expect(fakeImageReferenceClient.CreateCallCount()).To(Equal(1))
-			Expect(fakeImageReferenceClient.CreateArgsForCall(0)).To(Equal(config))
+			Expect(fakeHelmChartReferenceClient.CreateCallCount()).To(Equal(1))
+			Expect(fakeHelmChartReferenceClient.CreateArgsForCall(0)).To(Equal(config))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the HelmChartReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.CreateReturns(expectedErr)
+				fakeHelmChartReferenceClient.CreateReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -381,9 +359,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImagePath flag", func() {
+		Describe("Version flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(cmd, "ImagePath")
+				field = fieldFor(cmd, "Version")
 			})
 
 			It("is required", func() {
@@ -391,21 +369,7 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-path"))
-			})
-		})
-
-		Describe("Digest flag", func() {
-			BeforeEach(func() {
-				field = fieldFor(cmd, "Digest")
-			})
-
-			It("is required", func() {
-				Expect(isRequired(field)).To(BeTrue())
-			})
-
-			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("digest"))
+				Expect(longTag(field)).To(Equal("version"))
 			})
 		})
 
@@ -452,31 +416,31 @@ var _ = Describe("image reference commands", func() {
 		})
 	})
 
-	Describe("DeleteImageReferenceCommand", func() {
+	Describe("DeleteHelmChartReferenceCommand", func() {
 		var (
-			cmd commands.DeleteImageReferenceCommand
+			cmd commands.DeleteHelmChartReferenceCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.DeleteImageReferenceCommand{}
+			cmd = commands.DeleteHelmChartReferenceCommand{}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the HelmChartReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.DeleteCallCount()).To(Equal(1))
+			Expect(fakeHelmChartReferenceClient.DeleteCallCount()).To(Equal(1))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the HelmChartReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.DeleteReturns(expectedErr)
+				fakeHelmChartReferenceClient.DeleteReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -512,7 +476,7 @@ var _ = Describe("image reference commands", func() {
 
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.DeleteImageReferenceCommand{}, "ProductSlug")
+				field = fieldFor(commands.DeleteHelmChartReferenceCommand{}, "ProductSlug")
 			})
 
 			It("is required", func() {
@@ -528,9 +492,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImageReferenceID flag", func() {
+		Describe("HelmChartReferenceID flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.DeleteImageReferenceCommand{}, "ImageReferenceID")
+				field = fieldFor(commands.DeleteHelmChartReferenceCommand{}, "HelmChartReferenceID")
 			})
 
 			It("is required", func() {
@@ -542,73 +506,68 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-reference-id"))
+				Expect(longTag(field)).To(Equal("helm-chart-reference-id"))
 			})
 		})
 	})
 
-	Describe("UpdateImagereferenceCommand", func() {
+	Describe("UpdateHelmChartReferenceCommand", func() {
 		var (
 			productSlug      string
-			imageReferenceID int
+			helmChartReferenceID int
 
 			description        string
-			name               string
 			docsURL            string
 			systemRequirements []string
 
-			cmd commands.UpdateImageReferenceCommand
+			cmd commands.UpdateHelmChartReferenceCommand
 		)
 
 		BeforeEach(func() {
 			productSlug = "some product slug"
-			imageReferenceID = 1234
+			helmChartReferenceID = 1234
 
 			description = "some description"
-			name = "some image reference"
 			docsURL = "some-docs-url"
 			systemRequirements = []string{"system1", "system2"}
 
-			cmd = commands.UpdateImageReferenceCommand{
+			cmd = commands.UpdateHelmChartReferenceCommand{
 				ProductSlug:        productSlug,
-				ImageReferenceID:   imageReferenceID,
-				Name:               &name,
+				HelmChartReferenceID:   helmChartReferenceID,
 				Description:        &description,
 				DocsURL:            &docsURL,
 				SystemRequirements: &systemRequirements,
 			}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the HelmChartReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.UpdateCallCount()).To(Equal(1))
+			Expect(fakeHelmChartReferenceClient.UpdateCallCount()).To(Equal(1))
 
 			invokedProductSlug,
-				invokedImageID,
-				invokedName,
+				invokedHelmChartReferenceID,
 				invokedDescription,
 				invokedDocsURL,
-				invokedSystemRequirements := fakeImageReferenceClient.UpdateArgsForCall(0)
+				invokedSystemRequirements := fakeHelmChartReferenceClient.UpdateArgsForCall(0)
 
-			Expect(invokedImageID).To(Equal(imageReferenceID))
+			Expect(invokedHelmChartReferenceID).To(Equal(helmChartReferenceID))
 			Expect(invokedProductSlug).To(Equal(productSlug))
-			Expect(*invokedName).To(Equal(name))
 			Expect(*invokedDescription).To(Equal(description))
 			Expect(*invokedDocsURL).To(Equal(docsURL))
 			Expect(*invokedSystemRequirements).To(Equal(systemRequirements))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the HelmChartReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.UpdateReturns(expectedErr)
+				fakeHelmChartReferenceClient.UpdateReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -660,9 +619,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImageReferenceID flag", func() {
+		Describe("HelmChartReferenceID flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(cmd, "ImageReferenceID")
+				field = fieldFor(cmd, "HelmChartReferenceID")
 			})
 
 			It("is required", func() {
@@ -674,21 +633,7 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-reference-id"))
-			})
-		})
-
-		Describe("Name flag", func() {
-			BeforeEach(func() {
-				field = fieldFor(cmd, "Name")
-			})
-
-			It("is not required", func() {
-				Expect(isRequired(field)).To(BeFalse())
-			})
-
-			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("name"))
+				Expect(longTag(field)).To(Equal("helm-chart-reference-id"))
 			})
 		})
 
@@ -735,31 +680,31 @@ var _ = Describe("image reference commands", func() {
 		})
 	})
 
-	Describe("AddImageReferenceToReleaseCommand", func() {
+	Describe("AddHelmChartReferenceToReleaseCommand", func() {
 		var (
-			cmd commands.AddImageReferenceToReleaseCommand
+			cmd commands.AddHelmChartReferenceToReleaseCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.AddImageReferenceToReleaseCommand{}
+			cmd = commands.AddHelmChartReferenceToReleaseCommand{}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the HelmChartReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.AddToReleaseCallCount()).To(Equal(1))
+			Expect(fakeHelmChartReferenceClient.AddToReleaseCallCount()).To(Equal(1))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the HelmChartReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.AddToReleaseReturns(expectedErr)
+				fakeHelmChartReferenceClient.AddToReleaseReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -811,9 +756,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImageReferenceID flag", func() {
+		Describe("HelmChartReferenceID flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(cmd, "ImageReferenceID")
+				field = fieldFor(cmd, "HelmChartReferenceID")
 			})
 
 			It("is required", func() {
@@ -825,7 +770,7 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-reference-id"))
+				Expect(longTag(field)).To(Equal("helm-chart-reference-id"))
 			})
 		})
 
@@ -848,31 +793,31 @@ var _ = Describe("image reference commands", func() {
 		})
 	})
 
-	Describe("RemoveImageReferenceFromReleaseCommand", func() {
+	Describe("RemoveHelmChartReferenceFromReleaseCommand", func() {
 		var (
-			cmd commands.RemoveImageReferenceFromReleaseCommand
+			cmd commands.RemoveHelmChartReferenceFromReleaseCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.RemoveImageReferenceFromReleaseCommand{}
+			cmd = commands.RemoveHelmChartReferenceFromReleaseCommand{}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the HelmChartReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.RemoveFromReleaseCallCount()).To(Equal(1))
+			Expect(fakeHelmChartReferenceClient.RemoveFromReleaseCallCount()).To(Equal(1))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the HelmChartReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.RemoveFromReleaseReturns(expectedErr)
+				fakeHelmChartReferenceClient.RemoveFromReleaseReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -924,9 +869,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImageReferenceID flag", func() {
+		Describe("HelmChartReferenceID flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(cmd, "ImageReferenceID")
+				field = fieldFor(cmd, "HelmChartReferenceID")
 			})
 
 			It("is required", func() {
@@ -938,7 +883,7 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-reference-id"))
+				Expect(longTag(field)).To(Equal("helm-chart-reference-id"))
 			})
 		})
 
