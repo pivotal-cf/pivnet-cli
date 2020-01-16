@@ -125,10 +125,10 @@ type PivnetCommand struct {
 	AddUserGroupMember    AddUserGroupMemberCommand    `command:"add-user-group-member" alias:"augm" description:"Add user group member to group"`
 	RemoveUserGroupMember RemoveUserGroupMemberCommand `command:"remove-user-group-member" alias:"rugm" description:"Remove user group member from group"`
 
-	SubscriptionGroups SubscriptionGroupsCommand `command:"subscription-groups" alias:"cgs" description:"List managed subscription groups"`
-	SubscriptionGroup SubscriptionGroupCommand `command:"subscription-group" alias:"cg" description:"Show subscription group"`
-	AddSubscriptionGroupMember AddSubscriptionGroupMemberCommand `command:"subscription-group-add-member" alias:"cgam" description:"Add a member to a subscription group"`
-	RemoveSubscriptionGroupMember RemoveSubscriptionGroupMemberCommand `command:"subscription-group-remove-member" alias:"cgrm" description:"Remove a member to a subscription group"`
+	SubscriptionGroups SubscriptionGroupsCommand `command:"subscription-groups" alias:"sgs" description:"List managed subscription groups"`
+	SubscriptionGroup SubscriptionGroupCommand `command:"subscription-group" alias:"sg" description:"Show subscription group"`
+	AddSubscriptionGroupMember AddSubscriptionGroupMemberCommand `command:"subscription-group-add-member" alias:"sgam" description:"Add a member to a subscription group"`
+	RemoveSubscriptionGroupMember RemoveSubscriptionGroupMemberCommand `command:"subscription-group-remove-member" alias:"sgrm" description:"Remove a member to a subscription group"`
 
 	ReleaseDependencies     ReleaseDependenciesCommand     `command:"release-dependencies" alias:"rds" description:"List release dependencies"`
 	AddReleaseDependency    AddReleaseDependencyCommand    `command:"add-release-dependency" alias:"ard" description:"Add release dependency"`
