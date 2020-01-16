@@ -7,7 +7,7 @@ import (
 	"github.com/pivotal-cf/pivnet-cli/commands"
 )
 
-type FakeCompanyGroupClient struct {
+type FakeSubscriptionGroupClient struct {
 	AddMemberStub        func(int, string, string) error
 	addMemberMutex       sync.RWMutex
 	addMemberArgsForCall []struct {
@@ -58,7 +58,7 @@ type FakeCompanyGroupClient struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCompanyGroupClient) AddMember(arg1 int, arg2 string, arg3 string) error {
+func (fake *FakeSubscriptionGroupClient) AddMember(arg1 int, arg2 string, arg3 string) error {
 	fake.addMemberMutex.Lock()
 	ret, specificReturn := fake.addMemberReturnsOnCall[len(fake.addMemberArgsForCall)]
 	fake.addMemberArgsForCall = append(fake.addMemberArgsForCall, struct {
@@ -78,26 +78,26 @@ func (fake *FakeCompanyGroupClient) AddMember(arg1 int, arg2 string, arg3 string
 	return fakeReturns.result1
 }
 
-func (fake *FakeCompanyGroupClient) AddMemberCallCount() int {
+func (fake *FakeSubscriptionGroupClient) AddMemberCallCount() int {
 	fake.addMemberMutex.RLock()
 	defer fake.addMemberMutex.RUnlock()
 	return len(fake.addMemberArgsForCall)
 }
 
-func (fake *FakeCompanyGroupClient) AddMemberCalls(stub func(int, string, string) error) {
+func (fake *FakeSubscriptionGroupClient) AddMemberCalls(stub func(int, string, string) error) {
 	fake.addMemberMutex.Lock()
 	defer fake.addMemberMutex.Unlock()
 	fake.AddMemberStub = stub
 }
 
-func (fake *FakeCompanyGroupClient) AddMemberArgsForCall(i int) (int, string, string) {
+func (fake *FakeSubscriptionGroupClient) AddMemberArgsForCall(i int) (int, string, string) {
 	fake.addMemberMutex.RLock()
 	defer fake.addMemberMutex.RUnlock()
 	argsForCall := fake.addMemberArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeCompanyGroupClient) AddMemberReturns(result1 error) {
+func (fake *FakeSubscriptionGroupClient) AddMemberReturns(result1 error) {
 	fake.addMemberMutex.Lock()
 	defer fake.addMemberMutex.Unlock()
 	fake.AddMemberStub = nil
@@ -106,7 +106,7 @@ func (fake *FakeCompanyGroupClient) AddMemberReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeCompanyGroupClient) AddMemberReturnsOnCall(i int, result1 error) {
+func (fake *FakeSubscriptionGroupClient) AddMemberReturnsOnCall(i int, result1 error) {
 	fake.addMemberMutex.Lock()
 	defer fake.addMemberMutex.Unlock()
 	fake.AddMemberStub = nil
@@ -120,7 +120,7 @@ func (fake *FakeCompanyGroupClient) AddMemberReturnsOnCall(i int, result1 error)
 	}{result1}
 }
 
-func (fake *FakeCompanyGroupClient) Get(arg1 int) error {
+func (fake *FakeSubscriptionGroupClient) Get(arg1 int) error {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
@@ -138,26 +138,26 @@ func (fake *FakeCompanyGroupClient) Get(arg1 int) error {
 	return fakeReturns.result1
 }
 
-func (fake *FakeCompanyGroupClient) GetCallCount() int {
+func (fake *FakeSubscriptionGroupClient) GetCallCount() int {
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
 	return len(fake.getArgsForCall)
 }
 
-func (fake *FakeCompanyGroupClient) GetCalls(stub func(int) error) {
+func (fake *FakeSubscriptionGroupClient) GetCalls(stub func(int) error) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = stub
 }
 
-func (fake *FakeCompanyGroupClient) GetArgsForCall(i int) int {
+func (fake *FakeSubscriptionGroupClient) GetArgsForCall(i int) int {
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
 	argsForCall := fake.getArgsForCall[i]
 	return argsForCall.arg1
 }
 
-func (fake *FakeCompanyGroupClient) GetReturns(result1 error) {
+func (fake *FakeSubscriptionGroupClient) GetReturns(result1 error) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
@@ -166,7 +166,7 @@ func (fake *FakeCompanyGroupClient) GetReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeCompanyGroupClient) GetReturnsOnCall(i int, result1 error) {
+func (fake *FakeSubscriptionGroupClient) GetReturnsOnCall(i int, result1 error) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
@@ -180,7 +180,7 @@ func (fake *FakeCompanyGroupClient) GetReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeCompanyGroupClient) List() error {
+func (fake *FakeSubscriptionGroupClient) List() error {
 	fake.listMutex.Lock()
 	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
 	fake.listArgsForCall = append(fake.listArgsForCall, struct {
@@ -197,19 +197,19 @@ func (fake *FakeCompanyGroupClient) List() error {
 	return fakeReturns.result1
 }
 
-func (fake *FakeCompanyGroupClient) ListCallCount() int {
+func (fake *FakeSubscriptionGroupClient) ListCallCount() int {
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
 	return len(fake.listArgsForCall)
 }
 
-func (fake *FakeCompanyGroupClient) ListCalls(stub func() error) {
+func (fake *FakeSubscriptionGroupClient) ListCalls(stub func() error) {
 	fake.listMutex.Lock()
 	defer fake.listMutex.Unlock()
 	fake.ListStub = stub
 }
 
-func (fake *FakeCompanyGroupClient) ListReturns(result1 error) {
+func (fake *FakeSubscriptionGroupClient) ListReturns(result1 error) {
 	fake.listMutex.Lock()
 	defer fake.listMutex.Unlock()
 	fake.ListStub = nil
@@ -218,7 +218,7 @@ func (fake *FakeCompanyGroupClient) ListReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeCompanyGroupClient) ListReturnsOnCall(i int, result1 error) {
+func (fake *FakeSubscriptionGroupClient) ListReturnsOnCall(i int, result1 error) {
 	fake.listMutex.Lock()
 	defer fake.listMutex.Unlock()
 	fake.ListStub = nil
@@ -232,7 +232,7 @@ func (fake *FakeCompanyGroupClient) ListReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeCompanyGroupClient) RemoveMember(arg1 int, arg2 string) error {
+func (fake *FakeSubscriptionGroupClient) RemoveMember(arg1 int, arg2 string) error {
 	fake.removeMemberMutex.Lock()
 	ret, specificReturn := fake.removeMemberReturnsOnCall[len(fake.removeMemberArgsForCall)]
 	fake.removeMemberArgsForCall = append(fake.removeMemberArgsForCall, struct {
@@ -251,26 +251,26 @@ func (fake *FakeCompanyGroupClient) RemoveMember(arg1 int, arg2 string) error {
 	return fakeReturns.result1
 }
 
-func (fake *FakeCompanyGroupClient) RemoveMemberCallCount() int {
+func (fake *FakeSubscriptionGroupClient) RemoveMemberCallCount() int {
 	fake.removeMemberMutex.RLock()
 	defer fake.removeMemberMutex.RUnlock()
 	return len(fake.removeMemberArgsForCall)
 }
 
-func (fake *FakeCompanyGroupClient) RemoveMemberCalls(stub func(int, string) error) {
+func (fake *FakeSubscriptionGroupClient) RemoveMemberCalls(stub func(int, string) error) {
 	fake.removeMemberMutex.Lock()
 	defer fake.removeMemberMutex.Unlock()
 	fake.RemoveMemberStub = stub
 }
 
-func (fake *FakeCompanyGroupClient) RemoveMemberArgsForCall(i int) (int, string) {
+func (fake *FakeSubscriptionGroupClient) RemoveMemberArgsForCall(i int) (int, string) {
 	fake.removeMemberMutex.RLock()
 	defer fake.removeMemberMutex.RUnlock()
 	argsForCall := fake.removeMemberArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeCompanyGroupClient) RemoveMemberReturns(result1 error) {
+func (fake *FakeSubscriptionGroupClient) RemoveMemberReturns(result1 error) {
 	fake.removeMemberMutex.Lock()
 	defer fake.removeMemberMutex.Unlock()
 	fake.RemoveMemberStub = nil
@@ -279,7 +279,7 @@ func (fake *FakeCompanyGroupClient) RemoveMemberReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeCompanyGroupClient) RemoveMemberReturnsOnCall(i int, result1 error) {
+func (fake *FakeSubscriptionGroupClient) RemoveMemberReturnsOnCall(i int, result1 error) {
 	fake.removeMemberMutex.Lock()
 	defer fake.removeMemberMutex.Unlock()
 	fake.RemoveMemberStub = nil
@@ -293,7 +293,7 @@ func (fake *FakeCompanyGroupClient) RemoveMemberReturnsOnCall(i int, result1 err
 	}{result1}
 }
 
-func (fake *FakeCompanyGroupClient) Invocations() map[string][][]interface{} {
+func (fake *FakeSubscriptionGroupClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.addMemberMutex.RLock()
@@ -311,7 +311,7 @@ func (fake *FakeCompanyGroupClient) Invocations() map[string][][]interface{} {
 	return copiedInvocations
 }
 
-func (fake *FakeCompanyGroupClient) recordInvocation(key string, args []interface{}) {
+func (fake *FakeSubscriptionGroupClient) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -323,4 +323,4 @@ func (fake *FakeCompanyGroupClient) recordInvocation(key string, args []interfac
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ commands.CompanyGroupClient = new(FakeCompanyGroupClient)
+var _ commands.SubscriptionGroupClient = new(FakeSubscriptionGroupClient)

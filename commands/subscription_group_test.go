@@ -5,52 +5,52 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/commands/companygroup"
+	"github.com/pivotal-cf/pivnet-cli/commands/subscriptiongroup"
 	"reflect"
 
 	"github.com/pivotal-cf/pivnet-cli/commands"
 	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
 )
 
-var _ = Describe("company group commands", func() {
+var _ = Describe("subscription group commands", func() {
 	var (
 		field reflect.StructField
-		fakeCompanyGroupClient *commandsfakes.FakeCompanyGroupClient
+		fakeSubscriptionGroupClient *commandsfakes.FakeSubscriptionGroupClient
 	)
 
 	BeforeEach(func() {
-		fakeCompanyGroupClient = &commandsfakes.FakeCompanyGroupClient{}
+		fakeSubscriptionGroupClient = &commandsfakes.FakeSubscriptionGroupClient{}
 
-		commands.NewCompanyGroupClient = func(companygroup.PivnetClient) commands.CompanyGroupClient {
-			return fakeCompanyGroupClient
+		commands.NewSubscriptionGroupClient = func(subscriptiongroup.PivnetClient) commands.SubscriptionGroupClient {
+			return fakeSubscriptionGroupClient
 		}
 	})
 
-	Describe("CompanyGroupsCommand", func() {
+	Describe("SubscriptionGroupsCommand", func() {
 		var (
-			cmd commands.CompanyGroupsCommand
+			cmd commands.SubscriptionGroupsCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.CompanyGroupsCommand{}
+			cmd = commands.SubscriptionGroupsCommand{}
 		})
 
-		It("invokes the CompanyGroup client", func() {
+		It("invokes the SubscriptionGroup client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeCompanyGroupClient.ListCallCount()).To(Equal(1))
+			Expect(fakeSubscriptionGroupClient.ListCallCount()).To(Equal(1))
 		})
 
-		Context("when the CompanyGroup client returns an error", func() {
+		Context("when the SubscriptionGroup client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeCompanyGroupClient.ListReturns(expectedErr)
+				fakeSubscriptionGroupClient.ListReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -85,31 +85,31 @@ var _ = Describe("company group commands", func() {
 		})
 	})
 
-	Describe("CompanyGroupCommand", func() {
+	Describe("SubscriptionGroupCommand", func() {
 		var (
-			cmd commands.CompanyGroupCommand
+			cmd commands.SubscriptionGroupCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.CompanyGroupCommand{}
+			cmd = commands.SubscriptionGroupCommand{}
 		})
 
-		It("invokes the CompanyGroup client", func() {
+		It("invokes the SubscriptionGroup client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeCompanyGroupClient.GetCallCount()).To(Equal(1))
+			Expect(fakeSubscriptionGroupClient.GetCallCount()).To(Equal(1))
 		})
 
-		Context("when the CompanyGroup client returns an error", func() {
+		Context("when the SubscriptionGroup client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeCompanyGroupClient.GetReturns(expectedErr)
+				fakeSubscriptionGroupClient.GetReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -143,9 +143,9 @@ var _ = Describe("company group commands", func() {
 			})
 		})
 
-		Describe("CompanyGroupId flag", func() {
+		Describe("SubscriptionGroupId flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.CompanyGroupCommand{}, "CompanyGroupID")
+				field = fieldFor(commands.SubscriptionGroupCommand{}, "SubscriptionGroupID")
 			})
 
 			It("is required", func() {
@@ -157,36 +157,36 @@ var _ = Describe("company group commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("company-group-id"))
+				Expect(longTag(field)).To(Equal("subscription-group-id"))
 			})
 		})
 	})
 
-	Describe("AddCompanyGroupMemberCommand", func() {
+	Describe("AddSubscriptionGroupMemberCommand", func() {
 		var (
-			cmd commands.AddCompanyGroupMemberCommand
+			cmd commands.AddSubscriptionGroupMemberCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.AddCompanyGroupMemberCommand{}
+			cmd = commands.AddSubscriptionGroupMemberCommand{}
 		})
 
-		It("invokes the CompanyGroup client", func() {
+		It("invokes the SubscriptionGroup client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeCompanyGroupClient.AddMemberCallCount()).To(Equal(1))
+			Expect(fakeSubscriptionGroupClient.AddMemberCallCount()).To(Equal(1))
 		})
 
-		Context("when the CompanyGroup client returns an error", func() {
+		Context("when the SubscriptionGroup client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeCompanyGroupClient.AddMemberReturns(expectedErr)
+				fakeSubscriptionGroupClient.AddMemberReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -220,9 +220,9 @@ var _ = Describe("company group commands", func() {
 			})
 		})
 
-		Describe("CompanyGroupId flag", func() {
+		Describe("SubscriptionGroupId flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.AddCompanyGroupMemberCommand{}, "CompanyGroupID")
+				field = fieldFor(commands.AddSubscriptionGroupMemberCommand{}, "SubscriptionGroupID")
 			})
 
 			It("is required", func() {
@@ -234,13 +234,13 @@ var _ = Describe("company group commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("company-group-id"))
+				Expect(longTag(field)).To(Equal("subscription-group-id"))
 			})
 		})
 
 		Describe("MemberEmail flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.AddCompanyGroupMemberCommand{}, "MemberEmail")
+				field = fieldFor(commands.AddSubscriptionGroupMemberCommand{}, "MemberEmail")
 			})
 
 			It("is required", func() {
@@ -254,7 +254,7 @@ var _ = Describe("company group commands", func() {
 
 		Describe("IsAdmin flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.AddCompanyGroupMemberCommand{}, "IsAdmin")
+				field = fieldFor(commands.AddSubscriptionGroupMemberCommand{}, "IsAdmin")
 			})
 
 			It("is not required", func() {
@@ -267,31 +267,31 @@ var _ = Describe("company group commands", func() {
 		})
 	})
 
-	Describe("RemoveCompanyGroupMemberCommand", func() {
+	Describe("RemoveSubscriptionGroupMemberCommand", func() {
 		var (
-			cmd commands.RemoveCompanyGroupMemberCommand
+			cmd commands.RemoveSubscriptionGroupMemberCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.RemoveCompanyGroupMemberCommand{}
+			cmd = commands.RemoveSubscriptionGroupMemberCommand{}
 		})
 
-		It("invokes the CompanyGroup client", func() {
+		It("invokes the SubscriptionGroup client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeCompanyGroupClient.RemoveMemberCallCount()).To(Equal(1))
+			Expect(fakeSubscriptionGroupClient.RemoveMemberCallCount()).To(Equal(1))
 		})
 
-		Context("when the CompanyGroup client returns an error", func() {
+		Context("when the SubscriptionGroup client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeCompanyGroupClient.RemoveMemberReturns(expectedErr)
+				fakeSubscriptionGroupClient.RemoveMemberReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -325,9 +325,9 @@ var _ = Describe("company group commands", func() {
 			})
 		})
 
-		Describe("CompanyGroupId flag", func() {
+		Describe("SubscriptionGroupId flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.RemoveCompanyGroupMemberCommand{}, "CompanyGroupID")
+				field = fieldFor(commands.RemoveSubscriptionGroupMemberCommand{}, "SubscriptionGroupID")
 			})
 
 			It("is required", func() {
@@ -339,13 +339,13 @@ var _ = Describe("company group commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("company-group-id"))
+				Expect(longTag(field)).To(Equal("subscription-group-id"))
 			})
 		})
 
 		Describe("MemberEmail flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.RemoveCompanyGroupMemberCommand{}, "MemberEmail")
+				field = fieldFor(commands.RemoveSubscriptionGroupMemberCommand{}, "MemberEmail")
 			})
 
 			It("is required", func() {

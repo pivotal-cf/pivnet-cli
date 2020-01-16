@@ -5,9 +5,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/pivotal-cf/go-pivnet/v3"
-	"github.com/pivotal-cf/go-pivnet/v3/download"
-	"github.com/pivotal-cf/go-pivnet/v3/logger"
+	"github.com/pivotal-cf/go-pivnet/v4"
+	"github.com/pivotal-cf/go-pivnet/v4/download"
+	"github.com/pivotal-cf/go-pivnet/v4/logger"
 )
 
 type Client struct {
@@ -124,20 +124,20 @@ func (c Client) RemoveMemberFromGroup(userGroupID int, emailAddress string) (piv
 	return c.client.UserGroups.RemoveMemberFromGroup(userGroupID, emailAddress)
 }
 
-func (c Client) CompanyGroups() ([]pivnet.CompanyGroup, error) {
-	return c.client.CompanyGroups.List()
+func (c Client) SubscriptionGroups() ([]pivnet.SubscriptionGroup, error) {
+	return c.client.SubscriptionGroups.List()
 }
 
-func (c Client) CompanyGroup(companyGroupID int) (pivnet.CompanyGroup, error) {
-	return c.client.CompanyGroups.Get(companyGroupID)
+func (c Client) SubscriptionGroup(subscriptionGroupID int) (pivnet.SubscriptionGroup, error) {
+	return c.client.SubscriptionGroups.Get(subscriptionGroupID)
 }
 
-func (c Client) AddCompanyGroupMember(companyGroupID int, emailAddress string, isAdmin string) (pivnet.CompanyGroup, error) {
-	return c.client.CompanyGroups.AddMember(companyGroupID, emailAddress, isAdmin)
+func (c Client) AddSubscriptionGroupMember(subscriptionGroupID int, emailAddress string, isAdmin string) (pivnet.SubscriptionGroup, error) {
+	return c.client.SubscriptionGroups.AddMember(subscriptionGroupID, emailAddress, isAdmin)
 }
 
-func (c Client) RemoveCompanyGroupMember(companyGroupID int, emailAddress string) (pivnet.CompanyGroup, error) {
-	return c.client.CompanyGroups.RemoveMember(companyGroupID, emailAddress)
+func (c Client) RemoveSubscriptionGroupMember(subscriptionGroupID int, emailAddress string) (pivnet.SubscriptionGroup, error) {
+	return c.client.SubscriptionGroups.RemoveMember(subscriptionGroupID, emailAddress)
 }
 
 func (c Client) EULA(eulaSlug string) (pivnet.EULA, error) {

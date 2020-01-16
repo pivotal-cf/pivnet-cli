@@ -4,7 +4,7 @@ package commandsfakes
 import (
 	"sync"
 
-	pivnet "github.com/pivotal-cf/go-pivnet/v3"
+	pivnet "github.com/pivotal-cf/go-pivnet/v4"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 )
 

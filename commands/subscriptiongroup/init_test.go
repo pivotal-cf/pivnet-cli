@@ -1,4 +1,4 @@
-package companygroup_test
+package subscriptiongroup_test
 
 import (
 	"testing"
@@ -9,5 +9,5 @@ import (
 
 func TestCommands(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "CompanyGroup suite")
+	RunSpecs(t, "SubscriptionGroup suite")
 }

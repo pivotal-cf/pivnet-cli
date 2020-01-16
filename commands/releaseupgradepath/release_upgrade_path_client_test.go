@@ -8,9 +8,9 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	pivnet "github.com/pivotal-cf/go-pivnet/v3"
-	"github.com/pivotal-cf/go-pivnet/v3/logger"
-	"github.com/pivotal-cf/go-pivnet/v3/logshim"
+	pivnet "github.com/pivotal-cf/go-pivnet/v4"
+	"github.com/pivotal-cf/go-pivnet/v4/logger"
+	"github.com/pivotal-cf/go-pivnet/v4/logshim"
 	"github.com/pivotal-cf/pivnet-cli/commands/releaseupgradepath"
 	"github.com/pivotal-cf/pivnet-cli/commands/releaseupgradepath/releaseupgradepathfakes"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"

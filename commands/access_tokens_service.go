@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/pivotal-cf/go-pivnet/v3"
+	"github.com/pivotal-cf/go-pivnet/v4"
 	"github.com/pivotal-cf/pivnet-cli/gp"
 	"github.com/pivotal-cf/pivnet-cli/rc"
 	"time"

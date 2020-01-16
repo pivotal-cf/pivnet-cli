@@ -1,10 +1,10 @@
-package companygroup
+package subscriptiongroup
 
 import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
-	"github.com/pivotal-cf/go-pivnet/v3"
+	"github.com/pivotal-cf/go-pivnet/v4"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
 	"io"
@@ -14,13 +14,13 @@ import (
 
 //go:generate counterfeiter . PivnetClient
 type PivnetClient interface {
-	CompanyGroups() ([]pivnet.CompanyGroup, error)
-	CompanyGroup(companyGroupID int) (pivnet.CompanyGroup, error)
-	AddCompanyGroupMember(companyGroupID int, emailAddress string, isAdmin string) (pivnet.CompanyGroup, error)
-	RemoveCompanyGroupMember(companyGroupID int, emailAddress string) (pivnet.CompanyGroup, error)
+	SubscriptionGroups() ([]pivnet.SubscriptionGroup, error)
+	SubscriptionGroup(subscriptionGroupID int) (pivnet.SubscriptionGroup, error)
+	AddSubscriptionGroupMember(subscriptionGroupID int, emailAddress string, isAdmin string) (pivnet.SubscriptionGroup, error)
+	RemoveSubscriptionGroupMember(subscriptionGroupID int, emailAddress string) (pivnet.SubscriptionGroup, error)
 }
 
-type CompanyGroupClient struct {
+type SubscriptionGroupClient struct {
 	pivnetClient PivnetClient
 	eh           errorhandler.ErrorHandler
 	format       string
@@ -28,14 +28,14 @@ type CompanyGroupClient struct {
 	printer      printer.Printer
 }
 
-func NewCompanyGroupClient(
+func NewSubscriptionGroupClient(
 	pivnetClient PivnetClient,
 	eh errorhandler.ErrorHandler,
 	format string,
 	outputWriter io.Writer,
 	printer printer.Printer,
-) *CompanyGroupClient {
-	return &CompanyGroupClient{
+) *SubscriptionGroupClient {
+	return &SubscriptionGroupClient{
 		pivnetClient: pivnetClient,
 		eh:           eh,
 		format:       format,
@@ -44,76 +44,76 @@ func NewCompanyGroupClient(
 	}
 }
 
-func (c *CompanyGroupClient) List() error {
-	companyGroups, err := c.pivnetClient.CompanyGroups()
+func (c *SubscriptionGroupClient) List() error {
+	subscriptionGroups, err := c.pivnetClient.SubscriptionGroups()
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
 
-	return c.printCompanyGroups(companyGroups)
+	return c.printSubscriptionGroups(subscriptionGroups)
 }
 
-func (c *CompanyGroupClient) printCompanyGroups(companyGroups []pivnet.CompanyGroup) error {
+func (c *SubscriptionGroupClient) printSubscriptionGroups(subscriptionGroups []pivnet.SubscriptionGroup) error {
 	switch c.format {
 
 	case printer.PrintAsTable:
 		table := tablewriter.NewWriter(c.outputWriter)
 		table.SetHeader([]string{"ID", "Name"})
 
-		for _, companyGroup := range companyGroups {
-			companyGroupAsString := []string{
-				strconv.Itoa(companyGroup.ID),
-				companyGroup.Name,
+		for _, subscriptionGroup := range subscriptionGroups {
+			subscriptionGroupAsString := []string{
+				strconv.Itoa(subscriptionGroup.ID),
+				subscriptionGroup.Name,
 			}
-			table.Append(companyGroupAsString)
+			table.Append(subscriptionGroupAsString)
 		}
 		table.Render()
 		return nil
 	case printer.PrintAsJSON:
-		return c.printer.PrintJSON(companyGroups)
+		return c.printer.PrintJSON(subscriptionGroups)
 	case printer.PrintAsYAML:
-		return c.printer.PrintYAML(companyGroups)
+		return c.printer.PrintYAML(subscriptionGroups)
 	}
 
 	return nil
 }
 
-func (c *CompanyGroupClient) Get(companyGroupID int) error {
-	companyGroup, err := c.pivnetClient.CompanyGroup(companyGroupID)
+func (c *SubscriptionGroupClient) Get(subscriptionGroupID int) error {
+	subscriptionGroup, err := c.pivnetClient.SubscriptionGroup(subscriptionGroupID)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
 
-	return c.printCompanyGroup(companyGroup)
+	return c.printSubscriptionGroup(subscriptionGroup)
 }
 
-func (c *CompanyGroupClient) AddMember(companyGroupID int, memberEmail string, isAdmin string) error {
-	companyGroup, err := c.pivnetClient.AddCompanyGroupMember(companyGroupID, memberEmail, isAdmin)
+func (c *SubscriptionGroupClient) AddMember(subscriptionGroupID int, memberEmail string, isAdmin string) error {
+	subscriptionGroup, err := c.pivnetClient.AddSubscriptionGroupMember(subscriptionGroupID, memberEmail, isAdmin)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
 
-	return c.printCompanyGroup(companyGroup)
+	return c.printSubscriptionGroup(subscriptionGroup)
 }
 
-func (c *CompanyGroupClient) RemoveMember(companyGroupID int, memberEmail string) error {
-	companyGroup, err := c.pivnetClient.RemoveCompanyGroupMember(companyGroupID, memberEmail)
+func (c *SubscriptionGroupClient) RemoveMember(subscriptionGroupID int, memberEmail string) error {
+	subscriptionGroup, err := c.pivnetClient.RemoveSubscriptionGroupMember(subscriptionGroupID, memberEmail)
 	if err != nil {
 		return c.eh.HandleError(err)
 	}
 
-	return c.printCompanyGroup(companyGroup)
+	return c.printSubscriptionGroup(subscriptionGroup)
 }
 
-func (c *CompanyGroupClient) printCompanyGroup(companyGroup pivnet.CompanyGroup) error {
+func (c *SubscriptionGroupClient) printSubscriptionGroup(subscriptionGroup pivnet.SubscriptionGroup) error {
 	switch c.format {
 	case printer.PrintAsTable:
 		b := color.New(color.Bold).SprintFunc()
-		fmt.Println(b("ID: "), companyGroup.ID)
-		fmt.Println(b("Company Name: "), companyGroup.Name)
+		fmt.Println(b("ID: "), subscriptionGroup.ID)
+		fmt.Println(b("Subscription Name: "), subscriptionGroup.Name)
 
 		var entitlements []string
-		for _, entitlement := range companyGroup.Entitlements {
+		for _, entitlement := range subscriptionGroup.Entitlements {
 			entitlements = append(entitlements, entitlement.Name)
 		}
 		fmt.Println(b("Entitlements: "), strings.Join(entitlements, ", "))
@@ -122,34 +122,34 @@ func (c *CompanyGroupClient) printCompanyGroup(companyGroup pivnet.CompanyGroup)
 		table := tablewriter.NewWriter(c.outputWriter)
 		table.SetHeader([]string{"Name", "Email", "Is Admin", "Pending"})
 
-		for _, member := range companyGroup.Members {
-			companyGroupAsString := []string{
+		for _, member := range subscriptionGroup.Members {
+			subscriptionGroupAsString := []string{
 				member.Name,
 				member.Email,
 				strconv.FormatBool(member.IsAdmin),
 				"x",
 			}
 
-			table.Append(companyGroupAsString)
+			table.Append(subscriptionGroupAsString)
 		}
 
-		for _, pendingEmail := range companyGroup.PendingInvitations {
-			companyGroupAsString := []string{
+		for _, pendingEmail := range subscriptionGroup.PendingInvitations {
+			subscriptionGroupAsString := []string{
 				"",
 				pendingEmail,
 				"",
 				"\xE2\x9C\x94",
 			}
 
-			table.Append(companyGroupAsString)
+			table.Append(subscriptionGroupAsString)
 		}
 
 		table.Render()
 		return nil
 	case printer.PrintAsJSON:
-		return c.printer.PrintJSON(companyGroup)
+		return c.printer.PrintJSON(subscriptionGroup)
 	case printer.PrintAsYAML:
-		return c.printer.PrintYAML(companyGroup)
+		return c.printer.PrintYAML(subscriptionGroup)
 	}
 
 	return nil

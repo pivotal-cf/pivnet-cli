@@ -1,36 +1,36 @@
 package commands
 
 import (
-	"github.com/pivotal-cf/pivnet-cli/commands/companygroup"
+	"github.com/pivotal-cf/pivnet-cli/commands/subscriptiongroup"
 )
 
-type CompanyGroupsCommand struct{}
+type SubscriptionGroupsCommand struct{}
 
-type CompanyGroupCommand struct {
-	CompanyGroupID int `long:"company-group-id" short:"i" description:"Company group ID e.g. 1234" required:"true"`
+type SubscriptionGroupCommand struct {
+	SubscriptionGroupID int `long:"subscription-group-id" short:"i" description:"Subscription group ID e.g. 1234" required:"true"`
 }
 
-type AddCompanyGroupMemberCommand struct {
-	CompanyGroupID int    `long:"company-group-id" short:"i" description:"Company group ID e.g. 1234" required:"true"`
+type AddSubscriptionGroupMemberCommand struct {
+	SubscriptionGroupID int    `long:"subscription-group-id" short:"i" description:"Subscription group ID e.g. 1234" required:"true"`
 	MemberEmail    string `long:"member-email" description:"Email of member to add e.g. example@example.net" required:"true"`
 	IsAdmin        string `long:"admin" description:"Whether the user should be an admin e.g. --admin=[true|false]"`
 }
 
-type RemoveCompanyGroupMemberCommand struct {
-	CompanyGroupID int    `long:"company-group-id" short:"i" description:"Company group ID e.g. 1234" required:"true"`
+type RemoveSubscriptionGroupMemberCommand struct {
+	SubscriptionGroupID int    `long:"subscription-group-id" short:"i" description:"Subscription group ID e.g. 1234" required:"true"`
 	MemberEmail    string `long:"member-email" description:"Email of member to add e.g. example@example.net" required:"true"`
 }
 
-//go:generate counterfeiter . CompanyGroupClient
-type CompanyGroupClient interface {
+//go:generate counterfeiter . SubscriptionGroupClient
+type SubscriptionGroupClient interface {
 	List() error
-	Get(companyGroupID int) error
-	AddMember(companyGroupID int, memberEmail string, isAdmin string) error
-	RemoveMember(companyGroupID int, memberEmail string) error
+	Get(subscriptionGroupID int) error
+	AddMember(subscriptionGroupID int, memberEmail string, isAdmin string) error
+	RemoveMember(subscriptionGroupID int, memberEmail string) error
 }
 
-var NewCompanyGroupClient = func(client companygroup.PivnetClient) CompanyGroupClient {
-	return companygroup.NewCompanyGroupClient(
+var NewSubscriptionGroupClient = func(client subscriptiongroup.PivnetClient) SubscriptionGroupClient {
+	return subscriptiongroup.NewSubscriptionGroupClient(
 		client,
 		ErrorHandler,
 		Pivnet.Format,
@@ -39,7 +39,7 @@ var NewCompanyGroupClient = func(client companygroup.PivnetClient) CompanyGroupC
 	)
 }
 
-func (command *CompanyGroupsCommand) Execute([]string) error {
+func (command *SubscriptionGroupsCommand) Execute([]string) error {
 	err := Init(true)
 	if err != nil {
 		return err
@@ -51,10 +51,10 @@ func (command *CompanyGroupsCommand) Execute([]string) error {
 		return err
 	}
 
-	return NewCompanyGroupClient(client).List()
+	return NewSubscriptionGroupClient(client).List()
 }
 
-func (command *CompanyGroupCommand) Execute([]string) error {
+func (command *SubscriptionGroupCommand) Execute([]string) error {
 	err := Init(true)
 	if err != nil {
 		return err
@@ -66,10 +66,10 @@ func (command *CompanyGroupCommand) Execute([]string) error {
 		return err
 	}
 
-	return NewCompanyGroupClient(client).Get(command.CompanyGroupID)
+	return NewSubscriptionGroupClient(client).Get(command.SubscriptionGroupID)
 }
 
-func (command *AddCompanyGroupMemberCommand) Execute([]string) error {
+func (command *AddSubscriptionGroupMemberCommand) Execute([]string) error {
 	err := Init(true)
 	if err != nil {
 		return err
@@ -81,10 +81,10 @@ func (command *AddCompanyGroupMemberCommand) Execute([]string) error {
 		return err
 	}
 
-	return NewCompanyGroupClient(client).AddMember(command.CompanyGroupID, command.MemberEmail, command.IsAdmin)
+	return NewSubscriptionGroupClient(client).AddMember(command.SubscriptionGroupID, command.MemberEmail, command.IsAdmin)
 }
 
-func (command *RemoveCompanyGroupMemberCommand) Execute([]string) error {
+func (command *RemoveSubscriptionGroupMemberCommand) Execute([]string) error {
 	err := Init(true)
 	if err != nil {
 		return err
@@ -96,5 +96,5 @@ func (command *RemoveCompanyGroupMemberCommand) Execute([]string) error {
 		return err
 	}
 
-	return NewCompanyGroupClient(client).RemoveMember(command.CompanyGroupID, command.MemberEmail)
+	return NewSubscriptionGroupClient(client).RemoveMember(command.SubscriptionGroupID, command.MemberEmail)
 }

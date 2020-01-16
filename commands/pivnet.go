@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/pivotal-cf/go-pivnet/v3/logshim"
+	"github.com/pivotal-cf/go-pivnet/v4/logshim"
 	"github.com/pivotal-cf/pivnet-cli/filter"
 	"github.com/pivotal-cf/pivnet-cli/rc/filesystem"
 	"io"
@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/pivotal-cf/go-pivnet/v3"
-	"github.com/pivotal-cf/go-pivnet/v3/logger"
-	"github.com/pivotal-cf/go-pivnet/v3/sha256sum"
+	"github.com/pivotal-cf/go-pivnet/v4"
+	"github.com/pivotal-cf/go-pivnet/v4/logger"
+	"github.com/pivotal-cf/go-pivnet/v4/sha256sum"
 	"github.com/pivotal-cf/pivnet-cli/auth"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/gp"
@@ -125,10 +125,10 @@ type PivnetCommand struct {
 	AddUserGroupMember    AddUserGroupMemberCommand    `command:"add-user-group-member" alias:"augm" description:"Add user group member to group"`
 	RemoveUserGroupMember RemoveUserGroupMemberCommand `command:"remove-user-group-member" alias:"rugm" description:"Remove user group member from group"`
 
-	CompanyGroups CompanyGroupsCommand `command:"company-groups" alias:"cgs" description:"List managed company groups"`
-	CompanyGroup CompanyGroupCommand `command:"company-group" alias:"cg" description:"Show company group"`
-	AddCompanyGroupMember AddCompanyGroupMemberCommand `command:"company-group-add-member" alias:"cgam" description:"Add a member to a company group"`
-	RemoveCompanyGroupMember RemoveCompanyGroupMemberCommand `command:"company-group-remove-member" alias:"cgrm" description:"Remove a member to a company group"`
+	SubscriptionGroups SubscriptionGroupsCommand `command:"subscription-groups" alias:"cgs" description:"List managed subscription groups"`
+	SubscriptionGroup SubscriptionGroupCommand `command:"subscription-group" alias:"cg" description:"Show subscription group"`
+	AddSubscriptionGroupMember AddSubscriptionGroupMemberCommand `command:"subscription-group-add-member" alias:"cgam" description:"Add a member to a subscription group"`
+	RemoveSubscriptionGroupMember RemoveSubscriptionGroupMemberCommand `command:"subscription-group-remove-member" alias:"cgrm" description:"Remove a member to a subscription group"`
 
 	ReleaseDependencies     ReleaseDependenciesCommand     `command:"release-dependencies" alias:"rds" description:"List release dependencies"`
 	AddReleaseDependency    AddReleaseDependencyCommand    `command:"add-release-dependency" alias:"ard" description:"Add release dependency"`
