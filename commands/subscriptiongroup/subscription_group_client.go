@@ -112,11 +112,11 @@ func (c *SubscriptionGroupClient) printSubscriptionGroup(subscriptionGroup pivne
 		fmt.Println(b("ID: "), subscriptionGroup.ID)
 		fmt.Println(b("Subscription Name: "), subscriptionGroup.Name)
 
-		var entitlements []string
-		for _, entitlement := range subscriptionGroup.Entitlements {
-			entitlements = append(entitlements, entitlement.Name)
+		var subscriptions []string
+		for _, subscription := range subscriptionGroup.Subscriptions {
+			subscriptions = append(subscriptions, subscription.Name)
 		}
-		fmt.Println(b("Entitlements: "), strings.Join(entitlements, ", "))
+		fmt.Println(b("Subscriptions: "), strings.Join(subscriptions, ", "))
 		fmt.Println("")
 		fmt.Println(b("Members/Pending Invitations:"))
 		table := tablewriter.NewWriter(c.outputWriter)
