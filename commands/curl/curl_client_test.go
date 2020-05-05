@@ -142,5 +142,23 @@ var _ = Describe("curl commands", func() {
 				Expect(fakeErrorHandler.HandleErrorArgsForCall(0)).To(HaveOccurred())
 			})
 		})
+
+		Context("when the response is of type csv", func() {
+			BeforeEach(func() {
+				returnedBytes := []byte(`column0,column1,column2`)
+				resp = &http.Response{
+					Body: ioutil.NopCloser(bytes.NewReader(returnedBytes)),
+					Header: map[string][]string{},
+				}
+				resp.Header.Set("Content-type", "text/csv")
+			})
+
+			It("invokes the error handler", func() {
+				err := client.MakeRequest(method, data, url)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(0))
+			})
+		})
 	})
 })

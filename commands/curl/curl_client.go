@@ -2,6 +2,9 @@ package curl
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
+
 	"io"
 	"net/http"
 	"strings"
@@ -61,6 +64,19 @@ func (c *CurlClient) MakeRequest(
 		return c.eh.HandleError(err)
 	}
 	defer resp.Body.Close()
+
+	contentType := resp.Header.Get("Content-Type")
+
+	if strings.ToLower(contentType) == "text/csv" {
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return c.eh.HandleError(err)
+		}
+
+		fmt.Println(string(bodyBytes))
+
+		return nil
+	}
 
 	err = json.NewDecoder(resp.Body).Decode(&output)
 	if err != nil {
