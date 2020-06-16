@@ -108,14 +108,6 @@ type PivnetCommand struct {
 	RemoveImageReferenceFromRelease RemoveImageReferenceFromReleaseCommand `command:"remove-image-reference" alias:"rir" description:"Remove image reference from release"`
 	UpdateImageReference            UpdateImageReferenceCommand            `command:"update-image-reference" alias:"uir" description:"Update a container image reference"`
 
-	HelmChartReferences                 HelmChartReferencesCommand                 `command:"helm-chart-references" alias:"hrs" description:"List helm chart references"`
-	HelmChartReference                  HelmChartReferenceCommand                  `command:"helm-chart-reference" alias:"hr" description:"Show helm chart reference"`
-	CreateHelmChartReference            CreateHelmChartReferenceCommand            `command:"create-helm-chart-reference" alias:"chr" description:"Create a container helm chart reference"`
-	DeleteHelmChartReference            DeleteHelmChartReferenceCommand            `command:"delete-helm-chart-reference" alias:"dhr" description:"Delete a container helm chart reference"`
-	AddHelmChartReferenceToRelease      AddHelmChartReferenceToReleaseCommand      `command:"add-helm-chart-reference" alias:"ahr" description:"Add helm chart reference to release"`
-	RemoveHelmChartReferenceFromRelease RemoveHelmChartReferenceFromReleaseCommand `command:"remove-helm-chart-reference" alias:"rhr" description:"Remove helm chart reference from release"`
-	UpdateHelmChartReference            UpdateHelmChartReferenceCommand            `command:"update-helm-chart-reference" alias:"uhr" description:"Update a container helm chart reference"`
-
 	Releases      ReleasesCommand      `command:"releases" alias:"rs" description:"List releases"`
 	Release       ReleaseCommand       `command:"release" alias:"r" description:"Show release"`
 	CreateRelease CreateReleaseCommand `command:"create-release" alias:"cr" description:"Create release"`

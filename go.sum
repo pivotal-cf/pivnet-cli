@@ -53,6 +53,7 @@ github.com/onsi/gomega v1.9.0 h1:R1uwffexN6Pr340GtYRIdZmAiN4J+iw6WG4wog1DUXg=
 github.com/onsi/gomega v1.9.0/go.mod h1:Ho0h+IUsWyvy1OpqCwxlQ/21gkhVunqlU8fDGcoTdcA=
 github.com/pivotal-cf/go-pivnet/v4 v4.0.1 h1:RHUCiziGeWtUxiMXffP0yavS5tiUZMoR2dy5WQAoioQ=
 github.com/pivotal-cf/go-pivnet/v4 v4.0.1/go.mod h1:Oeom+lR9SwTfshcxHZ3UbYVAFPXtIlryCX28PhbsQ/M=
+github.com/pivotal-cf/go-pivnet/v4 v4.0.4 h1:qjVpJ9fM6pRsBeBpxumzhfuSC84iF/+GogfS1yPimfk=
 github.com/pivotal-cf/go-pivnet/v4 v4.0.4/go.mod h1:Oeom+lR9SwTfshcxHZ3UbYVAFPXtIlryCX28PhbsQ/M=
 github.com/robdimsdale/sanitizer v0.0.0-20160522134901-ab2334cb7539 h1:h3AVw1v3JIE9Y1HyjYyiPTG73ywlF4754oiIjkxPjNk=
 github.com/robdimsdale/sanitizer v0.0.0-20160522134901-ab2334cb7539/go.mod h1:tqCODtkKV+9Tfvt9JURvKCTxJ69bA/OU/QhsaQLK/rc=

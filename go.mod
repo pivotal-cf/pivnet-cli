@@ -14,7 +14,6 @@ require (
 	github.com/pivotal-cf/go-pivnet/v4 v4.0.4
 	github.com/robdimsdale/sanitizer v0.0.0-20160522134901-ab2334cb7539
 	github.com/shirou/gopsutil v2.20.2+incompatible // indirect
-	golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073 // indirect
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
 	golang.org/x/sys v0.0.0-20200302150141-5c8b2ff67527 // indirect
 	gopkg.in/cheggaaa/pb.v1 v1.0.28 // indirect
