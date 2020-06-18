@@ -4,7 +4,7 @@ import (
 	"io"
 
 	"github.com/olekukonko/tablewriter"
-	pivnet "github.com/pivotal-cf/go-pivnet/v4"
+	pivnet "github.com/pivotal-cf/go-pivnet/v5"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/printer"
 )

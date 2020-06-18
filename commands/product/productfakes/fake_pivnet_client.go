@@ -4,7 +4,7 @@ package productfakes
 import (
 	"sync"
 
-	pivnet "github.com/pivotal-cf/go-pivnet/v4"
+	pivnet "github.com/pivotal-cf/go-pivnet/v5"
 	"github.com/pivotal-cf/pivnet-cli/commands/product"
 )
 

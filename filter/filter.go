@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	pivnet "github.com/pivotal-cf/go-pivnet/v4"
-	"github.com/pivotal-cf/go-pivnet/v4/logger"
+	pivnet "github.com/pivotal-cf/go-pivnet/v5"
+	"github.com/pivotal-cf/go-pivnet/v5/logger"
 )
 
 type Filter struct {

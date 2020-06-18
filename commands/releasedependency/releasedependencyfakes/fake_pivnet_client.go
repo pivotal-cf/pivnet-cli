@@ -4,7 +4,7 @@ package releasedependencyfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/go-pivnet/v4"
+	"github.com/pivotal-cf/go-pivnet/v5"
 	"github.com/pivotal-cf/pivnet-cli/commands/releasedependency"
 )
 

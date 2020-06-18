@@ -5,9 +5,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/pivotal-cf/go-pivnet/v4"
-	"github.com/pivotal-cf/go-pivnet/v4/download"
-	"github.com/pivotal-cf/go-pivnet/v4/logger"
+	"github.com/pivotal-cf/go-pivnet/v5"
+	"github.com/pivotal-cf/go-pivnet/v5/download"
+	"github.com/pivotal-cf/go-pivnet/v5/logger"
 )
 
 type Client struct {
