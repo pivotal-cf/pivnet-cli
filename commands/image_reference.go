@@ -20,7 +20,7 @@ type ImageReferenceCommand struct {
 type CreateImageReferenceCommand struct {
 	ProductSlug        string   `long:"product-slug" short:"p" description:"Product slug e.g. 'p-mysql'" required:"true"`
 	Name               string   `long:"name" description:"Name e.g. 'p-mysql 1.7.13'" required:"true"`
-	ImagePath          string   `long:"image-path" description:"Image path e.g. 'library/image:tag'" required:"true"`
+	ImagePath          string   `long:"image-path" description:"Image path e.g. 'repo_name:tag'" required:"true"`
 	Digest             string   `long:"digest" description:"Digest of the image e.g. 'sha256:1234abcd'" required:"true"`
 	Description        string   `long:"description" description:"Description of the image"`
 	DocsURL            string   `long:"docs-url" description:"URL of docs for the image"`
