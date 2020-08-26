@@ -4,7 +4,7 @@ package releasefakes
 import (
 	"sync"
 
-	pivnet "github.com/pivotal-cf/go-pivnet/v5"
+	pivnet "github.com/pivotal-cf/go-pivnet/v6"
 	"github.com/pivotal-cf/pivnet-cli/commands/release"
 )
 

@@ -4,15 +4,16 @@ package releasetypefakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/go-pivnet/v5"
+	pivnet "github.com/pivotal-cf/go-pivnet/v6"
 	"github.com/pivotal-cf/pivnet-cli/commands/releasetype"
 )
 
 type FakePivnetClient struct {
 	ReleaseTypesStub        func() ([]pivnet.ReleaseType, error)
 	releaseTypesMutex       sync.RWMutex
-	releaseTypesArgsForCall []struct{}
-	releaseTypesReturns     struct {
+	releaseTypesArgsForCall []struct {
+	}
+	releaseTypesReturns struct {
 		result1 []pivnet.ReleaseType
 		result2 error
 	}
@@ -27,7 +28,8 @@ type FakePivnetClient struct {
 func (fake *FakePivnetClient) ReleaseTypes() ([]pivnet.ReleaseType, error) {
 	fake.releaseTypesMutex.Lock()
 	ret, specificReturn := fake.releaseTypesReturnsOnCall[len(fake.releaseTypesArgsForCall)]
-	fake.releaseTypesArgsForCall = append(fake.releaseTypesArgsForCall, struct{}{})
+	fake.releaseTypesArgsForCall = append(fake.releaseTypesArgsForCall, struct {
+	}{})
 	fake.recordInvocation("ReleaseTypes", []interface{}{})
 	fake.releaseTypesMutex.Unlock()
 	if fake.ReleaseTypesStub != nil {
@@ -36,7 +38,8 @@ func (fake *FakePivnetClient) ReleaseTypes() ([]pivnet.ReleaseType, error) {
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.releaseTypesReturns.result1, fake.releaseTypesReturns.result2
+	fakeReturns := fake.releaseTypesReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakePivnetClient) ReleaseTypesCallCount() int {
@@ -45,7 +48,15 @@ func (fake *FakePivnetClient) ReleaseTypesCallCount() int {
 	return len(fake.releaseTypesArgsForCall)
 }
 
+func (fake *FakePivnetClient) ReleaseTypesCalls(stub func() ([]pivnet.ReleaseType, error)) {
+	fake.releaseTypesMutex.Lock()
+	defer fake.releaseTypesMutex.Unlock()
+	fake.ReleaseTypesStub = stub
+}
+
 func (fake *FakePivnetClient) ReleaseTypesReturns(result1 []pivnet.ReleaseType, result2 error) {
+	fake.releaseTypesMutex.Lock()
+	defer fake.releaseTypesMutex.Unlock()
 	fake.ReleaseTypesStub = nil
 	fake.releaseTypesReturns = struct {
 		result1 []pivnet.ReleaseType
@@ -54,6 +65,8 @@ func (fake *FakePivnetClient) ReleaseTypesReturns(result1 []pivnet.ReleaseType, 
 }
 
 func (fake *FakePivnetClient) ReleaseTypesReturnsOnCall(i int, result1 []pivnet.ReleaseType, result2 error) {
+	fake.releaseTypesMutex.Lock()
+	defer fake.releaseTypesMutex.Unlock()
 	fake.ReleaseTypesStub = nil
 	if fake.releaseTypesReturnsOnCall == nil {
 		fake.releaseTypesReturnsOnCall = make(map[int]struct {

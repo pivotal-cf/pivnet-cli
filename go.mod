@@ -11,7 +11,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/onsi/ginkgo v1.8.0
 	github.com/onsi/gomega v1.9.0
-	github.com/pivotal-cf/go-pivnet/v5 v5.0.1
+	github.com/pivotal-cf/go-pivnet/v6 v6.0.1
 	github.com/robdimsdale/sanitizer v0.0.0-20160522134901-ab2334cb7539
 	github.com/shirou/gopsutil v2.20.2+incompatible // indirect
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect

@@ -10,8 +10,9 @@ import (
 type FakeAuthClient struct {
 	AuthStub        func() (bool, error)
 	authMutex       sync.RWMutex
-	authArgsForCall []struct{}
-	authReturns     struct {
+	authArgsForCall []struct {
+	}
+	authReturns struct {
 		result1 bool
 		result2 error
 	}
@@ -26,7 +27,8 @@ type FakeAuthClient struct {
 func (fake *FakeAuthClient) Auth() (bool, error) {
 	fake.authMutex.Lock()
 	ret, specificReturn := fake.authReturnsOnCall[len(fake.authArgsForCall)]
-	fake.authArgsForCall = append(fake.authArgsForCall, struct{}{})
+	fake.authArgsForCall = append(fake.authArgsForCall, struct {
+	}{})
 	fake.recordInvocation("Auth", []interface{}{})
 	fake.authMutex.Unlock()
 	if fake.AuthStub != nil {
@@ -35,7 +37,8 @@ func (fake *FakeAuthClient) Auth() (bool, error) {
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.authReturns.result1, fake.authReturns.result2
+	fakeReturns := fake.authReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeAuthClient) AuthCallCount() int {
@@ -44,7 +47,15 @@ func (fake *FakeAuthClient) AuthCallCount() int {
 	return len(fake.authArgsForCall)
 }
 
+func (fake *FakeAuthClient) AuthCalls(stub func() (bool, error)) {
+	fake.authMutex.Lock()
+	defer fake.authMutex.Unlock()
+	fake.AuthStub = stub
+}
+
 func (fake *FakeAuthClient) AuthReturns(result1 bool, result2 error) {
+	fake.authMutex.Lock()
+	defer fake.authMutex.Unlock()
 	fake.AuthStub = nil
 	fake.authReturns = struct {
 		result1 bool
@@ -53,6 +64,8 @@ func (fake *FakeAuthClient) AuthReturns(result1 bool, result2 error) {
 }
 
 func (fake *FakeAuthClient) AuthReturnsOnCall(i int, result1 bool, result2 error) {
+	fake.authMutex.Lock()
+	defer fake.authMutex.Unlock()
 	fake.AuthStub = nil
 	if fake.authReturnsOnCall == nil {
 		fake.authReturnsOnCall = make(map[int]struct {

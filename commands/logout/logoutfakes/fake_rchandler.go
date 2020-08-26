@@ -8,10 +8,10 @@ import (
 )
 
 type FakeRCHandler struct {
-	RemoveProfileWithNameStub        func(profileName string) error
+	RemoveProfileWithNameStub        func(string) error
 	removeProfileWithNameMutex       sync.RWMutex
 	removeProfileWithNameArgsForCall []struct {
-		profileName string
+		arg1 string
 	}
 	removeProfileWithNameReturns struct {
 		result1 error
@@ -23,21 +23,22 @@ type FakeRCHandler struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeRCHandler) RemoveProfileWithName(profileName string) error {
+func (fake *FakeRCHandler) RemoveProfileWithName(arg1 string) error {
 	fake.removeProfileWithNameMutex.Lock()
 	ret, specificReturn := fake.removeProfileWithNameReturnsOnCall[len(fake.removeProfileWithNameArgsForCall)]
 	fake.removeProfileWithNameArgsForCall = append(fake.removeProfileWithNameArgsForCall, struct {
-		profileName string
-	}{profileName})
-	fake.recordInvocation("RemoveProfileWithName", []interface{}{profileName})
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("RemoveProfileWithName", []interface{}{arg1})
 	fake.removeProfileWithNameMutex.Unlock()
 	if fake.RemoveProfileWithNameStub != nil {
-		return fake.RemoveProfileWithNameStub(profileName)
+		return fake.RemoveProfileWithNameStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.removeProfileWithNameReturns.result1
+	fakeReturns := fake.removeProfileWithNameReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeRCHandler) RemoveProfileWithNameCallCount() int {
@@ -46,13 +47,22 @@ func (fake *FakeRCHandler) RemoveProfileWithNameCallCount() int {
 	return len(fake.removeProfileWithNameArgsForCall)
 }
 
+func (fake *FakeRCHandler) RemoveProfileWithNameCalls(stub func(string) error) {
+	fake.removeProfileWithNameMutex.Lock()
+	defer fake.removeProfileWithNameMutex.Unlock()
+	fake.RemoveProfileWithNameStub = stub
+}
+
 func (fake *FakeRCHandler) RemoveProfileWithNameArgsForCall(i int) string {
 	fake.removeProfileWithNameMutex.RLock()
 	defer fake.removeProfileWithNameMutex.RUnlock()
-	return fake.removeProfileWithNameArgsForCall[i].profileName
+	argsForCall := fake.removeProfileWithNameArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *FakeRCHandler) RemoveProfileWithNameReturns(result1 error) {
+	fake.removeProfileWithNameMutex.Lock()
+	defer fake.removeProfileWithNameMutex.Unlock()
 	fake.RemoveProfileWithNameStub = nil
 	fake.removeProfileWithNameReturns = struct {
 		result1 error
@@ -60,6 +70,8 @@ func (fake *FakeRCHandler) RemoveProfileWithNameReturns(result1 error) {
 }
 
 func (fake *FakeRCHandler) RemoveProfileWithNameReturnsOnCall(i int, result1 error) {
+	fake.removeProfileWithNameMutex.Lock()
+	defer fake.removeProfileWithNameMutex.Unlock()
 	fake.RemoveProfileWithNameStub = nil
 	if fake.removeProfileWithNameReturnsOnCall == nil {
 		fake.removeProfileWithNameReturnsOnCall = make(map[int]struct {

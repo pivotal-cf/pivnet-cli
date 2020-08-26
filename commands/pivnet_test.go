@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/pivotal-cf/go-pivnet/v5"
+	"github.com/pivotal-cf/go-pivnet/v6"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
@@ -547,87 +547,101 @@ var _ = Describe("Pivnet commands", func() {
 		})
 	})
 
-	Describe("ImageReferences command", func() {
+	Describe("ArtifactReferences command", func() {
 		BeforeEach(func() {
-			field = fieldFor(commands.Pivnet, "ImageReferences")
+			field = fieldFor(commands.Pivnet, "ArtifactReferences")
 		})
 
 		It("contains command", func() {
-			Expect(command(field)).To(Equal("image-references"))
+			Expect(command(field)).To(Equal("artifact-references"))
 		})
 
 		It("contains alias", func() {
-			Expect(alias(field)).To(Equal("irs"))
+			Expect(alias(field)).To(Equal("ars"))
 		})
 	})
 
-	Describe("ImageReference command", func() {
+	Describe("ArtifactReference command", func() {
 		BeforeEach(func() {
-			field = fieldFor(commands.Pivnet, "ImageReference")
+			field = fieldFor(commands.Pivnet, "ArtifactReference")
 		})
 
 		It("contains command", func() {
-			Expect(command(field)).To(Equal("image-reference"))
+			Expect(command(field)).To(Equal("artifact-reference"))
 		})
 
 		It("contains alias", func() {
-			Expect(alias(field)).To(Equal("ir"))
+			Expect(alias(field)).To(Equal("ar"))
 		})
 	})
 
-	Describe("CreateImageReference command", func() {
+	Describe("CreateArtifactReference command", func() {
 		BeforeEach(func() {
-			field = fieldFor(commands.Pivnet, "CreateImageReference")
+			field = fieldFor(commands.Pivnet, "CreateArtifactReference")
 		})
 
 		It("contains command", func() {
-			Expect(command(field)).To(Equal("create-image-reference"))
+			Expect(command(field)).To(Equal("create-artifact-reference"))
 		})
 
 		It("contains alias", func() {
-			Expect(alias(field)).To(Equal("cir"))
+			Expect(alias(field)).To(Equal("car"))
 		})
 	})
 
-	Describe("DeleteImageReference command", func() {
+	Describe("DeleteArtifactReference command", func() {
 		BeforeEach(func() {
-			field = fieldFor(commands.Pivnet, "DeleteImageReference")
+			field = fieldFor(commands.Pivnet, "DeleteArtifactReference")
 		})
 
 		It("contains command", func() {
-			Expect(command(field)).To(Equal("delete-image-reference"))
+			Expect(command(field)).To(Equal("delete-artifact-reference"))
 		})
 
 		It("contains alias", func() {
-			Expect(alias(field)).To(Equal("dir"))
+			Expect(alias(field)).To(Equal("dar"))
 		})
 	})
 
-	Describe("AddImageReferenceToRelease command", func() {
+	Describe("AddArtifactReferenceToRelease command", func() {
 		BeforeEach(func() {
-			field = fieldFor(commands.Pivnet, "AddImageReferenceToRelease")
+			field = fieldFor(commands.Pivnet, "AddArtifactReferenceToRelease")
 		})
 
 		It("contains command", func() {
-			Expect(command(field)).To(Equal("add-image-reference"))
+			Expect(command(field)).To(Equal("add-artifact-reference"))
 		})
 
 		It("contains alias", func() {
-			Expect(alias(field)).To(Equal("air"))
+			Expect(alias(field)).To(Equal("aar"))
 		})
 	})
 
-	Describe("RemoveImageReferenceFromRelease command", func() {
+	Describe("RemoveArtifactReferenceFromRelease command", func() {
 		BeforeEach(func() {
-			field = fieldFor(commands.Pivnet, "RemoveImageReferenceFromRelease")
+			field = fieldFor(commands.Pivnet, "RemoveArtifactReferenceFromRelease")
 		})
 
 		It("contains command", func() {
-			Expect(command(field)).To(Equal("remove-image-reference"))
+			Expect(command(field)).To(Equal("remove-artifact-reference"))
 		})
 
 		It("contains alias", func() {
-			Expect(alias(field)).To(Equal("rir"))
+			Expect(alias(field)).To(Equal("rar"))
+		})
+	})
+
+	Describe("UpdateArtifactReference command", func() {
+		BeforeEach(func() {
+			field = fieldFor(commands.Pivnet, "UpdateArtifactReference")
+		})
+
+		It("contains command", func() {
+			Expect(command(field)).To(Equal("update-artifact-reference"))
+		})
+
+		It("contains alias", func() {
+			Expect(alias(field)).To(Equal("uar"))
 		})
 	})
 

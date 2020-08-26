@@ -8,14 +8,14 @@ import (
 )
 
 type FakeRCHandler struct {
-	SaveProfileStub        func(profileName string, apiToken string, host string, accessToken string, accessTokenExpiry int64) error
+	SaveProfileStub        func(string, string, string, string, int64) error
 	saveProfileMutex       sync.RWMutex
 	saveProfileArgsForCall []struct {
-		profileName       string
-		apiToken          string
-		host              string
-		accessToken       string
-		accessTokenExpiry int64
+		arg1 string
+		arg2 string
+		arg3 string
+		arg4 string
+		arg5 int64
 	}
 	saveProfileReturns struct {
 		result1 error
@@ -27,25 +27,26 @@ type FakeRCHandler struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeRCHandler) SaveProfile(profileName string, apiToken string, host string, accessToken string, accessTokenExpiry int64) error {
+func (fake *FakeRCHandler) SaveProfile(arg1 string, arg2 string, arg3 string, arg4 string, arg5 int64) error {
 	fake.saveProfileMutex.Lock()
 	ret, specificReturn := fake.saveProfileReturnsOnCall[len(fake.saveProfileArgsForCall)]
 	fake.saveProfileArgsForCall = append(fake.saveProfileArgsForCall, struct {
-		profileName       string
-		apiToken          string
-		host              string
-		accessToken       string
-		accessTokenExpiry int64
-	}{profileName, apiToken, host, accessToken, accessTokenExpiry})
-	fake.recordInvocation("SaveProfile", []interface{}{profileName, apiToken, host, accessToken, accessTokenExpiry})
+		arg1 string
+		arg2 string
+		arg3 string
+		arg4 string
+		arg5 int64
+	}{arg1, arg2, arg3, arg4, arg5})
+	fake.recordInvocation("SaveProfile", []interface{}{arg1, arg2, arg3, arg4, arg5})
 	fake.saveProfileMutex.Unlock()
 	if fake.SaveProfileStub != nil {
-		return fake.SaveProfileStub(profileName, apiToken, host, accessToken, accessTokenExpiry)
+		return fake.SaveProfileStub(arg1, arg2, arg3, arg4, arg5)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.saveProfileReturns.result1
+	fakeReturns := fake.saveProfileReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeRCHandler) SaveProfileCallCount() int {
@@ -54,13 +55,22 @@ func (fake *FakeRCHandler) SaveProfileCallCount() int {
 	return len(fake.saveProfileArgsForCall)
 }
 
+func (fake *FakeRCHandler) SaveProfileCalls(stub func(string, string, string, string, int64) error) {
+	fake.saveProfileMutex.Lock()
+	defer fake.saveProfileMutex.Unlock()
+	fake.SaveProfileStub = stub
+}
+
 func (fake *FakeRCHandler) SaveProfileArgsForCall(i int) (string, string, string, string, int64) {
 	fake.saveProfileMutex.RLock()
 	defer fake.saveProfileMutex.RUnlock()
-	return fake.saveProfileArgsForCall[i].profileName, fake.saveProfileArgsForCall[i].apiToken, fake.saveProfileArgsForCall[i].host, fake.saveProfileArgsForCall[i].accessToken, fake.saveProfileArgsForCall[i].accessTokenExpiry
+	argsForCall := fake.saveProfileArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
 }
 
 func (fake *FakeRCHandler) SaveProfileReturns(result1 error) {
+	fake.saveProfileMutex.Lock()
+	defer fake.saveProfileMutex.Unlock()
 	fake.SaveProfileStub = nil
 	fake.saveProfileReturns = struct {
 		result1 error
@@ -68,6 +78,8 @@ func (fake *FakeRCHandler) SaveProfileReturns(result1 error) {
 }
 
 func (fake *FakeRCHandler) SaveProfileReturnsOnCall(i int, result1 error) {
+	fake.saveProfileMutex.Lock()
+	defer fake.saveProfileMutex.Unlock()
 	fake.SaveProfileStub = nil
 	if fake.saveProfileReturnsOnCall == nil {
 		fake.saveProfileReturnsOnCall = make(map[int]struct {

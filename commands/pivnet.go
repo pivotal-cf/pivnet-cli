@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/pivotal-cf/go-pivnet/v5/logshim"
+	"github.com/pivotal-cf/go-pivnet/v6/logshim"
 	"github.com/pivotal-cf/pivnet-cli/filter"
 	"github.com/pivotal-cf/pivnet-cli/rc/filesystem"
 	"io"
@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/pivotal-cf/go-pivnet/v5"
-	"github.com/pivotal-cf/go-pivnet/v5/logger"
-	"github.com/pivotal-cf/go-pivnet/v5/sha256sum"
+	"github.com/pivotal-cf/go-pivnet/v6"
+	"github.com/pivotal-cf/go-pivnet/v6/logger"
+	"github.com/pivotal-cf/go-pivnet/v6/sha256sum"
 	"github.com/pivotal-cf/pivnet-cli/auth"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/gp"
@@ -78,8 +78,8 @@ type PivnetCommand struct {
 	EULA       EULACommand       `command:"eula" alias:"e" description:"Show EULA"`
 	AcceptEULA AcceptEULACommand `command:"accept-eula" alias:"ae" description:"Accept EULA (Available for pivots only)"`
 
-	Products ProductsCommand `command:"products" alias:"ps" description:"List products"`
-	Product  ProductCommand  `command:"product" alias:"p" description:"Show product"`
+	Products     ProductsCommand     `command:"products" alias:"ps" description:"List products"`
+	Product      ProductCommand      `command:"product" alias:"p" description:"Show product"`
 	ProductSlugs ProductSlugsCommand `command:"product-slugs" alias:"psl" description:"Show slugs associated to a product"`
 
 	ProductFiles      ProductFilesCommand      `command:"product-files" alias:"pfs" description:"List product files"`
@@ -100,13 +100,13 @@ type PivnetCommand struct {
 	AddFileGroupToRelease      AddFileGroupToReleaseCommand      `command:"add-file-group" alias:"afg" description:"Add file group to release"`
 	RemoveFileGroupFromRelease RemoveFileGroupFromReleaseCommand `command:"remove-file-group" alias:"rfg" description:"Remove file group from release"`
 
-	ImageReferences                 ImageReferencesCommand                 `command:"image-references" alias:"irs" description:"List image references"`
-	ImageReference                  ImageReferenceCommand                  `command:"image-reference" alias:"ir" description:"Show image reference"`
-	CreateImageReference            CreateImageReferenceCommand            `command:"create-image-reference" alias:"cir" description:"Create a container image reference"`
-	DeleteImageReference            DeleteImageReferenceCommand            `command:"delete-image-reference" alias:"dir" description:"Delete a container image reference"`
-	AddImageReferenceToRelease      AddImageReferenceToReleaseCommand      `command:"add-image-reference" alias:"air" description:"Add image reference to release"`
-	RemoveImageReferenceFromRelease RemoveImageReferenceFromReleaseCommand `command:"remove-image-reference" alias:"rir" description:"Remove image reference from release"`
-	UpdateImageReference            UpdateImageReferenceCommand            `command:"update-image-reference" alias:"uir" description:"Update a container image reference"`
+	ArtifactReferences                 ArtifactReferencesCommand                 `command:"artifact-references" alias:"ars" description:"List artifact references"`
+	ArtifactReference                  ArtifactReferenceCommand                  `command:"artifact-reference" alias:"ar" description:"Show artifact reference"`
+	CreateArtifactReference            CreateArtifactReferenceCommand            `command:"create-artifact-reference" alias:"car" description:"Create a container artifact reference"`
+	DeleteArtifactReference            DeleteArtifactReferenceCommand            `command:"delete-artifact-reference" alias:"dar" description:"Delete a container artifact reference"`
+	AddArtifactReferenceToRelease      AddArtifactReferenceToReleaseCommand      `command:"add-artifact-reference" alias:"aar" description:"Add artifact reference to release"`
+	RemoveArtifactReferenceFromRelease RemoveArtifactReferenceFromReleaseCommand `command:"remove-artifact-reference" alias:"rar" description:"Remove artifact reference from release"`
+	UpdateArtifactReference            UpdateArtifactReferenceCommand            `command:"update-artifact-reference" alias:"uar" description:"Update a container artifact reference"`
 
 	Releases      ReleasesCommand      `command:"releases" alias:"rs" description:"List releases"`
 	Release       ReleaseCommand       `command:"release" alias:"r" description:"Show release"`
@@ -125,9 +125,9 @@ type PivnetCommand struct {
 	AddUserGroupMember    AddUserGroupMemberCommand    `command:"add-user-group-member" alias:"augm" description:"Add user group member to group"`
 	RemoveUserGroupMember RemoveUserGroupMemberCommand `command:"remove-user-group-member" alias:"rugm" description:"Remove user group member from group"`
 
-	SubscriptionGroups SubscriptionGroupsCommand `command:"subscription-groups" alias:"sgs" description:"List managed subscription groups"`
-	SubscriptionGroup SubscriptionGroupCommand `command:"subscription-group" alias:"sg" description:"Show subscription group"`
-	AddSubscriptionGroupMember AddSubscriptionGroupMemberCommand `command:"subscription-group-add-member" alias:"sgam" description:"Add a member to a subscription group"`
+	SubscriptionGroups            SubscriptionGroupsCommand            `command:"subscription-groups" alias:"sgs" description:"List managed subscription groups"`
+	SubscriptionGroup             SubscriptionGroupCommand             `command:"subscription-group" alias:"sg" description:"Show subscription group"`
+	AddSubscriptionGroupMember    AddSubscriptionGroupMemberCommand    `command:"subscription-group-add-member" alias:"sgam" description:"Add a member to a subscription group"`
 	RemoveSubscriptionGroupMember RemoveSubscriptionGroupMemberCommand `command:"subscription-group-remove-member" alias:"sgrm" description:"Remove a member to a subscription group"`
 
 	ReleaseDependencies     ReleaseDependenciesCommand     `command:"release-dependencies" alias:"rds" description:"List release dependencies"`

@@ -4,7 +4,7 @@ package subscriptiongroupfakes
 import (
 	"sync"
 
-	pivnet "github.com/pivotal-cf/go-pivnet/v5"
+	pivnet "github.com/pivotal-cf/go-pivnet/v6"
 	"github.com/pivotal-cf/pivnet-cli/commands/subscriptiongroup"
 )
 
@@ -21,6 +21,20 @@ type FakePivnetClient struct {
 		result2 error
 	}
 	addSubscriptionGroupMemberReturnsOnCall map[int]struct {
+		result1 pivnet.SubscriptionGroup
+		result2 error
+	}
+	RemoveSubscriptionGroupMemberStub        func(int, string) (pivnet.SubscriptionGroup, error)
+	removeSubscriptionGroupMemberMutex       sync.RWMutex
+	removeSubscriptionGroupMemberArgsForCall []struct {
+		arg1 int
+		arg2 string
+	}
+	removeSubscriptionGroupMemberReturns struct {
+		result1 pivnet.SubscriptionGroup
+		result2 error
+	}
+	removeSubscriptionGroupMemberReturnsOnCall map[int]struct {
 		result1 pivnet.SubscriptionGroup
 		result2 error
 	}
@@ -47,20 +61,6 @@ type FakePivnetClient struct {
 	}
 	subscriptionGroupsReturnsOnCall map[int]struct {
 		result1 []pivnet.SubscriptionGroup
-		result2 error
-	}
-	RemoveSubscriptionGroupMemberStub        func(int, string) (pivnet.SubscriptionGroup, error)
-	removeSubscriptionGroupMemberMutex       sync.RWMutex
-	removeSubscriptionGroupMemberArgsForCall []struct {
-		arg1 int
-		arg2 string
-	}
-	removeSubscriptionGroupMemberReturns struct {
-		result1 pivnet.SubscriptionGroup
-		result2 error
-	}
-	removeSubscriptionGroupMemberReturnsOnCall map[int]struct {
-		result1 pivnet.SubscriptionGroup
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -127,6 +127,70 @@ func (fake *FakePivnetClient) AddSubscriptionGroupMemberReturnsOnCall(i int, res
 		})
 	}
 	fake.addSubscriptionGroupMemberReturnsOnCall[i] = struct {
+		result1 pivnet.SubscriptionGroup
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) RemoveSubscriptionGroupMember(arg1 int, arg2 string) (pivnet.SubscriptionGroup, error) {
+	fake.removeSubscriptionGroupMemberMutex.Lock()
+	ret, specificReturn := fake.removeSubscriptionGroupMemberReturnsOnCall[len(fake.removeSubscriptionGroupMemberArgsForCall)]
+	fake.removeSubscriptionGroupMemberArgsForCall = append(fake.removeSubscriptionGroupMemberArgsForCall, struct {
+		arg1 int
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("RemoveSubscriptionGroupMember", []interface{}{arg1, arg2})
+	fake.removeSubscriptionGroupMemberMutex.Unlock()
+	if fake.RemoveSubscriptionGroupMemberStub != nil {
+		return fake.RemoveSubscriptionGroupMemberStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.removeSubscriptionGroupMemberReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakePivnetClient) RemoveSubscriptionGroupMemberCallCount() int {
+	fake.removeSubscriptionGroupMemberMutex.RLock()
+	defer fake.removeSubscriptionGroupMemberMutex.RUnlock()
+	return len(fake.removeSubscriptionGroupMemberArgsForCall)
+}
+
+func (fake *FakePivnetClient) RemoveSubscriptionGroupMemberCalls(stub func(int, string) (pivnet.SubscriptionGroup, error)) {
+	fake.removeSubscriptionGroupMemberMutex.Lock()
+	defer fake.removeSubscriptionGroupMemberMutex.Unlock()
+	fake.RemoveSubscriptionGroupMemberStub = stub
+}
+
+func (fake *FakePivnetClient) RemoveSubscriptionGroupMemberArgsForCall(i int) (int, string) {
+	fake.removeSubscriptionGroupMemberMutex.RLock()
+	defer fake.removeSubscriptionGroupMemberMutex.RUnlock()
+	argsForCall := fake.removeSubscriptionGroupMemberArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakePivnetClient) RemoveSubscriptionGroupMemberReturns(result1 pivnet.SubscriptionGroup, result2 error) {
+	fake.removeSubscriptionGroupMemberMutex.Lock()
+	defer fake.removeSubscriptionGroupMemberMutex.Unlock()
+	fake.RemoveSubscriptionGroupMemberStub = nil
+	fake.removeSubscriptionGroupMemberReturns = struct {
+		result1 pivnet.SubscriptionGroup
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakePivnetClient) RemoveSubscriptionGroupMemberReturnsOnCall(i int, result1 pivnet.SubscriptionGroup, result2 error) {
+	fake.removeSubscriptionGroupMemberMutex.Lock()
+	defer fake.removeSubscriptionGroupMemberMutex.Unlock()
+	fake.RemoveSubscriptionGroupMemberStub = nil
+	if fake.removeSubscriptionGroupMemberReturnsOnCall == nil {
+		fake.removeSubscriptionGroupMemberReturnsOnCall = make(map[int]struct {
+			result1 pivnet.SubscriptionGroup
+			result2 error
+		})
+	}
+	fake.removeSubscriptionGroupMemberReturnsOnCall[i] = struct {
 		result1 pivnet.SubscriptionGroup
 		result2 error
 	}{result1, result2}
@@ -250,81 +314,17 @@ func (fake *FakePivnetClient) SubscriptionGroupsReturnsOnCall(i int, result1 []p
 	}{result1, result2}
 }
 
-func (fake *FakePivnetClient) RemoveSubscriptionGroupMember(arg1 int, arg2 string) (pivnet.SubscriptionGroup, error) {
-	fake.removeSubscriptionGroupMemberMutex.Lock()
-	ret, specificReturn := fake.removeSubscriptionGroupMemberReturnsOnCall[len(fake.removeSubscriptionGroupMemberArgsForCall)]
-	fake.removeSubscriptionGroupMemberArgsForCall = append(fake.removeSubscriptionGroupMemberArgsForCall, struct {
-		arg1 int
-		arg2 string
-	}{arg1, arg2})
-	fake.recordInvocation("RemoveSubscriptionGroupMember", []interface{}{arg1, arg2})
-	fake.removeSubscriptionGroupMemberMutex.Unlock()
-	if fake.RemoveSubscriptionGroupMemberStub != nil {
-		return fake.RemoveSubscriptionGroupMemberStub(arg1, arg2)
-	}
-	if specificReturn {
-		return ret.result1, ret.result2
-	}
-	fakeReturns := fake.removeSubscriptionGroupMemberReturns
-	return fakeReturns.result1, fakeReturns.result2
-}
-
-func (fake *FakePivnetClient) RemoveSubscriptionGroupMemberCallCount() int {
-	fake.removeSubscriptionGroupMemberMutex.RLock()
-	defer fake.removeSubscriptionGroupMemberMutex.RUnlock()
-	return len(fake.removeSubscriptionGroupMemberArgsForCall)
-}
-
-func (fake *FakePivnetClient) RemoveSubscriptionGroupMemberCalls(stub func(int, string) (pivnet.SubscriptionGroup, error)) {
-	fake.removeSubscriptionGroupMemberMutex.Lock()
-	defer fake.removeSubscriptionGroupMemberMutex.Unlock()
-	fake.RemoveSubscriptionGroupMemberStub = stub
-}
-
-func (fake *FakePivnetClient) RemoveSubscriptionGroupMemberArgsForCall(i int) (int, string) {
-	fake.removeSubscriptionGroupMemberMutex.RLock()
-	defer fake.removeSubscriptionGroupMemberMutex.RUnlock()
-	argsForCall := fake.removeSubscriptionGroupMemberArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
-}
-
-func (fake *FakePivnetClient) RemoveSubscriptionGroupMemberReturns(result1 pivnet.SubscriptionGroup, result2 error) {
-	fake.removeSubscriptionGroupMemberMutex.Lock()
-	defer fake.removeSubscriptionGroupMemberMutex.Unlock()
-	fake.RemoveSubscriptionGroupMemberStub = nil
-	fake.removeSubscriptionGroupMemberReturns = struct {
-		result1 pivnet.SubscriptionGroup
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakePivnetClient) RemoveSubscriptionGroupMemberReturnsOnCall(i int, result1 pivnet.SubscriptionGroup, result2 error) {
-	fake.removeSubscriptionGroupMemberMutex.Lock()
-	defer fake.removeSubscriptionGroupMemberMutex.Unlock()
-	fake.RemoveSubscriptionGroupMemberStub = nil
-	if fake.removeSubscriptionGroupMemberReturnsOnCall == nil {
-		fake.removeSubscriptionGroupMemberReturnsOnCall = make(map[int]struct {
-			result1 pivnet.SubscriptionGroup
-			result2 error
-		})
-	}
-	fake.removeSubscriptionGroupMemberReturnsOnCall[i] = struct {
-		result1 pivnet.SubscriptionGroup
-		result2 error
-	}{result1, result2}
-}
-
 func (fake *FakePivnetClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.addSubscriptionGroupMemberMutex.RLock()
 	defer fake.addSubscriptionGroupMemberMutex.RUnlock()
+	fake.removeSubscriptionGroupMemberMutex.RLock()
+	defer fake.removeSubscriptionGroupMemberMutex.RUnlock()
 	fake.subscriptionGroupMutex.RLock()
 	defer fake.subscriptionGroupMutex.RUnlock()
 	fake.subscriptionGroupsMutex.RLock()
 	defer fake.subscriptionGroupsMutex.RUnlock()
-	fake.removeSubscriptionGroupMemberMutex.RLock()
-	defer fake.removeSubscriptionGroupMemberMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

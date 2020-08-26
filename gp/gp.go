@@ -5,9 +5,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/pivotal-cf/go-pivnet/v5"
-	"github.com/pivotal-cf/go-pivnet/v5/download"
-	"github.com/pivotal-cf/go-pivnet/v5/logger"
+	"github.com/pivotal-cf/go-pivnet/v6"
+	"github.com/pivotal-cf/go-pivnet/v6/download"
+	"github.com/pivotal-cf/go-pivnet/v6/logger"
 )
 
 type Client struct {
@@ -210,8 +210,8 @@ func (c Client) UpdateProductFile(productSlug string, productFile pivnet.Product
 	return c.client.ProductFiles.Update(productSlug, productFile)
 }
 
-func (c Client) UpdateImageReference(productSlug string, imageReference pivnet.ImageReference) (pivnet.ImageReference, error) {
-	return c.client.ImageReferences.Update(productSlug, imageReference)
+func (c Client) UpdateArtifactReference(productSlug string, artifactReference pivnet.ArtifactReference) (pivnet.ArtifactReference, error) {
+	return c.client.ArtifactReferences.Update(productSlug, artifactReference)
 }
 
 func (c Client) AddProductFileToRelease(productSlug string, releaseID int, productFileID int) error {
@@ -230,40 +230,40 @@ func (c Client) RemoveProductFileFromFileGroup(productSlug string, fileGroupID i
 	return c.client.ProductFiles.RemoveFromFileGroup(productSlug, fileGroupID, productFileID)
 }
 
-func (c Client) ImageReferencesForRelease(productSlug string, releaseID int) ([]pivnet.ImageReference, error) {
-	return c.client.ImageReferences.ListForRelease(productSlug, releaseID)
+func (c Client) ArtifactReferencesForRelease(productSlug string, releaseID int) ([]pivnet.ArtifactReference, error) {
+	return c.client.ArtifactReferences.ListForRelease(productSlug, releaseID)
 }
 
-func (c Client) ImageReferencesForDigest(productSlug string, imageReferenceDigest string) ([]pivnet.ImageReference, error) {
-	return c.client.ImageReferences.ListForDigest(productSlug, imageReferenceDigest)
+func (c Client) ArtifactReferencesForDigest(productSlug string, artifactReferenceDigest string) ([]pivnet.ArtifactReference, error) {
+	return c.client.ArtifactReferences.ListForDigest(productSlug, artifactReferenceDigest)
 }
 
-func (c Client) ImageReferences(productSlug string) ([]pivnet.ImageReference, error) {
-	return c.client.ImageReferences.List(productSlug)
+func (c Client) ArtifactReferences(productSlug string) ([]pivnet.ArtifactReference, error) {
+	return c.client.ArtifactReferences.List(productSlug)
 }
 
-func (c Client) ImageReferenceForRelease(productSlug string, releaseID int, imageReferenceID int) (pivnet.ImageReference, error) {
-	return c.client.ImageReferences.GetForRelease(productSlug, releaseID, imageReferenceID)
+func (c Client) ArtifactReferenceForRelease(productSlug string, releaseID int, artifactReferenceID int) (pivnet.ArtifactReference, error) {
+	return c.client.ArtifactReferences.GetForRelease(productSlug, releaseID, artifactReferenceID)
 }
 
-func (c Client) ImageReference(productSlug string, imageReferenceID int) (pivnet.ImageReference, error) {
-	return c.client.ImageReferences.Get(productSlug, imageReferenceID)
+func (c Client) ArtifactReference(productSlug string, artifactReferenceID int) (pivnet.ArtifactReference, error) {
+	return c.client.ArtifactReferences.Get(productSlug, artifactReferenceID)
 }
 
-func (c Client) CreateImageReference(config pivnet.CreateImageReferenceConfig) (pivnet.ImageReference, error) {
-	return c.client.ImageReferences.Create(config)
+func (c Client) CreateArtifactReference(config pivnet.CreateArtifactReferenceConfig) (pivnet.ArtifactReference, error) {
+	return c.client.ArtifactReferences.Create(config)
 }
 
-func (c Client) DeleteImageReference(productSlug string, imageReferenceID int) (pivnet.ImageReference, error) {
-	return c.client.ImageReferences.Delete(productSlug, imageReferenceID)
+func (c Client) DeleteArtifactReference(productSlug string, artifactReferenceID int) (pivnet.ArtifactReference, error) {
+	return c.client.ArtifactReferences.Delete(productSlug, artifactReferenceID)
 }
 
-func (c Client) AddImageReferenceToRelease(productSlug string, imageReferenceID int, releaseID int) error {
-	return c.client.ImageReferences.AddToRelease(productSlug, imageReferenceID, releaseID)
+func (c Client) AddArtifactReferenceToRelease(productSlug string, artifactReferenceID int, releaseID int) error {
+	return c.client.ArtifactReferences.AddToRelease(productSlug, artifactReferenceID, releaseID)
 }
 
-func (c Client) RemoveImageReferenceFromRelease(productSlug string, imageReferenceID int, releaseID int) error {
-	return c.client.ImageReferences.RemoveFromRelease(productSlug, imageReferenceID, releaseID)
+func (c Client) RemoveArtifactReferenceFromRelease(productSlug string, artifactReferenceID int, releaseID int) error {
+	return c.client.ArtifactReferences.RemoveFromRelease(productSlug, artifactReferenceID, releaseID)
 }
 
 func (c Client) ReleaseDependencies(productSlug string, releaseID int) ([]pivnet.ReleaseDependency, error) {
@@ -345,4 +345,3 @@ func (c Client) MakeRequest(method string, url string, expectedResponseCode int,
 func (c Client) CreateRequest(method string, url string, body io.Reader) (*http.Request, error) {
 	return c.client.CreateRequest(method, url, body)
 }
-

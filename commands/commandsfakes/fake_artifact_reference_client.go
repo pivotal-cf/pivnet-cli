@@ -4,11 +4,11 @@ package commandsfakes
 import (
 	"sync"
 
-	pivnet "github.com/pivotal-cf/go-pivnet/v5"
+	pivnet "github.com/pivotal-cf/go-pivnet/v6"
 	"github.com/pivotal-cf/pivnet-cli/commands"
 )
 
-type FakeImageReferenceClient struct {
+type FakeArtifactReferenceClient struct {
 	AddToReleaseStub        func(string, int, string) error
 	addToReleaseMutex       sync.RWMutex
 	addToReleaseArgsForCall []struct {
@@ -22,10 +22,10 @@ type FakeImageReferenceClient struct {
 	addToReleaseReturnsOnCall map[int]struct {
 		result1 error
 	}
-	CreateStub        func(pivnet.CreateImageReferenceConfig) error
+	CreateStub        func(pivnet.CreateArtifactReferenceConfig) error
 	createMutex       sync.RWMutex
 	createArgsForCall []struct {
-		arg1 pivnet.CreateImageReferenceConfig
+		arg1 pivnet.CreateArtifactReferenceConfig
 	}
 	createReturns struct {
 		result1 error
@@ -104,7 +104,7 @@ type FakeImageReferenceClient struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeImageReferenceClient) AddToRelease(arg1 string, arg2 int, arg3 string) error {
+func (fake *FakeArtifactReferenceClient) AddToRelease(arg1 string, arg2 int, arg3 string) error {
 	fake.addToReleaseMutex.Lock()
 	ret, specificReturn := fake.addToReleaseReturnsOnCall[len(fake.addToReleaseArgsForCall)]
 	fake.addToReleaseArgsForCall = append(fake.addToReleaseArgsForCall, struct {
@@ -124,26 +124,26 @@ func (fake *FakeImageReferenceClient) AddToRelease(arg1 string, arg2 int, arg3 s
 	return fakeReturns.result1
 }
 
-func (fake *FakeImageReferenceClient) AddToReleaseCallCount() int {
+func (fake *FakeArtifactReferenceClient) AddToReleaseCallCount() int {
 	fake.addToReleaseMutex.RLock()
 	defer fake.addToReleaseMutex.RUnlock()
 	return len(fake.addToReleaseArgsForCall)
 }
 
-func (fake *FakeImageReferenceClient) AddToReleaseCalls(stub func(string, int, string) error) {
+func (fake *FakeArtifactReferenceClient) AddToReleaseCalls(stub func(string, int, string) error) {
 	fake.addToReleaseMutex.Lock()
 	defer fake.addToReleaseMutex.Unlock()
 	fake.AddToReleaseStub = stub
 }
 
-func (fake *FakeImageReferenceClient) AddToReleaseArgsForCall(i int) (string, int, string) {
+func (fake *FakeArtifactReferenceClient) AddToReleaseArgsForCall(i int) (string, int, string) {
 	fake.addToReleaseMutex.RLock()
 	defer fake.addToReleaseMutex.RUnlock()
 	argsForCall := fake.addToReleaseArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeImageReferenceClient) AddToReleaseReturns(result1 error) {
+func (fake *FakeArtifactReferenceClient) AddToReleaseReturns(result1 error) {
 	fake.addToReleaseMutex.Lock()
 	defer fake.addToReleaseMutex.Unlock()
 	fake.AddToReleaseStub = nil
@@ -152,7 +152,7 @@ func (fake *FakeImageReferenceClient) AddToReleaseReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) AddToReleaseReturnsOnCall(i int, result1 error) {
+func (fake *FakeArtifactReferenceClient) AddToReleaseReturnsOnCall(i int, result1 error) {
 	fake.addToReleaseMutex.Lock()
 	defer fake.addToReleaseMutex.Unlock()
 	fake.AddToReleaseStub = nil
@@ -166,11 +166,11 @@ func (fake *FakeImageReferenceClient) AddToReleaseReturnsOnCall(i int, result1 e
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) Create(arg1 pivnet.CreateImageReferenceConfig) error {
+func (fake *FakeArtifactReferenceClient) Create(arg1 pivnet.CreateArtifactReferenceConfig) error {
 	fake.createMutex.Lock()
 	ret, specificReturn := fake.createReturnsOnCall[len(fake.createArgsForCall)]
 	fake.createArgsForCall = append(fake.createArgsForCall, struct {
-		arg1 pivnet.CreateImageReferenceConfig
+		arg1 pivnet.CreateArtifactReferenceConfig
 	}{arg1})
 	fake.recordInvocation("Create", []interface{}{arg1})
 	fake.createMutex.Unlock()
@@ -184,26 +184,26 @@ func (fake *FakeImageReferenceClient) Create(arg1 pivnet.CreateImageReferenceCon
 	return fakeReturns.result1
 }
 
-func (fake *FakeImageReferenceClient) CreateCallCount() int {
+func (fake *FakeArtifactReferenceClient) CreateCallCount() int {
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
 	return len(fake.createArgsForCall)
 }
 
-func (fake *FakeImageReferenceClient) CreateCalls(stub func(pivnet.CreateImageReferenceConfig) error) {
+func (fake *FakeArtifactReferenceClient) CreateCalls(stub func(pivnet.CreateArtifactReferenceConfig) error) {
 	fake.createMutex.Lock()
 	defer fake.createMutex.Unlock()
 	fake.CreateStub = stub
 }
 
-func (fake *FakeImageReferenceClient) CreateArgsForCall(i int) pivnet.CreateImageReferenceConfig {
+func (fake *FakeArtifactReferenceClient) CreateArgsForCall(i int) pivnet.CreateArtifactReferenceConfig {
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
 	argsForCall := fake.createArgsForCall[i]
 	return argsForCall.arg1
 }
 
-func (fake *FakeImageReferenceClient) CreateReturns(result1 error) {
+func (fake *FakeArtifactReferenceClient) CreateReturns(result1 error) {
 	fake.createMutex.Lock()
 	defer fake.createMutex.Unlock()
 	fake.CreateStub = nil
@@ -212,7 +212,7 @@ func (fake *FakeImageReferenceClient) CreateReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) CreateReturnsOnCall(i int, result1 error) {
+func (fake *FakeArtifactReferenceClient) CreateReturnsOnCall(i int, result1 error) {
 	fake.createMutex.Lock()
 	defer fake.createMutex.Unlock()
 	fake.CreateStub = nil
@@ -226,7 +226,7 @@ func (fake *FakeImageReferenceClient) CreateReturnsOnCall(i int, result1 error) 
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) Delete(arg1 string, arg2 int) error {
+func (fake *FakeArtifactReferenceClient) Delete(arg1 string, arg2 int) error {
 	fake.deleteMutex.Lock()
 	ret, specificReturn := fake.deleteReturnsOnCall[len(fake.deleteArgsForCall)]
 	fake.deleteArgsForCall = append(fake.deleteArgsForCall, struct {
@@ -245,26 +245,26 @@ func (fake *FakeImageReferenceClient) Delete(arg1 string, arg2 int) error {
 	return fakeReturns.result1
 }
 
-func (fake *FakeImageReferenceClient) DeleteCallCount() int {
+func (fake *FakeArtifactReferenceClient) DeleteCallCount() int {
 	fake.deleteMutex.RLock()
 	defer fake.deleteMutex.RUnlock()
 	return len(fake.deleteArgsForCall)
 }
 
-func (fake *FakeImageReferenceClient) DeleteCalls(stub func(string, int) error) {
+func (fake *FakeArtifactReferenceClient) DeleteCalls(stub func(string, int) error) {
 	fake.deleteMutex.Lock()
 	defer fake.deleteMutex.Unlock()
 	fake.DeleteStub = stub
 }
 
-func (fake *FakeImageReferenceClient) DeleteArgsForCall(i int) (string, int) {
+func (fake *FakeArtifactReferenceClient) DeleteArgsForCall(i int) (string, int) {
 	fake.deleteMutex.RLock()
 	defer fake.deleteMutex.RUnlock()
 	argsForCall := fake.deleteArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeImageReferenceClient) DeleteReturns(result1 error) {
+func (fake *FakeArtifactReferenceClient) DeleteReturns(result1 error) {
 	fake.deleteMutex.Lock()
 	defer fake.deleteMutex.Unlock()
 	fake.DeleteStub = nil
@@ -273,7 +273,7 @@ func (fake *FakeImageReferenceClient) DeleteReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) DeleteReturnsOnCall(i int, result1 error) {
+func (fake *FakeArtifactReferenceClient) DeleteReturnsOnCall(i int, result1 error) {
 	fake.deleteMutex.Lock()
 	defer fake.deleteMutex.Unlock()
 	fake.DeleteStub = nil
@@ -287,7 +287,7 @@ func (fake *FakeImageReferenceClient) DeleteReturnsOnCall(i int, result1 error) 
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) Get(arg1 string, arg2 string, arg3 int) error {
+func (fake *FakeArtifactReferenceClient) Get(arg1 string, arg2 string, arg3 int) error {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
@@ -307,26 +307,26 @@ func (fake *FakeImageReferenceClient) Get(arg1 string, arg2 string, arg3 int) er
 	return fakeReturns.result1
 }
 
-func (fake *FakeImageReferenceClient) GetCallCount() int {
+func (fake *FakeArtifactReferenceClient) GetCallCount() int {
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
 	return len(fake.getArgsForCall)
 }
 
-func (fake *FakeImageReferenceClient) GetCalls(stub func(string, string, int) error) {
+func (fake *FakeArtifactReferenceClient) GetCalls(stub func(string, string, int) error) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = stub
 }
 
-func (fake *FakeImageReferenceClient) GetArgsForCall(i int) (string, string, int) {
+func (fake *FakeArtifactReferenceClient) GetArgsForCall(i int) (string, string, int) {
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
 	argsForCall := fake.getArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeImageReferenceClient) GetReturns(result1 error) {
+func (fake *FakeArtifactReferenceClient) GetReturns(result1 error) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
@@ -335,7 +335,7 @@ func (fake *FakeImageReferenceClient) GetReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) GetReturnsOnCall(i int, result1 error) {
+func (fake *FakeArtifactReferenceClient) GetReturnsOnCall(i int, result1 error) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
@@ -349,7 +349,7 @@ func (fake *FakeImageReferenceClient) GetReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) List(arg1 string, arg2 string, arg3 string) error {
+func (fake *FakeArtifactReferenceClient) List(arg1 string, arg2 string, arg3 string) error {
 	fake.listMutex.Lock()
 	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
 	fake.listArgsForCall = append(fake.listArgsForCall, struct {
@@ -369,26 +369,26 @@ func (fake *FakeImageReferenceClient) List(arg1 string, arg2 string, arg3 string
 	return fakeReturns.result1
 }
 
-func (fake *FakeImageReferenceClient) ListCallCount() int {
+func (fake *FakeArtifactReferenceClient) ListCallCount() int {
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
 	return len(fake.listArgsForCall)
 }
 
-func (fake *FakeImageReferenceClient) ListCalls(stub func(string, string, string) error) {
+func (fake *FakeArtifactReferenceClient) ListCalls(stub func(string, string, string) error) {
 	fake.listMutex.Lock()
 	defer fake.listMutex.Unlock()
 	fake.ListStub = stub
 }
 
-func (fake *FakeImageReferenceClient) ListArgsForCall(i int) (string, string, string) {
+func (fake *FakeArtifactReferenceClient) ListArgsForCall(i int) (string, string, string) {
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
 	argsForCall := fake.listArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeImageReferenceClient) ListReturns(result1 error) {
+func (fake *FakeArtifactReferenceClient) ListReturns(result1 error) {
 	fake.listMutex.Lock()
 	defer fake.listMutex.Unlock()
 	fake.ListStub = nil
@@ -397,7 +397,7 @@ func (fake *FakeImageReferenceClient) ListReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) ListReturnsOnCall(i int, result1 error) {
+func (fake *FakeArtifactReferenceClient) ListReturnsOnCall(i int, result1 error) {
 	fake.listMutex.Lock()
 	defer fake.listMutex.Unlock()
 	fake.ListStub = nil
@@ -411,7 +411,7 @@ func (fake *FakeImageReferenceClient) ListReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) RemoveFromRelease(arg1 string, arg2 int, arg3 string) error {
+func (fake *FakeArtifactReferenceClient) RemoveFromRelease(arg1 string, arg2 int, arg3 string) error {
 	fake.removeFromReleaseMutex.Lock()
 	ret, specificReturn := fake.removeFromReleaseReturnsOnCall[len(fake.removeFromReleaseArgsForCall)]
 	fake.removeFromReleaseArgsForCall = append(fake.removeFromReleaseArgsForCall, struct {
@@ -431,26 +431,26 @@ func (fake *FakeImageReferenceClient) RemoveFromRelease(arg1 string, arg2 int, a
 	return fakeReturns.result1
 }
 
-func (fake *FakeImageReferenceClient) RemoveFromReleaseCallCount() int {
+func (fake *FakeArtifactReferenceClient) RemoveFromReleaseCallCount() int {
 	fake.removeFromReleaseMutex.RLock()
 	defer fake.removeFromReleaseMutex.RUnlock()
 	return len(fake.removeFromReleaseArgsForCall)
 }
 
-func (fake *FakeImageReferenceClient) RemoveFromReleaseCalls(stub func(string, int, string) error) {
+func (fake *FakeArtifactReferenceClient) RemoveFromReleaseCalls(stub func(string, int, string) error) {
 	fake.removeFromReleaseMutex.Lock()
 	defer fake.removeFromReleaseMutex.Unlock()
 	fake.RemoveFromReleaseStub = stub
 }
 
-func (fake *FakeImageReferenceClient) RemoveFromReleaseArgsForCall(i int) (string, int, string) {
+func (fake *FakeArtifactReferenceClient) RemoveFromReleaseArgsForCall(i int) (string, int, string) {
 	fake.removeFromReleaseMutex.RLock()
 	defer fake.removeFromReleaseMutex.RUnlock()
 	argsForCall := fake.removeFromReleaseArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeImageReferenceClient) RemoveFromReleaseReturns(result1 error) {
+func (fake *FakeArtifactReferenceClient) RemoveFromReleaseReturns(result1 error) {
 	fake.removeFromReleaseMutex.Lock()
 	defer fake.removeFromReleaseMutex.Unlock()
 	fake.RemoveFromReleaseStub = nil
@@ -459,7 +459,7 @@ func (fake *FakeImageReferenceClient) RemoveFromReleaseReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) RemoveFromReleaseReturnsOnCall(i int, result1 error) {
+func (fake *FakeArtifactReferenceClient) RemoveFromReleaseReturnsOnCall(i int, result1 error) {
 	fake.removeFromReleaseMutex.Lock()
 	defer fake.removeFromReleaseMutex.Unlock()
 	fake.RemoveFromReleaseStub = nil
@@ -473,7 +473,7 @@ func (fake *FakeImageReferenceClient) RemoveFromReleaseReturnsOnCall(i int, resu
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) Update(arg1 string, arg2 int, arg3 *string, arg4 *string, arg5 *string, arg6 *[]string) error {
+func (fake *FakeArtifactReferenceClient) Update(arg1 string, arg2 int, arg3 *string, arg4 *string, arg5 *string, arg6 *[]string) error {
 	fake.updateMutex.Lock()
 	ret, specificReturn := fake.updateReturnsOnCall[len(fake.updateArgsForCall)]
 	fake.updateArgsForCall = append(fake.updateArgsForCall, struct {
@@ -496,26 +496,26 @@ func (fake *FakeImageReferenceClient) Update(arg1 string, arg2 int, arg3 *string
 	return fakeReturns.result1
 }
 
-func (fake *FakeImageReferenceClient) UpdateCallCount() int {
+func (fake *FakeArtifactReferenceClient) UpdateCallCount() int {
 	fake.updateMutex.RLock()
 	defer fake.updateMutex.RUnlock()
 	return len(fake.updateArgsForCall)
 }
 
-func (fake *FakeImageReferenceClient) UpdateCalls(stub func(string, int, *string, *string, *string, *[]string) error) {
+func (fake *FakeArtifactReferenceClient) UpdateCalls(stub func(string, int, *string, *string, *string, *[]string) error) {
 	fake.updateMutex.Lock()
 	defer fake.updateMutex.Unlock()
 	fake.UpdateStub = stub
 }
 
-func (fake *FakeImageReferenceClient) UpdateArgsForCall(i int) (string, int, *string, *string, *string, *[]string) {
+func (fake *FakeArtifactReferenceClient) UpdateArgsForCall(i int) (string, int, *string, *string, *string, *[]string) {
 	fake.updateMutex.RLock()
 	defer fake.updateMutex.RUnlock()
 	argsForCall := fake.updateArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6
 }
 
-func (fake *FakeImageReferenceClient) UpdateReturns(result1 error) {
+func (fake *FakeArtifactReferenceClient) UpdateReturns(result1 error) {
 	fake.updateMutex.Lock()
 	defer fake.updateMutex.Unlock()
 	fake.UpdateStub = nil
@@ -524,7 +524,7 @@ func (fake *FakeImageReferenceClient) UpdateReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) UpdateReturnsOnCall(i int, result1 error) {
+func (fake *FakeArtifactReferenceClient) UpdateReturnsOnCall(i int, result1 error) {
 	fake.updateMutex.Lock()
 	defer fake.updateMutex.Unlock()
 	fake.UpdateStub = nil
@@ -538,7 +538,7 @@ func (fake *FakeImageReferenceClient) UpdateReturnsOnCall(i int, result1 error) 
 	}{result1}
 }
 
-func (fake *FakeImageReferenceClient) Invocations() map[string][][]interface{} {
+func (fake *FakeArtifactReferenceClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.addToReleaseMutex.RLock()
@@ -562,7 +562,7 @@ func (fake *FakeImageReferenceClient) Invocations() map[string][][]interface{} {
 	return copiedInvocations
 }
 
-func (fake *FakeImageReferenceClient) recordInvocation(key string, args []interface{}) {
+func (fake *FakeArtifactReferenceClient) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -574,4 +574,4 @@ func (fake *FakeImageReferenceClient) recordInvocation(key string, args []interf
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ commands.ImageReferenceClient = new(FakeImageReferenceClient)
+var _ commands.ArtifactReferenceClient = new(FakeArtifactReferenceClient)

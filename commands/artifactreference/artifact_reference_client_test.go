@@ -1,4 +1,4 @@
-package imagereference_test
+package artifactreference_test
 
 import (
 	"bytes"
@@ -8,28 +8,28 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/go-pivnet/v5"
-	"github.com/pivotal-cf/go-pivnet/v5/logger"
-	"github.com/pivotal-cf/go-pivnet/v5/logshim"
-	"github.com/pivotal-cf/pivnet-cli/commands/imagereference"
-	"github.com/pivotal-cf/pivnet-cli/commands/imagereference/imagereferencefakes"
+	"github.com/pivotal-cf/go-pivnet/v6"
+	"github.com/pivotal-cf/go-pivnet/v6/logger"
+	"github.com/pivotal-cf/go-pivnet/v6/logshim"
+	"github.com/pivotal-cf/pivnet-cli/commands/artifactreference"
+	"github.com/pivotal-cf/pivnet-cli/commands/artifactreference/artifactreferencefakes"
 	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
 	"github.com/pivotal-cf/pivnet-cli/printer"
 )
 
-var _ = Describe("imagereference commands", func() {
+var _ = Describe("artifactreference commands", func() {
 	var (
 		l                logger.Logger
-		fakePivnetClient *imagereferencefakes.FakePivnetClient
+		fakePivnetClient *artifactreferencefakes.FakePivnetClient
 
 		fakeErrorHandler *errorhandlerfakes.FakeErrorHandler
 
 		outBuffer bytes.Buffer
 		logBuffer bytes.Buffer
 
-		imageReferences []pivnet.ImageReference
+		artifactReferences []pivnet.ArtifactReference
 
-		client *imagereference.ImageReferenceClient
+		client *artifactreference.ArtifactReferenceClient
 	)
 
 	BeforeEach(func() {
@@ -37,18 +37,18 @@ var _ = Describe("imagereference commands", func() {
 		debugLogger := log.New(GinkgoWriter, "", 0)
 		l = logshim.NewLogShim(infoLogger, debugLogger, true)
 
-		fakePivnetClient = &imagereferencefakes.FakePivnetClient{}
+		fakePivnetClient = &artifactreferencefakes.FakePivnetClient{}
 
 		outBuffer = bytes.Buffer{}
 		logBuffer = bytes.Buffer{}
 
 		fakeErrorHandler = &errorhandlerfakes.FakeErrorHandler{}
 
-		imageReferences = []pivnet.ImageReference{
+		artifactReferences = []pivnet.ArtifactReference{
 			{
 				ID:                 1234,
 				Name:               "my name",
-				ImagePath:          "my/path:123",
+				ArtifactPath:       "my/path:123",
 				Description:        "my description",
 				DocsURL:            "my.docs.url",
 				Digest:             "sha256:mydigest",
@@ -56,7 +56,7 @@ var _ = Describe("imagereference commands", func() {
 			},
 		}
 
-		client = imagereference.NewImageReferenceClient(
+		client = artifactreference.NewArtifactReferenceClient(
 			fakePivnetClient,
 			fakeErrorHandler,
 			printer.PrintAsJSON,
@@ -79,18 +79,18 @@ var _ = Describe("imagereference commands", func() {
 			releaseVersion = ""
 			digest = ""
 
-			fakePivnetClient.ImageReferencesReturns(imageReferences, nil)
+			fakePivnetClient.ArtifactReferencesReturns(artifactReferences, nil)
 		})
 
-		It("lists all ImageReferences", func() {
+		It("lists all ArtifactReferences", func() {
 			err := client.List(productSlug, releaseVersion, digest)
 			Expect(err).NotTo(HaveOccurred())
 
-			var returnedImageReferences []pivnet.ImageReference
-			err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReferences)
+			var returnedArtifactReferences []pivnet.ArtifactReference
+			err = json.Unmarshal(outBuffer.Bytes(), &returnedArtifactReferences)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(returnedImageReferences).To(Equal(imageReferences))
+			Expect(returnedArtifactReferences).To(Equal(artifactReferences))
 		})
 
 		Context("when there is an error", func() {
@@ -99,8 +99,8 @@ var _ = Describe("imagereference commands", func() {
 			)
 
 			BeforeEach(func() {
-				expectedErr = errors.New("imageReferences error")
-				fakePivnetClient.ImageReferencesReturns(nil, expectedErr)
+				expectedErr = errors.New("artifactReferences error")
+				fakePivnetClient.ArtifactReferencesReturns(nil, expectedErr)
 			})
 
 			It("invokes the error handler", func() {
@@ -115,18 +115,18 @@ var _ = Describe("imagereference commands", func() {
 		Context("when release version is not empty", func() {
 			BeforeEach(func() {
 				releaseVersion = "some-release-version"
-				fakePivnetClient.ImageReferencesForReleaseReturns(imageReferences, nil)
+				fakePivnetClient.ArtifactReferencesForReleaseReturns(artifactReferences, nil)
 			})
 
-			It("lists all ImageReferences", func() {
+			It("lists all ArtifactReferences", func() {
 				err := client.List(productSlug, releaseVersion, digest)
 				Expect(err).NotTo(HaveOccurred())
 
-				var returnedImageReferences []pivnet.ImageReference
-				err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReferences)
+				var returnedArtifactReferences []pivnet.ArtifactReference
+				err = json.Unmarshal(outBuffer.Bytes(), &returnedArtifactReferences)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(returnedImageReferences).To(Equal(imageReferences))
+				Expect(returnedArtifactReferences).To(Equal(artifactReferences))
 			})
 
 			Context("when there is an error getting release", func() {
@@ -154,8 +154,8 @@ var _ = Describe("imagereference commands", func() {
 				)
 
 				BeforeEach(func() {
-					expectedErr = errors.New("imageReferences error")
-					fakePivnetClient.ImageReferencesForReleaseReturns(nil, expectedErr)
+					expectedErr = errors.New("artifactReferences error")
+					fakePivnetClient.ArtifactReferencesForReleaseReturns(nil, expectedErr)
 				})
 
 				It("invokes the error handler", func() {
@@ -168,14 +168,14 @@ var _ = Describe("imagereference commands", func() {
 			})
 		})
 
-		Context("when an image digest is provided", func() {
+		Context("when an artifact digest is provided", func() {
 			BeforeEach(func() {
 				digest = "sha256:digest"
-				imageReferences = []pivnet.ImageReference{
+				artifactReferences = []pivnet.ArtifactReference{
 					{
 						ID:                 1234,
 						Name:               "my name",
-						ImagePath:          "my/path:123",
+						ArtifactPath:       "my/path:123",
 						Description:        "my description",
 						DocsURL:            "my.docs.url",
 						Digest:             "sha256:mydigest",
@@ -184,39 +184,39 @@ var _ = Describe("imagereference commands", func() {
 					},
 					{
 						ID:                 9876,
-						Name:               "other image name",
-						ImagePath:          "other image/path:123",
-						Description:        "other image description",
-						DocsURL:            "other image.docs.url",
+						Name:               "other artifact name",
+						ArtifactPath:       "other artifact/path:123",
+						Description:        "other artifact description",
+						DocsURL:            "other artifact.docs.url",
 						Digest:             "sha256:mydigest",
 						SystemRequirements: []string{"requirement3", "requirement4"},
 						ReleaseVersions:    []string{},
 					},
 				}
 
-				fakePivnetClient.ImageReferencesForDigestReturns(imageReferences, nil)
+				fakePivnetClient.ArtifactReferencesForDigestReturns(artifactReferences, nil)
 			})
 
 			It("invoke proper list command on client", func() {
-				Expect(fakePivnetClient.ImageReferencesForDigestCallCount()).To(Equal(0))
+				Expect(fakePivnetClient.ArtifactReferencesForDigestCallCount()).To(Equal(0))
 
 				err := client.List(productSlug, releaseVersion, digest)
 
 				Expect(err).ToNot(HaveOccurred())
-				Expect(fakePivnetClient.ImageReferencesForDigestCallCount()).To(Equal(1))
+				Expect(fakePivnetClient.ArtifactReferencesForDigestCallCount()).To(Equal(1))
 
-				invokedProductSlug, invokedDigest := fakePivnetClient.ImageReferencesForDigestArgsForCall(0)
+				invokedProductSlug, invokedDigest := fakePivnetClient.ArtifactReferencesForDigestArgsForCall(0)
 
 				Expect(invokedProductSlug).To(Equal(productSlug))
 				Expect(invokedDigest).To(Equal(digest))
 
-				var returnedImageReferences []pivnet.ImageReference
-				err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReferences)
+				var returnedArtifactReferences []pivnet.ArtifactReference
+				err = json.Unmarshal(outBuffer.Bytes(), &returnedArtifactReferences)
 				Expect(err).ToNot(HaveOccurred())
 
-				expectedImageReferences := imageReferences
-				expectedImageReferences[1].ReleaseVersions = nil
-				Expect(returnedImageReferences).To(Equal(expectedImageReferences))
+				expectedArtifactReferences := artifactReferences
+				expectedArtifactReferences[1].ReleaseVersions = nil
+				Expect(returnedArtifactReferences).To(Equal(expectedArtifactReferences))
 			})
 
 			Context("when there is an error", func() {
@@ -225,8 +225,8 @@ var _ = Describe("imagereference commands", func() {
 				)
 
 				BeforeEach(func() {
-					expectedErr = errors.New("imageReferences error")
-					fakePivnetClient.ImageReferencesForDigestReturns(nil, expectedErr)
+					expectedErr = errors.New("artifactReferences error")
+					fakePivnetClient.ArtifactReferencesForDigestReturns(nil, expectedErr)
 				})
 
 				It("invokes the error handler", func() {
@@ -242,28 +242,28 @@ var _ = Describe("imagereference commands", func() {
 
 	Describe("Get", func() {
 		var (
-			productSlug      string
-			releaseVersion   string
-			imageReferenceID int
+			productSlug         string
+			releaseVersion      string
+			artifactReferenceID int
 		)
 
 		BeforeEach(func() {
 			productSlug = "some-product-slug"
 			releaseVersion = ""
-			imageReferenceID = imageReferences[0].ID
+			artifactReferenceID = artifactReferences[0].ID
 
-			fakePivnetClient.ImageReferenceReturns(imageReferences[0], nil)
+			fakePivnetClient.ArtifactReferenceReturns(artifactReferences[0], nil)
 		})
 
-		It("gets ImageReference", func() {
-			err := client.Get(productSlug, releaseVersion, imageReferenceID)
+		It("gets ArtifactReference", func() {
+			err := client.Get(productSlug, releaseVersion, artifactReferenceID)
 			Expect(err).NotTo(HaveOccurred())
 
-			var returnedImageReference pivnet.ImageReference
-			err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReference)
+			var returnedArtifactReference pivnet.ArtifactReference
+			err = json.Unmarshal(outBuffer.Bytes(), &returnedArtifactReference)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(returnedImageReference).To(Equal(imageReferences[0]))
+			Expect(returnedArtifactReference).To(Equal(artifactReferences[0]))
 		})
 
 		Context("when there is an error", func() {
@@ -272,12 +272,12 @@ var _ = Describe("imagereference commands", func() {
 			)
 
 			BeforeEach(func() {
-				expectedErr = errors.New("imagereference error")
-				fakePivnetClient.ImageReferenceReturns(pivnet.ImageReference{}, expectedErr)
+				expectedErr = errors.New("artifactreference error")
+				fakePivnetClient.ArtifactReferenceReturns(pivnet.ArtifactReference{}, expectedErr)
 			})
 
 			It("invokes the error handler", func() {
-				err := client.Get(productSlug, releaseVersion, imageReferenceID)
+				err := client.Get(productSlug, releaseVersion, artifactReferenceID)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
@@ -288,18 +288,18 @@ var _ = Describe("imagereference commands", func() {
 		Context("when release version is not empty", func() {
 			BeforeEach(func() {
 				releaseVersion = "some-release-version"
-				fakePivnetClient.ImageReferenceForReleaseReturns(imageReferences[0], nil)
+				fakePivnetClient.ArtifactReferenceForReleaseReturns(artifactReferences[0], nil)
 			})
 
-			It("gets ImageReference", func() {
-				err := client.Get(productSlug, releaseVersion, imageReferenceID)
+			It("gets ArtifactReference", func() {
+				err := client.Get(productSlug, releaseVersion, artifactReferenceID)
 				Expect(err).NotTo(HaveOccurred())
 
-				var returnedImageReference pivnet.ImageReference
-				err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReference)
+				var returnedArtifactReference pivnet.ArtifactReference
+				err = json.Unmarshal(outBuffer.Bytes(), &returnedArtifactReference)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(returnedImageReference).To(Equal(imageReferences[0]))
+				Expect(returnedArtifactReference).To(Equal(artifactReferences[0]))
 			})
 
 			Context("when there is an error getting release", func() {
@@ -313,7 +313,7 @@ var _ = Describe("imagereference commands", func() {
 				})
 
 				It("invokes the error handler", func() {
-					err := client.Get(productSlug, releaseVersion, imageReferenceID)
+					err := client.Get(productSlug, releaseVersion, artifactReferenceID)
 					Expect(err).NotTo(HaveOccurred())
 
 					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
@@ -327,12 +327,12 @@ var _ = Describe("imagereference commands", func() {
 				)
 
 				BeforeEach(func() {
-					expectedErr = errors.New("imageReferences error")
-					fakePivnetClient.ImageReferenceForReleaseReturns(pivnet.ImageReference{}, expectedErr)
+					expectedErr = errors.New("artifactReferences error")
+					fakePivnetClient.ArtifactReferenceForReleaseReturns(pivnet.ArtifactReference{}, expectedErr)
 				})
 
 				It("invokes the error handler", func() {
-					err := client.Get(productSlug, releaseVersion, imageReferenceID)
+					err := client.Get(productSlug, releaseVersion, artifactReferenceID)
 					Expect(err).NotTo(HaveOccurred())
 
 					Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
@@ -344,8 +344,8 @@ var _ = Describe("imagereference commands", func() {
 
 	Describe("Update", func() {
 		var (
-			imageReferenceID int
-			productSlug      string
+			artifactReferenceID int
+			productSlug         string
 
 			existingName               string
 			existingDescription        string
@@ -357,12 +357,12 @@ var _ = Describe("imagereference commands", func() {
 			docsURL            string
 			systemRequirements []string
 
-			existingImageReference pivnet.ImageReference
+			existingArtifactReference pivnet.ArtifactReference
 		)
 
 		BeforeEach(func() {
 			productSlug = "some-product-slug"
-			imageReferenceID = imageReferences[0].ID
+			artifactReferenceID = artifactReferences[0].ID
 
 			existingName = "some-name"
 			existingDescription = "some-description"
@@ -374,22 +374,22 @@ var _ = Describe("imagereference commands", func() {
 			docsURL = "some-new-url.net"
 			systemRequirements = []string{"3", "4"}
 
-			existingImageReference = pivnet.ImageReference{
-				ID:                 imageReferenceID,
+			existingArtifactReference = pivnet.ArtifactReference{
+				ID:                 artifactReferenceID,
 				Name:               existingName,
 				Description:        existingDescription,
 				DocsURL:            existingDocsURL,
 				SystemRequirements: existingSystemRequirements,
 			}
 
-			fakePivnetClient.ImageReferenceReturns(existingImageReference, nil)
-			fakePivnetClient.UpdateImageReferenceReturns(imageReferences[0], nil)
+			fakePivnetClient.ArtifactReferenceReturns(existingArtifactReference, nil)
+			fakePivnetClient.UpdateArtifactReferenceReturns(artifactReferences[0], nil)
 		})
 
-		It("updates ImageReference", func() {
+		It("updates ArtifactReference", func() {
 			err := client.Update(
 				productSlug,
-				imageReferenceID,
+				artifactReferenceID,
 				&name,
 				&description,
 				&docsURL,
@@ -397,26 +397,26 @@ var _ = Describe("imagereference commands", func() {
 			)
 			Expect(err).NotTo(HaveOccurred())
 
-			var returnedImageReference pivnet.ImageReference
-			err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReference)
+			var returnedArtifactReference pivnet.ArtifactReference
+			err = json.Unmarshal(outBuffer.Bytes(), &returnedArtifactReference)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(returnedImageReference).To(Equal(imageReferences[0]))
+			Expect(returnedArtifactReference).To(Equal(artifactReferences[0]))
 
-			invokedProductSlug, invokedImageReference := fakePivnetClient.UpdateImageReferenceArgsForCall(0)
+			invokedProductSlug, invokedArtifactReference := fakePivnetClient.UpdateArtifactReferenceArgsForCall(0)
 			Expect(invokedProductSlug).To(Equal(productSlug))
-			Expect(invokedImageReference.ID).To(Equal(imageReferenceID))
-			Expect(invokedImageReference.Name).To(Equal(name))
-			Expect(invokedImageReference.Description).To(Equal(description))
-			Expect(invokedImageReference.DocsURL).To(Equal(docsURL))
-			Expect(invokedImageReference.SystemRequirements).To(Equal(systemRequirements))
+			Expect(invokedArtifactReference.ID).To(Equal(artifactReferenceID))
+			Expect(invokedArtifactReference.Name).To(Equal(name))
+			Expect(invokedArtifactReference.Description).To(Equal(description))
+			Expect(invokedArtifactReference.DocsURL).To(Equal(docsURL))
+			Expect(invokedArtifactReference.SystemRequirements).To(Equal(systemRequirements))
 		})
 
 		Context("when optional fields are nil", func() {
-			It("updates Image Reference with previous values", func() {
+			It("updates Artifact Reference with previous values", func() {
 				err := client.Update(
 					productSlug,
-					imageReferenceID,
+					artifactReferenceID,
 					nil,
 					nil,
 					nil,
@@ -424,15 +424,15 @@ var _ = Describe("imagereference commands", func() {
 				)
 				Expect(err).NotTo(HaveOccurred())
 
-				var returnedImageReference pivnet.ImageReference
-				err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReference)
+				var returnedArtifactReference pivnet.ArtifactReference
+				err = json.Unmarshal(outBuffer.Bytes(), &returnedArtifactReference)
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(returnedImageReference).To(Equal(imageReferences[0]))
+				Expect(returnedArtifactReference).To(Equal(artifactReferences[0]))
 
-				invokedProductSlug, invokedProductFile := fakePivnetClient.UpdateImageReferenceArgsForCall(0)
+				invokedProductSlug, invokedProductFile := fakePivnetClient.UpdateArtifactReferenceArgsForCall(0)
 				Expect(invokedProductSlug).To(Equal(productSlug))
-				Expect(invokedProductFile.ID).To(Equal(imageReferenceID))
+				Expect(invokedProductFile.ID).To(Equal(artifactReferenceID))
 				Expect(invokedProductFile.Name).To(Equal(existingName))
 				Expect(invokedProductFile.Description).To(Equal(existingDescription))
 				Expect(invokedProductFile.DocsURL).To(Equal(existingDocsURL))
@@ -446,14 +446,14 @@ var _ = Describe("imagereference commands", func() {
 			)
 
 			BeforeEach(func() {
-				expectedErr = errors.New("imageReference error")
-				fakePivnetClient.UpdateImageReferenceReturns(pivnet.ImageReference{}, expectedErr)
+				expectedErr = errors.New("artifactReference error")
+				fakePivnetClient.UpdateArtifactReferenceReturns(pivnet.ArtifactReference{}, expectedErr)
 			})
 
 			It("invokes the error handler", func() {
 				err := client.Update(
 					productSlug,
-					imageReferenceID,
+					artifactReferenceID,
 					&name,
 					&description,
 					&docsURL,
@@ -469,27 +469,27 @@ var _ = Describe("imagereference commands", func() {
 
 	Describe("Create", func() {
 		var (
-			config pivnet.CreateImageReferenceConfig
+			config pivnet.CreateArtifactReferenceConfig
 		)
 
 		BeforeEach(func() {
-			config = pivnet.CreateImageReferenceConfig{
+			config = pivnet.CreateArtifactReferenceConfig{
 				Name: "some-name",
 			}
 
-			fakePivnetClient.CreateImageReferenceReturns(imageReferences[0], nil)
+			fakePivnetClient.CreateArtifactReferenceReturns(artifactReferences[0], nil)
 		})
 
-		It("creates ImageReference", func() {
+		It("creates ArtifactReference", func() {
 			err := client.Create(config)
 			Expect(err).NotTo(HaveOccurred())
 
-			var returnedImageReference pivnet.ImageReference
-			err = json.Unmarshal(outBuffer.Bytes(), &returnedImageReference)
+			var returnedArtifactReference pivnet.ArtifactReference
+			err = json.Unmarshal(outBuffer.Bytes(), &returnedArtifactReference)
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(returnedImageReference).To(Equal(imageReferences[0]))
-			Expect(fakePivnetClient.CreateImageReferenceArgsForCall(0)).To(Equal(config))
+			Expect(returnedArtifactReference).To(Equal(artifactReferences[0]))
+			Expect(fakePivnetClient.CreateArtifactReferenceArgsForCall(0)).To(Equal(config))
 		})
 
 		Context("when there is an error", func() {
@@ -498,8 +498,8 @@ var _ = Describe("imagereference commands", func() {
 			)
 
 			BeforeEach(func() {
-				expectedErr = errors.New("imagereference error")
-				fakePivnetClient.CreateImageReferenceReturns(pivnet.ImageReference{}, expectedErr)
+				expectedErr = errors.New("artifactreference error")
+				fakePivnetClient.CreateArtifactReferenceReturns(pivnet.ArtifactReference{}, expectedErr)
 			})
 
 			It("invokes the error handler", func() {
@@ -514,19 +514,19 @@ var _ = Describe("imagereference commands", func() {
 
 	Describe("Delete", func() {
 		var (
-			productSlug      string
-			imageReferenceID int
+			productSlug         string
+			artifactReferenceID int
 		)
 
 		BeforeEach(func() {
 			productSlug = "some-product-slug"
-			imageReferenceID = imageReferences[0].ID
+			artifactReferenceID = artifactReferences[0].ID
 
-			fakePivnetClient.DeleteImageReferenceReturns(imageReferences[0], nil)
+			fakePivnetClient.DeleteArtifactReferenceReturns(artifactReferences[0], nil)
 		})
 
-		It("deletes ImageReference", func() {
-			err := client.Delete(productSlug, imageReferenceID)
+		It("deletes ArtifactReference", func() {
+			err := client.Delete(productSlug, artifactReferenceID)
 			Expect(err).NotTo(HaveOccurred())
 		})
 
@@ -536,12 +536,12 @@ var _ = Describe("imagereference commands", func() {
 			)
 
 			BeforeEach(func() {
-				expectedErr = errors.New("imagereference error")
-				fakePivnetClient.DeleteImageReferenceReturns(pivnet.ImageReference{}, expectedErr)
+				expectedErr = errors.New("artifactreference error")
+				fakePivnetClient.DeleteArtifactReferenceReturns(pivnet.ArtifactReference{}, expectedErr)
 			})
 
 			It("invokes the error handler", func() {
-				err := client.Delete(productSlug, imageReferenceID)
+				err := client.Delete(productSlug, artifactReferenceID)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(fakeErrorHandler.HandleErrorCallCount()).To(Equal(1))
@@ -552,23 +552,23 @@ var _ = Describe("imagereference commands", func() {
 
 	Describe("AddToRelease", func() {
 		var (
-			productSlug      string
-			releaseVersion   string
-			imageReferenceID int
+			productSlug         string
+			releaseVersion      string
+			artifactReferenceID int
 		)
 
 		BeforeEach(func() {
 			productSlug = "some-product-slug"
 			releaseVersion = "release-version"
-			imageReferenceID = imageReferences[0].ID
+			artifactReferenceID = artifactReferences[0].ID
 
-			fakePivnetClient.AddImageReferenceToReleaseReturns(nil)
+			fakePivnetClient.AddArtifactReferenceToReleaseReturns(nil)
 		})
 
-		It("adds ImageReference to release", func() {
+		It("adds ArtifactReference to release", func() {
 			err := client.AddToRelease(
 				productSlug,
-				imageReferenceID,
+				artifactReferenceID,
 				releaseVersion,
 			)
 			Expect(err).NotTo(HaveOccurred())
@@ -587,7 +587,7 @@ var _ = Describe("imagereference commands", func() {
 			It("invokes the error handler", func() {
 				err := client.AddToRelease(
 					productSlug,
-					imageReferenceID,
+					artifactReferenceID,
 					releaseVersion,
 				)
 				Expect(err).NotTo(HaveOccurred())
@@ -603,14 +603,14 @@ var _ = Describe("imagereference commands", func() {
 			)
 
 			BeforeEach(func() {
-				expectedErr = errors.New("image reference error")
-				fakePivnetClient.AddImageReferenceToReleaseReturns(expectedErr)
+				expectedErr = errors.New("artifact reference error")
+				fakePivnetClient.AddArtifactReferenceToReleaseReturns(expectedErr)
 			})
 
 			It("invokes the error handler", func() {
 				err := client.AddToRelease(
 					productSlug,
-					imageReferenceID,
+					artifactReferenceID,
 					releaseVersion,
 				)
 				Expect(err).NotTo(HaveOccurred())
@@ -623,23 +623,23 @@ var _ = Describe("imagereference commands", func() {
 
 	Describe("RemoveFromRelease", func() {
 		var (
-			productSlug      string
-			releaseVersion   string
-			imageReferenceID int
+			productSlug         string
+			releaseVersion      string
+			artifactReferenceID int
 		)
 
 		BeforeEach(func() {
 			productSlug = "some-product-slug"
 			releaseVersion = "release-version"
-			imageReferenceID = imageReferences[0].ID
+			artifactReferenceID = artifactReferences[0].ID
 
-			fakePivnetClient.RemoveImageReferenceFromReleaseReturns(nil)
+			fakePivnetClient.RemoveArtifactReferenceFromReleaseReturns(nil)
 		})
 
-		It("removes ImageReference from release", func() {
+		It("removes ArtifactReference from release", func() {
 			err := client.RemoveFromRelease(
 				productSlug,
-				imageReferenceID,
+				artifactReferenceID,
 				releaseVersion,
 			)
 			Expect(err).NotTo(HaveOccurred())
@@ -658,7 +658,7 @@ var _ = Describe("imagereference commands", func() {
 			It("invokes the error handler", func() {
 				err := client.RemoveFromRelease(
 					productSlug,
-					imageReferenceID,
+					artifactReferenceID,
 					releaseVersion,
 				)
 				Expect(err).NotTo(HaveOccurred())
@@ -674,14 +674,14 @@ var _ = Describe("imagereference commands", func() {
 			)
 
 			BeforeEach(func() {
-				expectedErr = errors.New("image reference error")
-				fakePivnetClient.RemoveImageReferenceFromReleaseReturns(expectedErr)
+				expectedErr = errors.New("artifact reference error")
+				fakePivnetClient.RemoveArtifactReferenceFromReleaseReturns(expectedErr)
 			})
 
 			It("invokes the error handler", func() {
 				err := client.RemoveFromRelease(
 					productSlug,
-					imageReferenceID,
+					artifactReferenceID,
 					releaseVersion,
 				)
 				Expect(err).NotTo(HaveOccurred())

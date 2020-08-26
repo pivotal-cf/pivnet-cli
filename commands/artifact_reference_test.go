@@ -7,52 +7,52 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	pivnet "github.com/pivotal-cf/go-pivnet/v5"
+	pivnet "github.com/pivotal-cf/go-pivnet/v6"
 	"github.com/pivotal-cf/pivnet-cli/commands"
+	"github.com/pivotal-cf/pivnet-cli/commands/artifactreference"
 	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
-	"github.com/pivotal-cf/pivnet-cli/commands/imagereference"
 )
 
-var _ = Describe("image reference commands", func() {
+var _ = Describe("artifact reference commands", func() {
 	var (
 		field reflect.StructField
 
-		fakeImageReferenceClient *commandsfakes.FakeImageReferenceClient
+		fakeArtifactReferenceClient *commandsfakes.FakeArtifactReferenceClient
 	)
 
 	BeforeEach(func() {
-		fakeImageReferenceClient = &commandsfakes.FakeImageReferenceClient{}
+		fakeArtifactReferenceClient = &commandsfakes.FakeArtifactReferenceClient{}
 
-		commands.NewImageReferenceClient = func(imagereference.PivnetClient) commands.ImageReferenceClient {
-			return fakeImageReferenceClient
+		commands.NewArtifactReferenceClient = func(artifactreference.PivnetClient) commands.ArtifactReferenceClient {
+			return fakeArtifactReferenceClient
 		}
 	})
 
-	Describe("ImageReferencesCommand", func() {
+	Describe("ArtifactReferencesCommand", func() {
 		var (
-			cmd commands.ImageReferencesCommand
+			cmd commands.ArtifactReferencesCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.ImageReferencesCommand{}
+			cmd = commands.ArtifactReferencesCommand{}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the ArtifactReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.ListCallCount()).To(Equal(1))
+			Expect(fakeArtifactReferenceClient.ListCallCount()).To(Equal(1))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the ArtifactReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.ListReturns(expectedErr)
+				fakeArtifactReferenceClient.ListReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -88,7 +88,7 @@ var _ = Describe("image reference commands", func() {
 
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferencesCommand{}, "ProductSlug")
+				field = fieldFor(commands.ArtifactReferencesCommand{}, "ProductSlug")
 			})
 
 			It("is required", func() {
@@ -106,7 +106,7 @@ var _ = Describe("image reference commands", func() {
 
 		Describe("ReleaseVersion flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferencesCommand{}, "ReleaseVersion")
+				field = fieldFor(commands.ArtifactReferencesCommand{}, "ReleaseVersion")
 			})
 
 			It("is not required", func() {
@@ -122,9 +122,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImageDigest flag", func() {
+		Describe("ArtifactDigest flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferencesCommand{}, "ImageDigest")
+				field = fieldFor(commands.ArtifactReferencesCommand{}, "ArtifactDigest")
 			})
 
 			It("is not required", func() {
@@ -141,31 +141,31 @@ var _ = Describe("image reference commands", func() {
 		})
 	})
 
-	Describe("ImageReferenceCommand", func() {
+	Describe("ArtifactReferenceCommand", func() {
 		var (
-			cmd commands.ImageReferenceCommand
+			cmd commands.ArtifactReferenceCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.ImageReferenceCommand{}
+			cmd = commands.ArtifactReferenceCommand{}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the ArtifactReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.GetCallCount()).To(Equal(1))
+			Expect(fakeArtifactReferenceClient.GetCallCount()).To(Equal(1))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the ArtifactReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.GetReturns(expectedErr)
+				fakeArtifactReferenceClient.GetReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -201,7 +201,7 @@ var _ = Describe("image reference commands", func() {
 
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferenceCommand{}, "ProductSlug")
+				field = fieldFor(commands.ArtifactReferenceCommand{}, "ProductSlug")
 			})
 
 			It("is required", func() {
@@ -219,7 +219,7 @@ var _ = Describe("image reference commands", func() {
 
 		Describe("ReleaseVersion flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferenceCommand{}, "ReleaseVersion")
+				field = fieldFor(commands.ArtifactReferenceCommand{}, "ReleaseVersion")
 			})
 
 			It("is not required", func() {
@@ -235,9 +235,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImageReferenceID flag", func() {
+		Describe("ArtifactReferenceID flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.ImageReferenceCommand{}, "ImageReferenceID")
+				field = fieldFor(commands.ArtifactReferenceCommand{}, "ArtifactReferenceID")
 			})
 
 			It("is required", func() {
@@ -249,39 +249,39 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-reference-id"))
+				Expect(longTag(field)).To(Equal("artifact-reference-id"))
 			})
 		})
 	})
 
-	Describe("CreateImageReferenceCommand", func() {
+	Describe("CreateArtifactReferenceCommand", func() {
 		var (
-			productSlug string
-			name        string
-			imagePath   string
-			digest      string
+			productSlug  string
+			name         string
+			artifactPath string
+			digest       string
 
 			description        string
 			docsURL            string
 			systemRequirements []string
 
-			cmd commands.CreateImageReferenceCommand
+			cmd commands.CreateArtifactReferenceCommand
 		)
 
 		BeforeEach(func() {
 			productSlug = "some product slug"
-			name = "some image reference"
-			imagePath = "some image path"
+			name = "some artifact reference"
+			artifactPath = "some artifact path"
 			digest = "some digest"
 
 			description = "some description"
 			docsURL = "some-docs-url"
 			systemRequirements = []string{"system1", "system2"}
 
-			cmd = commands.CreateImageReferenceCommand{
+			cmd = commands.CreateArtifactReferenceCommand{
 				ProductSlug:        productSlug,
 				Name:               name,
-				ImagePath:          imagePath,
+				ArtifactPath:       artifactPath,
 				Digest:             digest,
 				Description:        description,
 				DocsURL:            docsURL,
@@ -289,33 +289,33 @@ var _ = Describe("image reference commands", func() {
 			}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the ArtifactReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			config := pivnet.CreateImageReferenceConfig{
+			config := pivnet.CreateArtifactReferenceConfig{
 				ProductSlug:        productSlug,
 				Name:               name,
-				ImagePath:          imagePath,
+				ArtifactPath:       artifactPath,
 				Digest:             digest,
 				Description:        description,
 				DocsURL:            docsURL,
 				SystemRequirements: systemRequirements,
 			}
 
-			Expect(fakeImageReferenceClient.CreateCallCount()).To(Equal(1))
-			Expect(fakeImageReferenceClient.CreateArgsForCall(0)).To(Equal(config))
+			Expect(fakeArtifactReferenceClient.CreateCallCount()).To(Equal(1))
+			Expect(fakeArtifactReferenceClient.CreateArgsForCall(0)).To(Equal(config))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the ArtifactReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.CreateReturns(expectedErr)
+				fakeArtifactReferenceClient.CreateReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -381,9 +381,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImagePath flag", func() {
+		Describe("ArtifactPath flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(cmd, "ImagePath")
+				field = fieldFor(cmd, "ArtifactPath")
 			})
 
 			It("is required", func() {
@@ -391,7 +391,7 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-path"))
+				Expect(longTag(field)).To(Equal("artifact-path"))
 			})
 		})
 
@@ -452,31 +452,31 @@ var _ = Describe("image reference commands", func() {
 		})
 	})
 
-	Describe("DeleteImageReferenceCommand", func() {
+	Describe("DeleteArtifactReferenceCommand", func() {
 		var (
-			cmd commands.DeleteImageReferenceCommand
+			cmd commands.DeleteArtifactReferenceCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.DeleteImageReferenceCommand{}
+			cmd = commands.DeleteArtifactReferenceCommand{}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the ArtifactReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.DeleteCallCount()).To(Equal(1))
+			Expect(fakeArtifactReferenceClient.DeleteCallCount()).To(Equal(1))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the ArtifactReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.DeleteReturns(expectedErr)
+				fakeArtifactReferenceClient.DeleteReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -512,7 +512,7 @@ var _ = Describe("image reference commands", func() {
 
 		Describe("ProductSlug flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.DeleteImageReferenceCommand{}, "ProductSlug")
+				field = fieldFor(commands.DeleteArtifactReferenceCommand{}, "ProductSlug")
 			})
 
 			It("is required", func() {
@@ -528,9 +528,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImageReferenceID flag", func() {
+		Describe("ArtifactReferenceID flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(commands.DeleteImageReferenceCommand{}, "ImageReferenceID")
+				field = fieldFor(commands.DeleteArtifactReferenceCommand{}, "ArtifactReferenceID")
 			})
 
 			It("is required", func() {
@@ -542,58 +542,58 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-reference-id"))
+				Expect(longTag(field)).To(Equal("artifact-reference-id"))
 			})
 		})
 	})
 
-	Describe("UpdateImagereferenceCommand", func() {
+	Describe("UpdateArtifactreferenceCommand", func() {
 		var (
-			productSlug      string
-			imageReferenceID int
+			productSlug         string
+			artifactReferenceID int
 
 			description        string
 			name               string
 			docsURL            string
 			systemRequirements []string
 
-			cmd commands.UpdateImageReferenceCommand
+			cmd commands.UpdateArtifactReferenceCommand
 		)
 
 		BeforeEach(func() {
 			productSlug = "some product slug"
-			imageReferenceID = 1234
+			artifactReferenceID = 1234
 
 			description = "some description"
-			name = "some image reference"
+			name = "some artifact reference"
 			docsURL = "some-docs-url"
 			systemRequirements = []string{"system1", "system2"}
 
-			cmd = commands.UpdateImageReferenceCommand{
-				ProductSlug:        productSlug,
-				ImageReferenceID:   imageReferenceID,
-				Name:               &name,
-				Description:        &description,
-				DocsURL:            &docsURL,
-				SystemRequirements: &systemRequirements,
+			cmd = commands.UpdateArtifactReferenceCommand{
+				ProductSlug:         productSlug,
+				ArtifactReferenceID: artifactReferenceID,
+				Name:                &name,
+				Description:         &description,
+				DocsURL:             &docsURL,
+				SystemRequirements:  &systemRequirements,
 			}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the ArtifactReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.UpdateCallCount()).To(Equal(1))
+			Expect(fakeArtifactReferenceClient.UpdateCallCount()).To(Equal(1))
 
 			invokedProductSlug,
-				invokedImageID,
-				invokedName,
-				invokedDescription,
-				invokedDocsURL,
-				invokedSystemRequirements := fakeImageReferenceClient.UpdateArgsForCall(0)
+			invokedArtifactID,
+			invokedName,
+			invokedDescription,
+			invokedDocsURL,
+			invokedSystemRequirements := fakeArtifactReferenceClient.UpdateArgsForCall(0)
 
-			Expect(invokedImageID).To(Equal(imageReferenceID))
+			Expect(invokedArtifactID).To(Equal(artifactReferenceID))
 			Expect(invokedProductSlug).To(Equal(productSlug))
 			Expect(*invokedName).To(Equal(name))
 			Expect(*invokedDescription).To(Equal(description))
@@ -601,14 +601,14 @@ var _ = Describe("image reference commands", func() {
 			Expect(*invokedSystemRequirements).To(Equal(systemRequirements))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the ArtifactReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.UpdateReturns(expectedErr)
+				fakeArtifactReferenceClient.UpdateReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -660,9 +660,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImageReferenceID flag", func() {
+		Describe("ArtifactReferenceID flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(cmd, "ImageReferenceID")
+				field = fieldFor(cmd, "ArtifactReferenceID")
 			})
 
 			It("is required", func() {
@@ -674,7 +674,7 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-reference-id"))
+				Expect(longTag(field)).To(Equal("artifact-reference-id"))
 			})
 		})
 
@@ -735,31 +735,31 @@ var _ = Describe("image reference commands", func() {
 		})
 	})
 
-	Describe("AddImageReferenceToReleaseCommand", func() {
+	Describe("AddArtifactReferenceToReleaseCommand", func() {
 		var (
-			cmd commands.AddImageReferenceToReleaseCommand
+			cmd commands.AddArtifactReferenceToReleaseCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.AddImageReferenceToReleaseCommand{}
+			cmd = commands.AddArtifactReferenceToReleaseCommand{}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the ArtifactReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.AddToReleaseCallCount()).To(Equal(1))
+			Expect(fakeArtifactReferenceClient.AddToReleaseCallCount()).To(Equal(1))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the ArtifactReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.AddToReleaseReturns(expectedErr)
+				fakeArtifactReferenceClient.AddToReleaseReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -811,9 +811,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImageReferenceID flag", func() {
+		Describe("ArtifactReferenceID flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(cmd, "ImageReferenceID")
+				field = fieldFor(cmd, "ArtifactReferenceID")
 			})
 
 			It("is required", func() {
@@ -825,7 +825,7 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-reference-id"))
+				Expect(longTag(field)).To(Equal("artifact-reference-id"))
 			})
 		})
 
@@ -848,31 +848,31 @@ var _ = Describe("image reference commands", func() {
 		})
 	})
 
-	Describe("RemoveImageReferenceFromReleaseCommand", func() {
+	Describe("RemoveArtifactReferenceFromReleaseCommand", func() {
 		var (
-			cmd commands.RemoveImageReferenceFromReleaseCommand
+			cmd commands.RemoveArtifactReferenceFromReleaseCommand
 		)
 
 		BeforeEach(func() {
-			cmd = commands.RemoveImageReferenceFromReleaseCommand{}
+			cmd = commands.RemoveArtifactReferenceFromReleaseCommand{}
 		})
 
-		It("invokes the ImageReference client", func() {
+		It("invokes the ArtifactReference client", func() {
 			err := cmd.Execute(nil)
 
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(fakeImageReferenceClient.RemoveFromReleaseCallCount()).To(Equal(1))
+			Expect(fakeArtifactReferenceClient.RemoveFromReleaseCallCount()).To(Equal(1))
 		})
 
-		Context("when the ImageReference client returns an error", func() {
+		Context("when the ArtifactReference client returns an error", func() {
 			var (
 				expectedErr error
 			)
 
 			BeforeEach(func() {
 				expectedErr = errors.New("expected error")
-				fakeImageReferenceClient.RemoveFromReleaseReturns(expectedErr)
+				fakeArtifactReferenceClient.RemoveFromReleaseReturns(expectedErr)
 			})
 
 			It("forwards the error", func() {
@@ -924,9 +924,9 @@ var _ = Describe("image reference commands", func() {
 			})
 		})
 
-		Describe("ImageReferenceID flag", func() {
+		Describe("ArtifactReferenceID flag", func() {
 			BeforeEach(func() {
-				field = fieldFor(cmd, "ImageReferenceID")
+				field = fieldFor(cmd, "ArtifactReferenceID")
 			})
 
 			It("is required", func() {
@@ -938,7 +938,7 @@ var _ = Describe("image reference commands", func() {
 			})
 
 			It("contains long name", func() {
-				Expect(longTag(field)).To(Equal("image-reference-id"))
+				Expect(longTag(field)).To(Equal("artifact-reference-id"))
 			})
 		})
 

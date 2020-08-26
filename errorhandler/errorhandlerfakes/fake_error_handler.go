@@ -8,10 +8,10 @@ import (
 )
 
 type FakeErrorHandler struct {
-	HandleErrorStub        func(err error) error
+	HandleErrorStub        func(error) error
 	handleErrorMutex       sync.RWMutex
 	handleErrorArgsForCall []struct {
-		err error
+		arg1 error
 	}
 	handleErrorReturns struct {
 		result1 error
@@ -23,21 +23,22 @@ type FakeErrorHandler struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeErrorHandler) HandleError(err error) error {
+func (fake *FakeErrorHandler) HandleError(arg1 error) error {
 	fake.handleErrorMutex.Lock()
 	ret, specificReturn := fake.handleErrorReturnsOnCall[len(fake.handleErrorArgsForCall)]
 	fake.handleErrorArgsForCall = append(fake.handleErrorArgsForCall, struct {
-		err error
-	}{err})
-	fake.recordInvocation("HandleError", []interface{}{err})
+		arg1 error
+	}{arg1})
+	fake.recordInvocation("HandleError", []interface{}{arg1})
 	fake.handleErrorMutex.Unlock()
 	if fake.HandleErrorStub != nil {
-		return fake.HandleErrorStub(err)
+		return fake.HandleErrorStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.handleErrorReturns.result1
+	fakeReturns := fake.handleErrorReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeErrorHandler) HandleErrorCallCount() int {
@@ -46,13 +47,22 @@ func (fake *FakeErrorHandler) HandleErrorCallCount() int {
 	return len(fake.handleErrorArgsForCall)
 }
 
+func (fake *FakeErrorHandler) HandleErrorCalls(stub func(error) error) {
+	fake.handleErrorMutex.Lock()
+	defer fake.handleErrorMutex.Unlock()
+	fake.HandleErrorStub = stub
+}
+
 func (fake *FakeErrorHandler) HandleErrorArgsForCall(i int) error {
 	fake.handleErrorMutex.RLock()
 	defer fake.handleErrorMutex.RUnlock()
-	return fake.handleErrorArgsForCall[i].err
+	argsForCall := fake.handleErrorArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *FakeErrorHandler) HandleErrorReturns(result1 error) {
+	fake.handleErrorMutex.Lock()
+	defer fake.handleErrorMutex.Unlock()
 	fake.HandleErrorStub = nil
 	fake.handleErrorReturns = struct {
 		result1 error
@@ -60,6 +70,8 @@ func (fake *FakeErrorHandler) HandleErrorReturns(result1 error) {
 }
 
 func (fake *FakeErrorHandler) HandleErrorReturnsOnCall(i int, result1 error) {
+	fake.handleErrorMutex.Lock()
+	defer fake.handleErrorMutex.Unlock()
 	fake.HandleErrorStub = nil
 	if fake.handleErrorReturnsOnCall == nil {
 		fake.handleErrorReturnsOnCall = make(map[int]struct {

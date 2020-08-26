@@ -8,10 +8,10 @@ import (
 )
 
 type FakeFileSummer struct {
-	SumFileStub        func(filepath string) (string, error)
+	SumFileStub        func(string) (string, error)
 	sumFileMutex       sync.RWMutex
 	sumFileArgsForCall []struct {
-		filepath string
+		arg1 string
 	}
 	sumFileReturns struct {
 		result1 string
@@ -25,21 +25,22 @@ type FakeFileSummer struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeFileSummer) SumFile(filepath string) (string, error) {
+func (fake *FakeFileSummer) SumFile(arg1 string) (string, error) {
 	fake.sumFileMutex.Lock()
 	ret, specificReturn := fake.sumFileReturnsOnCall[len(fake.sumFileArgsForCall)]
 	fake.sumFileArgsForCall = append(fake.sumFileArgsForCall, struct {
-		filepath string
-	}{filepath})
-	fake.recordInvocation("SumFile", []interface{}{filepath})
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("SumFile", []interface{}{arg1})
 	fake.sumFileMutex.Unlock()
 	if fake.SumFileStub != nil {
-		return fake.SumFileStub(filepath)
+		return fake.SumFileStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.sumFileReturns.result1, fake.sumFileReturns.result2
+	fakeReturns := fake.sumFileReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeFileSummer) SumFileCallCount() int {
@@ -48,13 +49,22 @@ func (fake *FakeFileSummer) SumFileCallCount() int {
 	return len(fake.sumFileArgsForCall)
 }
 
+func (fake *FakeFileSummer) SumFileCalls(stub func(string) (string, error)) {
+	fake.sumFileMutex.Lock()
+	defer fake.sumFileMutex.Unlock()
+	fake.SumFileStub = stub
+}
+
 func (fake *FakeFileSummer) SumFileArgsForCall(i int) string {
 	fake.sumFileMutex.RLock()
 	defer fake.sumFileMutex.RUnlock()
-	return fake.sumFileArgsForCall[i].filepath
+	argsForCall := fake.sumFileArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *FakeFileSummer) SumFileReturns(result1 string, result2 error) {
+	fake.sumFileMutex.Lock()
+	defer fake.sumFileMutex.Unlock()
 	fake.SumFileStub = nil
 	fake.sumFileReturns = struct {
 		result1 string
@@ -63,6 +73,8 @@ func (fake *FakeFileSummer) SumFileReturns(result1 string, result2 error) {
 }
 
 func (fake *FakeFileSummer) SumFileReturnsOnCall(i int, result1 string, result2 error) {
+	fake.sumFileMutex.Lock()
+	defer fake.sumFileMutex.Unlock()
 	fake.SumFileStub = nil
 	if fake.sumFileReturnsOnCall == nil {
 		fake.sumFileReturnsOnCall = make(map[int]struct {

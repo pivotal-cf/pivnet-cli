@@ -1,4 +1,4 @@
-package imagereference_test
+package artifactreference_test
 
 import (
 	"testing"
@@ -9,5 +9,5 @@ import (
 
 func TestCommands(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "ImageReference suite")
+	RunSpecs(t, "ArtifactReference suite")
 }
