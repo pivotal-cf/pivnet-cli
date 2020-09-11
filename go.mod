@@ -1,4 +1,4 @@
-module github.com/pivotal-cf/pivnet-cli
+module github.com/pivotal-cf/pivnet-cli/v2
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect

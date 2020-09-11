@@ -3,14 +3,14 @@ package subscriptiongroup_test
 import (
 	"bytes"
 	"errors"
-	"github.com/pivotal-cf/pivnet-cli/commands/subscriptiongroup"
-	"github.com/pivotal-cf/pivnet-cli/commands/subscriptiongroup/subscriptiongroupfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/subscriptiongroup"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/subscriptiongroup/subscriptiongroupfakes"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pivotal-cf/go-pivnet/v6"
-	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
-	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler/errorhandlerfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/printer"
 )
 
 var _ = Describe("subscription group client", func() {

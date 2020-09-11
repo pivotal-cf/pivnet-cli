@@ -6,13 +6,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/pivotal-cf/pivnet-cli/ui"
+	"github.com/pivotal-cf/pivnet-cli/v2/ui"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pivotal-cf/go-pivnet/v6"
 	"github.com/pivotal-cf/go-pivnet/v6/logger"
-	"github.com/pivotal-cf/pivnet-cli/errorhandler"
-	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler"
+	"github.com/pivotal-cf/pivnet-cli/v2/printer"
 )
 
 //go:generate counterfeiter . PivnetClient

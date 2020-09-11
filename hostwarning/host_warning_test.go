@@ -1,7 +1,7 @@
 package hostwarning_test
 
 import (
-	"github.com/pivotal-cf/pivnet-cli/hostwarning"
+	"github.com/pivotal-cf/pivnet-cli/v2/hostwarning"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

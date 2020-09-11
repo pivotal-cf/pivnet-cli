@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	pivnet "github.com/pivotal-cf/go-pivnet/v6"
-	"github.com/pivotal-cf/pivnet-cli/commands/releaseupgradepath"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/releaseupgradepath"
 )
 
 type FakeFilter struct {

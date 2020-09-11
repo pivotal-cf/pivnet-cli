@@ -10,11 +10,11 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
 	"github.com/pivotal-cf/go-pivnet/v6"
-	"github.com/pivotal-cf/pivnet-cli/commands"
-	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
-	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
-	"github.com/pivotal-cf/pivnet-cli/printer"
-	"github.com/pivotal-cf/pivnet-cli/rc"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler/errorhandlerfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/printer"
+	"github.com/pivotal-cf/pivnet-cli/v2/rc"
 )
 
 var _ = Describe("Pivnet commands", func() {

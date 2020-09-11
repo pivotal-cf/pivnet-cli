@@ -4,7 +4,7 @@ package commandsfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/pivnet-cli/commands"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands"
 )
 
 type FakeProductClient struct {

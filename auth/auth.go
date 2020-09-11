@@ -3,7 +3,7 @@ package auth
 import (
 	"fmt"
 
-	"github.com/pivotal-cf/pivnet-cli/errorhandler"
+	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler"
 )
 
 //go:generate counterfeiter . AuthClient

@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	pivnet "github.com/pivotal-cf/go-pivnet/v6"
-	"github.com/pivotal-cf/pivnet-cli/commands/pivnetversions"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/pivnetversions"
 )
 
 type FakePivnetClient struct {

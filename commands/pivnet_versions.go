@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"github.com/pivotal-cf/pivnet-cli/commands/pivnetversions"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/pivnetversions"
 )
 
 type PivnetVersionsCommand struct {

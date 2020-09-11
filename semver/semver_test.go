@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 
-	"github.com/pivotal-cf/pivnet-cli/semver"
+	"github.com/pivotal-cf/pivnet-cli/v2/semver"
 )
 
 var _ = Describe("semantic versioning comparison", func() {

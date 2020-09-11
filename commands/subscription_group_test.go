@@ -5,11 +5,11 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/commands/subscriptiongroup"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/subscriptiongroup"
 	"reflect"
 
-	"github.com/pivotal-cf/pivnet-cli/commands"
-	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/commandsfakes"
 )
 
 var _ = Describe("subscription group commands", func() {

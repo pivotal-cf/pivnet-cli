@@ -6,7 +6,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/v2/printer"
 )
 
 var _ = Describe("Printer", func() {

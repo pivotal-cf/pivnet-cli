@@ -1,6 +1,6 @@
 package commands
 
-import "github.com/pivotal-cf/pivnet-cli/commands/curl"
+import "github.com/pivotal-cf/pivnet-cli/v2/commands/curl"
 
 type Args struct {
 	URL string `positional-arg-name:"URL" description:"URL without host or API prefix e.g. /products/p-mysql/releases/3451"`

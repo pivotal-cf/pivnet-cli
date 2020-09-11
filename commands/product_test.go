@@ -7,9 +7,9 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/commands"
-	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
-	"github.com/pivotal-cf/pivnet-cli/commands/product"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/product"
 )
 
 var _ = Describe("product commands", func() {

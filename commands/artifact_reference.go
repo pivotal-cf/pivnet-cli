@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/pivotal-cf/go-pivnet/v6"
-	"github.com/pivotal-cf/pivnet-cli/commands/artifactreference"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/artifactreference"
 )
 
 type ArtifactReferencesCommand struct {

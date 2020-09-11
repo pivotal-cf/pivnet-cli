@@ -11,10 +11,10 @@ import (
 	"github.com/pivotal-cf/go-pivnet/v6"
 	"github.com/pivotal-cf/go-pivnet/v6/logger"
 	"github.com/pivotal-cf/go-pivnet/v6/logshim"
-	"github.com/pivotal-cf/pivnet-cli/commands/artifactreference"
-	"github.com/pivotal-cf/pivnet-cli/commands/artifactreference/artifactreferencefakes"
-	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
-	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/artifactreference"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/artifactreference/artifactreferencefakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler/errorhandlerfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/printer"
 )
 
 var _ = Describe("artifactreference commands", func() {

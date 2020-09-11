@@ -1,6 +1,6 @@
 package commands
 
-import "github.com/pivotal-cf/pivnet-cli/commands/usergroup"
+import "github.com/pivotal-cf/pivnet-cli/v2/commands/usergroup"
 
 type UserGroupsCommand struct {
 	ProductSlug    string `long:"product-slug" short:"p" description:"Product slug e.g. p-mysql"`

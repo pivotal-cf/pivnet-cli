@@ -6,9 +6,9 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pivotal-cf/go-pivnet/v6"
-	"github.com/pivotal-cf/pivnet-cli/errorhandler"
-	"github.com/pivotal-cf/pivnet-cli/printer"
-	"github.com/pivotal-cf/pivnet-cli/semver"
+	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler"
+	"github.com/pivotal-cf/pivnet-cli/v2/printer"
+	"github.com/pivotal-cf/pivnet-cli/v2/semver"
 )
 
 //go:generate counterfeiter . PivnetClient

@@ -5,9 +5,9 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/auth"
-	"github.com/pivotal-cf/pivnet-cli/auth/authfakes"
-	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/auth"
+	"github.com/pivotal-cf/pivnet-cli/v2/auth/authfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler/errorhandlerfakes"
 )
 
 var _ = Describe("Authenticator", func() {

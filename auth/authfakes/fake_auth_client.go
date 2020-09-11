@@ -4,7 +4,7 @@ package authfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/pivnet-cli/auth"
+	"github.com/pivotal-cf/pivnet-cli/v2/auth"
 )
 
 type FakeAuthClient struct {

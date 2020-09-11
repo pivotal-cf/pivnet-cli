@@ -7,9 +7,9 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/commands"
-	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
-	"github.com/pivotal-cf/pivnet-cli/commands/curl"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/curl"
 )
 
 var _ = Describe("curl commands", func() {

@@ -8,9 +8,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	pivnet "github.com/pivotal-cf/go-pivnet/v6"
-	"github.com/pivotal-cf/pivnet-cli/commands"
-	"github.com/pivotal-cf/pivnet-cli/commands/artifactreference"
-	"github.com/pivotal-cf/pivnet-cli/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/artifactreference"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/commandsfakes"
 )
 
 var _ = Describe("artifact reference commands", func() {

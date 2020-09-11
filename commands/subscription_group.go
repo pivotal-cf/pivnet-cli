@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"github.com/pivotal-cf/pivnet-cli/commands/subscriptiongroup"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/subscriptiongroup"
 )
 
 type SubscriptionGroupsCommand struct{}

@@ -9,10 +9,10 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/commands/curl"
-	"github.com/pivotal-cf/pivnet-cli/commands/curl/curlfakes"
-	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
-	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/curl"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/curl/curlfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler/errorhandlerfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/printer"
 )
 
 var _ = Describe("curl commands", func() {

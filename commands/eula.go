@@ -1,6 +1,6 @@
 package commands
 
-import "github.com/pivotal-cf/pivnet-cli/commands/eula"
+import "github.com/pivotal-cf/pivnet-cli/v2/commands/eula"
 
 type EULAsCommand struct {
 }

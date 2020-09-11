@@ -5,10 +5,10 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/commands/login"
-	"github.com/pivotal-cf/pivnet-cli/commands/login/loginfakes"
-	"github.com/pivotal-cf/pivnet-cli/errorhandler/errorhandlerfakes"
-	"github.com/pivotal-cf/pivnet-cli/printer"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/login"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/login/loginfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler/errorhandlerfakes"
+	"github.com/pivotal-cf/pivnet-cli/v2/printer"
 )
 
 var _ = Describe("login commands", func() {

@@ -7,7 +7,7 @@ import (
 	pivnet "github.com/pivotal-cf/go-pivnet/v6"
 	"github.com/pivotal-cf/go-pivnet/v6/md5sum"
 	"github.com/pivotal-cf/go-pivnet/v6/sha256sum"
-	"github.com/pivotal-cf/pivnet-cli/commands/productfile"
+	"github.com/pivotal-cf/pivnet-cli/v2/commands/productfile"
 )
 
 type ProductFilesCommand struct {
