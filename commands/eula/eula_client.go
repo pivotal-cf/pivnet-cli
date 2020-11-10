@@ -57,10 +57,10 @@ func (c *EULAClient) printEULA(eula pivnet.EULA) error {
 	switch c.format {
 	case printer.PrintAsTable:
 		table := tablewriter.NewWriter(c.outputWriter)
-		table.SetHeader([]string{"ID", "Slug", "Name"})
+		table.SetHeader([]string{"ID", "Slug", "Name", "Archived At"})
 
 		eulaAsString := []string{
-			strconv.Itoa(eula.ID), eula.Slug, eula.Name,
+			strconv.Itoa(eula.ID), eula.Slug, eula.Name, eula.ArchivedAt,
 		}
 		table.Append(eulaAsString)
 		table.Render()
@@ -87,11 +87,11 @@ func (c *EULAClient) printEULAs(eulas []pivnet.EULA) error {
 	switch c.format {
 	case printer.PrintAsTable:
 		table := tablewriter.NewWriter(c.outputWriter)
-		table.SetHeader([]string{"ID", "Slug", "Name"})
+		table.SetHeader([]string{"ID", "Slug", "Name", "Archived At"})
 
 		for _, e := range eulas {
 			eulaAsString := []string{
-				strconv.Itoa(e.ID), e.Slug, e.Name,
+				strconv.Itoa(e.ID), e.Slug, e.Name, e.ArchivedAt,
 			}
 			table.Append(eulaAsString)
 		}
