@@ -7,7 +7,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/go-pivnet/v6"
+	"github.com/pivotal-cf/go-pivnet/v7"
 	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/v2/printer"
 )

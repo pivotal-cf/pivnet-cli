@@ -1,8 +1,8 @@
 package filter_test
 
 import (
-	"github.com/pivotal-cf/go-pivnet/v6"
-	"github.com/pivotal-cf/go-pivnet/v6/logger/loggerfakes"
+	"github.com/pivotal-cf/go-pivnet/v7"
+	"github.com/pivotal-cf/go-pivnet/v7/logger/loggerfakes"
 	"github.com/pivotal-cf/pivnet-cli/v2/filter"
 
 	. "github.com/onsi/ginkgo"

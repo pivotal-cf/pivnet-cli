@@ -3,7 +3,7 @@
 Using the Pivnet CLI requires a valid `Pivotal Network API token` or `UAA Refresh Token`.
 
 Refer to the
-[official docs](https://network.pivotal.io/docs/api#how-to-authenticate)
+[official docs](https://network.tanzu.vmware.com/docs/api#how-to-authenticate)
 for more details on obtaining a Pivotal Network API token.
 
 Example usage:

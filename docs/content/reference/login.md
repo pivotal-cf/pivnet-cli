@@ -16,6 +16,6 @@ Help Options:
 
 [login command options]
           --api-token=           Pivnet API Token (Pivnet legacy token or UAA refresh token)
-          --host=                Pivnet API Host (default: https://network.pivotal.io)
+          --host=                Pivnet API Host (default: https://network.tanzu.vmware.com)
 
 ```

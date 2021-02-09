@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/olekukonko/tablewriter"
-	pivnet "github.com/pivotal-cf/go-pivnet/v6"
+	pivnet "github.com/pivotal-cf/go-pivnet/v7"
 	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/v2/printer"
 	"github.com/pivotal-cf/pivnet-cli/v2/ui"

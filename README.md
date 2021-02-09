@@ -1,6 +1,6 @@
 # Pivnet CLI
 
-Interact with [Pivotal Network](https://network.pivotal.io) from the command-line.
+Interact with [Pivotal Network](https://network.tanzu.vmware.com) from the command-line.
 
 ## Installing
 
@@ -22,7 +22,7 @@ and ensure the file is executable and on the path.
 Using the Pivnet CLI requires a valid `Pivotal Network API token` or `UAA Refresh Token`.
 
 Refer to the
-[official docs](https://network.pivotal.io/docs/api#how-to-authenticate)
+[official docs](https://network.tanzu.vmware.com/docs/api#how-to-authenticate)
 for more details on obtaining a Pivotal Network API token.
 
 Example usage:
@@ -72,7 +72,7 @@ go get -u github.com/onsi/ginkgo/ginkgo
 The tests require a valid Pivotal Network API token and host.
 
 Refer to the
-[official docs](https://network.pivotal.io/docs/api#how-to-authenticate)
+[official docs](https://network.tanzu.vmware.com/docs/api#how-to-authenticate)
 for more details on obtaining a Pivotal Network API token.
 
 It is advised to run the acceptance tests against the Pivotal Network integration

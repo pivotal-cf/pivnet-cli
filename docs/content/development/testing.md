@@ -9,7 +9,7 @@ go get -u github.com/onsi/ginkgo/ginkgo
 The tests require a valid Pivotal Network API token and host.
 
 Refer to the
-[official docs](https://network.pivotal.io/docs/api#how-to-authenticate)
+[official docs](https://network.tanzu.vmware.com/docs/api#how-to-authenticate)
 for more details on obtaining a Pivotal Network API token.
 
 It is advised to run the acceptance tests against the Pivotal Network integration

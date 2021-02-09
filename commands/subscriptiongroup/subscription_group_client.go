@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
-	"github.com/pivotal-cf/go-pivnet/v6"
+	"github.com/pivotal-cf/go-pivnet/v7"
 	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/v2/printer"
 	"io"

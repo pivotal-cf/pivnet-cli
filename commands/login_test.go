@@ -124,7 +124,7 @@ var _ = Describe("login commands", func() {
 			})
 
 			It("has a default value", func() {
-				Expect(defaultVal(field)).To(Equal("https://network.pivotal.io"))
+				Expect(defaultVal(field)).To(Equal("https://network.tanzu.vmware.com"))
 			})
 		})
 

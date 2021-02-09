@@ -13,7 +13,7 @@ func NewHostWarning(host string) *HostWarning {
 }
 
 func (hw HostWarning) Warn() string {
-	if hw.host != "https://network.pivotal.io" && hw.host != ""  {
+	if hw.host != "https://network.tanzu.vmware.com" && hw.host != ""  {
 		return fmt.Sprintf( "\nWarning: You are currently targeting %s\n", hw.host)
 	}
 	 return ""

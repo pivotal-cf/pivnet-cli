@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/pivotal-cf/go-pivnet/v6/logshim"
+	"github.com/pivotal-cf/go-pivnet/v7/logshim"
 	"github.com/pivotal-cf/pivnet-cli/v2/filter"
 	"github.com/pivotal-cf/pivnet-cli/v2/rc/filesystem"
 	"io"
@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/pivotal-cf/go-pivnet/v6"
-	"github.com/pivotal-cf/go-pivnet/v6/logger"
-	"github.com/pivotal-cf/go-pivnet/v6/sha256sum"
+	"github.com/pivotal-cf/go-pivnet/v7"
+	"github.com/pivotal-cf/go-pivnet/v7/logger"
+	"github.com/pivotal-cf/go-pivnet/v7/sha256sum"
 	"github.com/pivotal-cf/pivnet-cli/v2/auth"
 	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler"
 	"github.com/pivotal-cf/pivnet-cli/v2/gp"

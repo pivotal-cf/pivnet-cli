@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/pivotal-cf/go-pivnet/v6"
+	"github.com/pivotal-cf/go-pivnet/v7"
 	"github.com/pivotal-cf/pivnet-cli/v2/commands"
 	"github.com/pivotal-cf/pivnet-cli/v2/commands/commandsfakes"
 	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler/errorhandlerfakes"

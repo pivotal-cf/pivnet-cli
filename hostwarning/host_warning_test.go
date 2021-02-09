@@ -31,7 +31,7 @@ var _ = Describe("Host Warning", func() {
 
 		Context("host is production", func() {
 			BeforeEach(func() {
-				host = "https://network.pivotal.io"
+				host = "https://network.tanzu.vmware.com"
 			})
 			It("does not return a warning", func() {
 				Expect(hw.Warn()).To(Equal(""))
