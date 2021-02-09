@@ -8,10 +8,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	pivnet "github.com/pivotal-cf/go-pivnet/v7"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/usergroup"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/usergroup/usergroupfakes"
-	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler/errorhandlerfakes"
-	"github.com/pivotal-cf/pivnet-cli/v2/printer"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/usergroup"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/usergroup/usergroupfakes"
+	"github.com/pivotal-cf/pivnet-cli/v3/errorhandler/errorhandlerfakes"
+	"github.com/pivotal-cf/pivnet-cli/v3/printer"
 )
 
 var _ = Describe("usergroup commands", func() {

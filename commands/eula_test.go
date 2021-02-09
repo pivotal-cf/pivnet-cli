@@ -7,9 +7,9 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/commandsfakes"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/eula"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/eula"
 )
 
 var _ = Describe("eula commands", func() {

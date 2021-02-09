@@ -3,8 +3,8 @@ package commands
 import (
 	"fmt"
 	"github.com/pivotal-cf/go-pivnet/v7"
-	"github.com/pivotal-cf/pivnet-cli/v2/gp"
-	"github.com/pivotal-cf/pivnet-cli/v2/rc"
+	"github.com/pivotal-cf/pivnet-cli/v3/gp"
+	"github.com/pivotal-cf/pivnet-cli/v3/rc"
 	"time"
 )
 

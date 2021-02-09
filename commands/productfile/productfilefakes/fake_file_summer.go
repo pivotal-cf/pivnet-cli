@@ -4,7 +4,7 @@ package productfilefakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/productfile"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/productfile"
 )
 
 type FakeFileSummer struct {

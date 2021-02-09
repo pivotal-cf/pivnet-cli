@@ -1,6 +1,6 @@
 package commands
 
-import "github.com/pivotal-cf/pivnet-cli/v2/commands/logout"
+import "github.com/pivotal-cf/pivnet-cli/v3/commands/logout"
 
 type LogoutCommand struct {
 }

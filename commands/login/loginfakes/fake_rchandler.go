@@ -4,7 +4,7 @@ package loginfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/login"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/login"
 )
 
 type FakeRCHandler struct {

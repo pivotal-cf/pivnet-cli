@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler"
-	"github.com/pivotal-cf/pivnet-cli/v2/printer"
-	"github.com/pivotal-cf/pivnet-cli/v2/ui"
+	"github.com/pivotal-cf/pivnet-cli/v3/errorhandler"
+	"github.com/pivotal-cf/pivnet-cli/v3/printer"
+	"github.com/pivotal-cf/pivnet-cli/v3/ui"
 )
 
 //go:generate counterfeiter . RCHandler

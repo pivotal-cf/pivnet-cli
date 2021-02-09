@@ -6,10 +6,10 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/logout"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/logout/logoutfakes"
-	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler/errorhandlerfakes"
-	"github.com/pivotal-cf/pivnet-cli/v2/printer"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/logout"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/logout/logoutfakes"
+	"github.com/pivotal-cf/pivnet-cli/v3/errorhandler/errorhandlerfakes"
+	"github.com/pivotal-cf/pivnet-cli/v3/printer"
 )
 
 var _ = Describe("logout commands", func() {

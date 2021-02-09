@@ -1,16 +1,16 @@
 package commands_test
 
 import (
-	"github.com/pivotal-cf/pivnet-cli/v2/gp"
-	"github.com/pivotal-cf/pivnet-cli/v2/gp/gpfakes"
+	"github.com/pivotal-cf/pivnet-cli/v3/gp"
+	"github.com/pivotal-cf/pivnet-cli/v3/gp/gpfakes"
 	"reflect"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/commandsfakes"
-	"github.com/pivotal-cf/pivnet-cli/v2/printer"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/v3/printer"
 )
 
 const (

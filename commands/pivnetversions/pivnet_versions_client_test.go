@@ -8,10 +8,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	pivnet "github.com/pivotal-cf/go-pivnet/v7"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/pivnetversions"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/pivnetversions/pivnetversionsfakes"
-	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler/errorhandlerfakes"
-	"github.com/pivotal-cf/pivnet-cli/v2/printer"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/pivnetversions"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/pivnetversions/pivnetversionsfakes"
+	"github.com/pivotal-cf/pivnet-cli/v3/errorhandler/errorhandlerfakes"
+	"github.com/pivotal-cf/pivnet-cli/v3/printer"
 )
 
 var _ = Describe("pivnetversions commands", func() {

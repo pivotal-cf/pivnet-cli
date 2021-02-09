@@ -7,9 +7,9 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/commandsfakes"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/releaseupgradepath"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/commandsfakes"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/releaseupgradepath"
 )
 
 var _ = Describe("release upgrade path commands", func() {

@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/pivotal-cf/go-pivnet/v7"
-	"github.com/pivotal-cf/pivnet-cli/v2/printer"
-	"github.com/pivotal-cf/pivnet-cli/v2/ui"
+	"github.com/pivotal-cf/pivnet-cli/v3/printer"
+	"github.com/pivotal-cf/pivnet-cli/v3/ui"
 )
 
 var (

@@ -4,8 +4,8 @@ package commandsfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/pivnet-cli/v2/auth"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands"
+	"github.com/pivotal-cf/pivnet-cli/v3/auth"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands"
 )
 
 type FakeAuthenticator struct {

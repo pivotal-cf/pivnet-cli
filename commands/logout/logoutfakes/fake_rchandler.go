@@ -4,7 +4,7 @@ package logoutfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/logout"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/logout"
 )
 
 type FakeRCHandler struct {
