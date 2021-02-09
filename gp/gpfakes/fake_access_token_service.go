@@ -4,7 +4,7 @@ package gpfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/pivnet-cli/v2/gp"
+	"github.com/pivotal-cf/pivnet-cli/v3/gp"
 )
 
 type FakeAccessTokenService struct {

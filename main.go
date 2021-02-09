@@ -2,15 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/pivotal-cf/pivnet-cli/v2/rc"
-	"github.com/pivotal-cf/pivnet-cli/v2/rc/filesystem"
+	"github.com/pivotal-cf/pivnet-cli/v3/rc"
+	"github.com/pivotal-cf/pivnet-cli/v3/rc/filesystem"
 	"os"
 
 	"github.com/jessevdk/go-flags"
-	"github.com/pivotal-cf/pivnet-cli/v2/commands"
-	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler"
-	"github.com/pivotal-cf/pivnet-cli/v2/version"
-	"github.com/pivotal-cf/pivnet-cli/v2/hostwarning"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands"
+	"github.com/pivotal-cf/pivnet-cli/v3/errorhandler"
+	"github.com/pivotal-cf/pivnet-cli/v3/version"
+	"github.com/pivotal-cf/pivnet-cli/v3/hostwarning"
 )
 
 var (

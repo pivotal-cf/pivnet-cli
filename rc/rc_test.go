@@ -6,8 +6,8 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/v2/rc"
-	"github.com/pivotal-cf/pivnet-cli/v2/rc/rcfakes"
+	"github.com/pivotal-cf/pivnet-cli/v3/rc"
+	"github.com/pivotal-cf/pivnet-cli/v3/rc/rcfakes"
 )
 
 var _ = Describe("RCHandler", func() {

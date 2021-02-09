@@ -9,7 +9,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/v2/rc/filesystem"
+	"github.com/pivotal-cf/pivnet-cli/v3/rc/filesystem"
 )
 
 var _ = Describe("PivnetRCReadWriter", func() {

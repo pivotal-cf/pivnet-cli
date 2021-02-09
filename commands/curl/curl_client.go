@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pivotal-cf/pivnet-cli/v2/errorhandler"
-	"github.com/pivotal-cf/pivnet-cli/v2/printer"
+	"github.com/pivotal-cf/pivnet-cli/v3/errorhandler"
+	"github.com/pivotal-cf/pivnet-cli/v3/printer"
 )
 
 //go:generate counterfeiter . PivnetClient

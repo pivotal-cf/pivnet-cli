@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/pivotal-cf/pivnet-cli/v2/commands/curl"
+	"github.com/pivotal-cf/pivnet-cli/v3/commands/curl"
 )
 
 type FakePivnetClient struct {

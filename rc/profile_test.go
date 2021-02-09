@@ -3,7 +3,7 @@ package rc_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pivotal-cf/pivnet-cli/v2/rc"
+	"github.com/pivotal-cf/pivnet-cli/v3/rc"
 )
 
 var _ = Describe("PivnetProfile", func() {

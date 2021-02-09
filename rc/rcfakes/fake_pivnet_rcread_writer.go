@@ -4,7 +4,7 @@ package rcfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/pivnet-cli/v2/rc"
+	"github.com/pivotal-cf/pivnet-cli/v3/rc"
 )
 
 type FakePivnetRCReadWriter struct {

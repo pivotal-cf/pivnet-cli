@@ -4,7 +4,7 @@ package printerfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/pivnet-cli/v2/printer"
+	"github.com/pivotal-cf/pivnet-cli/v3/printer"
 )
 
 type FakePrinter struct {
